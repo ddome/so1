@@ -11,7 +11,8 @@
 #define _FILEHANDLER_
 
 #define MFILE 15
-#define SLEEP_TIME 60
+#define MPATHL 100 //maximo tamanio del path de un file
+#define SLEEP_TIME 10
 
 
 #include <sys/types.h>

@@ -12,8 +12,7 @@
 int
 FilesWatch( string *path, int nfile )
 {
-	int flag;
-	int i,j;
+	int i;
 	struct stat sb;
 	time_t last_time[MFILE+1];
 	
@@ -37,6 +36,8 @@ FilesWatch( string *path, int nfile )
 				
 			//Espera para volver a controlar
 			sleep(SLEEP_TIME);
+			
+			printf("Desperto\n");
 		}
 	}	
 }
