@@ -78,23 +78,5 @@ FileExists( string folderPath, string fileName )
 	fclose(fptr);
 	return TRUE;
 }
-	
-	
-int
-main(void)
-{
-	string folder;
-	string name;
-	
-	folder = CreateString("/Users/damian/");
-	name   = CreateString("prueba.txt");
-	
-	printf("%d\n", FileExists(folder,name) );
-	
-	CreateFile(folder,name);
-	
-	printf("%d\n", FileExists(folder,name) );
-	
-}
 
 
