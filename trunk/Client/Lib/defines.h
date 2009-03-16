@@ -16,4 +16,6 @@ typedef enum boolean{ FALSE = 0, TRUE = 1} boolean;
 
 typedef char * string;
 
+typedef unsigned int uInt;
+
 #endif
