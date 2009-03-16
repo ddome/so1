@@ -41,7 +41,33 @@ FilesWatch( string *path, int nfile )
 		}
 	}	
 }
-				
+
+int
+FilesHasChanged( string *path, int nfile )
+{
+	int i;
+	struct stat sb;
+	time_t last_time[MFILE+1];
+	
+	
+	//Inicializacion
+	for ( i=0; i < nfile; i++ ) {
+		
+		if( stat(path[i],&sb) == -1 )
+			return ERROR;
+		
+		last_time[i] = sb.st_mtime;
+	}	
+	
+
+	for( i=0; i < nfile; i++ ) {
+		if( stat(path[i],&sb) == -1 || sb.st_mtime != last_time[i] )
+			return i;
+	}
+	return -1;
+}
+
+
 FILE *
 CreateFile( string folderPath, string fileName )
 {
