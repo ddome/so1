@@ -37,6 +37,8 @@ boolean AnyCanWrite( string path );
 // si no existe algun archivo, devuelve ERROR
 int FilesWatch( string *path, int nfiles );
 
+int FilesHasChanged( string *path, int nfile );
+
 FILE * CreateFile( string folderPath, string fileName );
 
 boolean FileExists( string folderPath, string fileName );

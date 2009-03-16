@@ -27,31 +27,39 @@ MakeFilesArray(fileT *files, int nfiles)
 	return array;
 }
 
+static int
+FilesHandler()
+{
+	string *auxArray;	
+	fileT * fileList;
+	int idFile;
+	
+	//Hasta que no se salga del programa
+	//el problema es que no puedo detectar cuando se agregan nuevos archivos
+	//para vigilar
+	while(1) {
+		fileList = InitFiles();
+		idFile = FilesHasChanged(auxArray=MakeFilesArray(fileList, 5), 5);
+		if( idFile != -1 )
+			printf("HAGO ALGO CON EL ARCHIVO QUE CAMBIO%d\n",idFile);
+		free(auxArray);
+	}
+	
+	return OK;
+}
 
 int
 InitClientApp()
 {
-	int aux;
 	fileT *fileList;
-	string *auxArray;
-	
-	fileList = InitFiles();
-	
+
 	switch(fork()) {
 		case 0: 
-			aux = FilesWatch(auxArray=MakeFilesArray(fileList, 5), 5);
-			
-			printf("Cambio un archivo %d\n", aux);
-			
-			free(auxArray);
-			
-			return OK;
+			return FilesHandler();
 		default:
 			ClientPrompt();
-			wait(NULL);
+			wait(NULL); //tengo que esperar que termine el hijo antes creado
 	}		
-	
-	free(fileList);
 	return OK;
 }
 
@@ -68,7 +76,7 @@ InitFiles()
 	
 	//Por ahora tenemos 5 fijos
 	//creados en ejecucion
-	//deberiamos levantarlos al iniciar, de alguna manera.
+	//deberiamos levantarlos al iniciar, de alguna manera global.
 	fileT *array;	
 	
 	array = malloc(sizeof(fileT)*5);
