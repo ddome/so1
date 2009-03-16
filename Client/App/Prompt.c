@@ -46,32 +46,39 @@ static char * ReadLine( FILE * inputFile )
 /* Comandos el Prompt
 */
 
-static int RegisterDirectory(scannerADT scanner, void * data)
+static int SelectServer(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
     return retValue;    
 }
 
-static int ListUsers(scannerADT scanner, void * data)
+static int LogOn(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
-    return retValue;
+    return retValue;    
 }
 
-static int ListUserDirectory(scannerADT scanner, void * data)
+static int ListSynchronizableDirectories(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
-    return retValue;
+    return retValue;    
 }
 
-static int ListLast10(scannerADT scanner, void * data)
+static int SynchronizeDirectory(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
-    return retValue;
+    return retValue;    
+}
+
+static int RemoveDirectory(scannerADT scanner, void * data)
+{
+    int retValue = OK;
+    
+    return retValue;    
 }
 
 
@@ -88,7 +95,7 @@ static int ShowCommands(scannerADT scanner, void * data)
     printf("==================\n");
     printf("Inicializando Aplicacion...\n");
     printf("Inicializando Sesion...\n");
-    printf("Inicializando Aplicacion...\n");
+    printf("Inicializando Transporte...\n");
     printf("==================\n");
     printf("Comandos disponibles:\n");
 
@@ -101,10 +108,11 @@ static int ShowCommands(scannerADT scanner, void * data)
 
 static void LoadTree(treeADT tree)
 {
-    InsertExpression(tree, "Registrar",    RegisterDirectory);
-    InsertExpression(tree, "Usuarios",   ListUsers);
-    InsertExpression(tree, "Dir",        ListUserDirectory);
-    InsertExpression(tree, "Last10",     ListLast10);
+    InsertExpression(tree, "Servidor",    SelectServer);
+    InsertExpression(tree, "Nombre",   LogOn);
+    InsertExpression(tree, "Lista",        ListSynchronizableDirectories);
+    InsertExpression(tree, "Agregar",     SynchronizeDirectory);
+    InsertExpression(tree, "Remover",     RemoveDirectory);
     InsertExpression(tree, "Salir",      ExitPrompt);
     InsertExpression(tree, "Help",   ShowCommands);
 }
