@@ -14,12 +14,6 @@
 #include "../Lib/genlib.h"
 #include "../Lib/defines.h"
 
-typedef struct {
-	int idFile;
-	string path;
-	string fName;
-} fileT;
-
 
 fileT * InitFiles(void);
 int ClientPrompt(void);
