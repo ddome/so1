@@ -9,6 +9,23 @@
 
 #include "fileHandler.h"
 
+
+static string *
+MakeFilesArray(fileT *files, int nfiles)
+{
+	string *array;
+	int i;
+	
+	if( (array=malloc(sizeof(string)*nfiles)) == NULL )
+		return NULL;
+	
+	for( i=0; i<nfiles; i++ ) {
+		array[i] = Concat(files[i].path,files[i].fName);
+	}
+	
+	return array;
+}
+
 int
 FilesWatch( string *path, int nfile )
 {
@@ -43,26 +60,37 @@ FilesWatch( string *path, int nfile )
 }
 
 int
-FilesHasChanged( string *path, int nfile )
+InitFilesStat(fileT *files, int nfile)
 {
 	int i;
-	struct stat sb;
-	time_t last_time[MFILE+1];
+	string aux;
 	
 	
-	//Inicializacion
 	for ( i=0; i < nfile; i++ ) {
-		
-		if( stat(path[i],&sb) == -1 )
+			
+		aux = Concat(files[i].path, files[i].fName);
+		if( stat(aux,&(files[i].sb)) == -1 )
 			return ERROR;
-		
-		last_time[i] = sb.st_mtime;
-	}	
+		free(aux);
+	}
+	return OK;
+}
 	
-
+int
+FilesHasChanged( fileT *files, int nfile )
+{
+	int i;
+	string aux;
+	struct stat sb;
+	
+	
 	for( i=0; i < nfile; i++ ) {
-		if( stat(path[i],&sb) == -1 || sb.st_mtime != last_time[i] )
+		aux = Concat(files[i].path, files[i].fName);
+		if( stat(aux,&sb) == -1 || sb.st_mtime != files[i].sb.st_mtime ) {
+			files[i].sb = sb;
 			return i;
+		}
+		free(aux);
 	}
 	return -1;
 }

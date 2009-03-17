@@ -9,8 +9,6 @@
 
 #include "client.h"
 
-
-
 static string *
 MakeFilesArray(fileT *files, int nfiles)
 {
@@ -30,19 +28,17 @@ MakeFilesArray(fileT *files, int nfiles)
 static int
 FilesHandler()
 {
-	string *auxArray;	
 	fileT * fileList;
 	int idFile;
 	
 	//Hasta que no se salga del programa
 	//el problema es que no puedo detectar cuando se agregan nuevos archivos
 	//para vigilar
+	fileList = InitFiles();
 	while(1) {
-		fileList = InitFiles();
-		idFile = FilesHasChanged(auxArray=MakeFilesArray(fileList, 5), 5);
+		idFile = FilesHasChanged(fileList, 5);
 		if( idFile != -1 )
 			printf("HAGO ALGO CON EL ARCHIVO QUE CAMBIO%d\n",idFile);
-		free(auxArray);
 	}
 	
 	return OK;
@@ -51,8 +47,6 @@ FilesHandler()
 int
 InitClientApp()
 {
-	fileT *fileList;
-
 	switch(fork()) {
 		case 0: 
 			return FilesHandler();
@@ -93,6 +87,7 @@ InitFiles()
 	for( i=0; i<5; i++ ) {
 		CreateFile(array[i].path, array[i].fName);
 	}
+	InitFilesStat(array,5);
 	
 	return array;		
 }
