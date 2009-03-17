@@ -23,6 +23,13 @@
 #include "../Lib/genlib.h"
 
 
+typedef struct {
+	int idFile;
+	string path;
+	string fName;
+	struct stat sb; //Guardo el estado inicial del archivo
+} fileT;
+
 // Funciones de control de permisos. No estan implementadas
 boolean UserCanRead( string path );
 boolean GroupCanRead( string path );
@@ -37,8 +44,12 @@ boolean AnyCanWrite( string path );
 // si no existe algun archivo, devuelve ERROR
 int FilesWatch( string *path, int nfiles );
 
+int FilesHasChanged( fileT *files, int nfile );
+
 FILE * CreateFile( string folderPath, string fileName );
 
 boolean FileExists( string folderPath, string fileName );
+
+int InitFilesStat(fileT *files, int nfile);
 
 #endif
