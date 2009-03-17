@@ -9,6 +9,23 @@
 
 #include "fileHandler.h"
 
+
+static string *
+MakeFilesArray(fileT *files, int nfiles)
+{
+	string *array;
+	int i;
+	
+	if( (array=malloc(sizeof(string)*nfiles)) == NULL )
+		return NULL;
+	
+	for( i=0; i<nfiles; i++ ) {
+		array[i] = Concat(files[i].path,files[i].fName);
+	}
+	
+	return array;
+}
+
 int
 FilesWatch( string *path, int nfile )
 {
@@ -41,7 +58,44 @@ FilesWatch( string *path, int nfile )
 		}
 	}	
 }
-				
+
+int
+InitFilesStat(fileT *files, int nfile)
+{
+	int i;
+	string aux;
+	
+	
+	for ( i=0; i < nfile; i++ ) {
+			
+		aux = Concat(files[i].path, files[i].fName);
+		if( stat(aux,&(files[i].sb)) == -1 )
+			return ERROR;
+		free(aux);
+	}
+	return OK;
+}
+	
+int
+FilesHasChanged( fileT *files, int nfile )
+{
+	int i;
+	string aux;
+	struct stat sb;
+	
+	
+	for( i=0; i < nfile; i++ ) {
+		aux = Concat(files[i].path, files[i].fName);
+		if( stat(aux,&sb) == -1 || sb.st_mtime != files[i].sb.st_mtime ) {
+			files[i].sb = sb;
+			return i;
+		}
+		free(aux);
+	}
+	return -1;
+}
+
+
 FILE *
 CreateFile( string folderPath, string fileName )
 {
