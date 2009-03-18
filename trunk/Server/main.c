@@ -18,10 +18,7 @@
 #define FALSE 0
 #define OK 1
 
-
 #define MAX_LINE 120
-
-
 
 int main( void )
 {

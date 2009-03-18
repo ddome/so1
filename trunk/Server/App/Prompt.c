@@ -126,7 +126,7 @@ Prompt(void)
     /*Help(NULL, NULL);*/
     while ( !terminar )
     {
-        printf("user@host:~ $ ");
+        printf("user@server:~ $ ");
         strAux = ReadLine( stdin );
         if ( strcmp(strAux, "Salir\n") == 0 )
             terminar = TRUE;
