@@ -7,7 +7,7 @@
  *
  */
 
-#include "client.h"
+#include "Application.h"
 
 static string *
 MakeFilesArray(fileT *files, int nfiles)
@@ -60,6 +60,7 @@ InitClientApp()
 int
 ClientPrompt()
 {
+	Prompt();
 	return OK;
 }
 

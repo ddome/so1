@@ -13,6 +13,7 @@
 #include "fileHandler.h"
 #include "../Lib/genlib.h"
 #include "../Lib/defines.h"
+#include "Prompt.h"
 
 
 fileT * InitFiles(void);
