@@ -9,6 +9,43 @@
 
 #include "fileHandler.h"
 
+#define FILE_T 0x8
+
+static string
+GetPath( fileT file )
+{
+	string aux1,aux2;
+	
+	aux1 = Concat(file.path, "/");
+	aux2 = Concat(aux1,file.fName);
+	
+	free(aux1);
+	return aux2;
+}
+
+
+fileT
+NewFileT( string dir, string fName )
+{
+	fileT aux;
+	string path;
+	
+	aux.path = dir;
+	aux.fName = fName;
+	
+	path = GetPath(aux);
+    stat(path,&(aux.sb));
+	free(path);
+	
+	return aux;
+}
+
+int
+GetSize(fileT file)
+{
+	return file.sb.st_size;
+}
+
 
 static string *
 MakeFilesArray(fileT *files, int nfiles)
@@ -63,15 +100,15 @@ int
 InitFilesStat(fileT *files, int nfile)
 {
 	int i;
-	string aux;
+	string path;
 	
 	
 	for ( i=0; i < nfile; i++ ) {
 			
-		aux = Concat(files[i].path, files[i].fName);
-		if( stat(aux,&(files[i].sb)) == -1 )
+		path = GetPath(files[i]);
+		if( stat(path,&(files[i].sb)) == -1 )
 			return ERROR;
-		free(aux);
+		free(path);
 	}
 	return OK;
 }
@@ -97,41 +134,179 @@ FilesHasChanged( fileT *files, int nfile )
 
 
 FILE *
-CreateFile( string folderPath, string fileName )
+CreateFile( fileT file )
 {
-	string fName;
+	string path;
 	FILE *fptr;
 	
-	if( FileExists(folderPath,fileName) == TRUE )
+	if( FileExists(file) == TRUE )
 		return NULL;
-		
-	if( (fName=Concat(folderPath,fileName)) == NULL )
-	   return NULL;
 	
-	if( (fptr=fopen(fName,"wb+")) == NULL ) {
-		free(fName);
-		return NULL;
+	path = GetPath(file);
+	
+	fptr=fopen(path,"wb+");
+	free(path);
+	return fptr;
+}
+
+int
+DeleteFile( fileT file )
+{
+	string path;
+	
+	if( FileExists(file) == FALSE )
+		return ERROR;
+	
+	path = GetPath(file);
+	
+	if( remove(path) != 0  ) {
+		free(path);
+		return ERROR;
 	}
 	
-	return fptr;
+	free(path);
+	return OK;
 }
 	   
 boolean 
-FileExists( string folderPath, string fileName )
+FileExists( fileT file )
 {
-	string fName;
+	string path;
 	FILE * fptr;
 	
-	if( (fName=Concat(folderPath,fileName)) == NULL )
-		return FALSE;
+	path = GetPath(file);
 	
-	if( (fptr=fopen(fName,"r")) == NULL ) {
-		free(fName);
+	if( (fptr=fopen(path,"r")) == NULL ) {
+		free(path);
 		return FALSE;
 	}
-	free(fName);
+	free(path);
 	fclose(fptr);
 	return TRUE;
 }
 
+int
+CopyFile( string srcFile, string destFile )
+{
+	FILE *sptr;
+	FILE *dptr;
+	byte aux;
+	
+	if( (sptr=fopen(srcFile,"rb")) == NULL ) {
+		return ERROR;
+	}
+	if( (dptr=fopen(destFile,"wb")) == NULL ) {
+		return ERROR;
+	}
+	
+	while( fread( &aux, 1, 1, sptr ) != 0 ) {
+		fwrite( &aux, 1, 1, dptr );
+	}
+	
+	fclose(sptr);
+	fclose(dptr);
+	
+	return OK;
+}
+	
+int 
+CopyDir( string srcDir, string destDir  )
+{
+	DIR *sptr;
+	//FILE *faux;
+	struct dirent *d;
+	string aux1,aux11;
+	string aux2,aux22;
+	
+	if ( (sptr = opendir(srcDir)) == NULL ) {
+		return ERROR;
+	}
+	
+	mkdir(destDir,0777);
+	while( d = readdir(sptr) ) {
+		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0) {
+			if( d->d_type == FILE_T ) {
+				aux1 = Concat( aux11 = Concat(srcDir,"/"),d->d_name);
+				aux2 = Concat( aux22 = Concat(destDir,"/"),d->d_name);
+				CopyFile( aux1, aux2 );
+				free(aux1);
+				free(aux2);
+				free(aux11);
+				free(aux22);
+			}
+			else {
+				aux1 = Concat( aux11 = Concat(srcDir,"/"),d->d_name);
+				aux2 = Concat( aux22 = Concat(destDir,"/"),d->d_name);
+				CopyDir( aux1, aux2 );
+				free(aux1);
+				free(aux2);
+				free(aux11);
+				free(aux22);
+			}
+		}	
+	}
+	
+	closedir(sptr);
+	return OK;
+}
+	
+int
+DirFilesNumber( string dir )
+{
+	DIR *dptr;
+	int fnumber;
+	
+	if ( (dptr = opendir(dir)) == NULL ) {
+		return ERROR;
+	}
+	
+	fnumber = 0;
+	while( readdir(dptr) ) {
+		fnumber++;
+	}
+
+	return fnumber;
+}
+	
+	
+FILE *
+OpenFile( fileT file )
+{
+	string path;
+	FILE *fptr;
+	
+	path = GetPath(file);
+	fptr=fopen(path,"wb+");
+	
+	free(path);
+	return fptr;
+}
+
+FILE *
+OpenReadFile( fileT file )
+{
+	string path;
+	FILE *fptr;
+	
+	path = GetPath(file);
+	fptr=fopen(path,"rb");
+	
+	free(path);
+	return fptr;
+}
+
+fileT *
+DirFiles(string dir)
+{
+
+}
+	
+
+	
+	
+	
+	
+	
+	
+	
 

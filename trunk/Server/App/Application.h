@@ -5,25 +5,23 @@
 #include "Prompt.h"
 #include "../Lib/genlib.h"
 #include "../Lib/defines.h"
+#include "fileHandler.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
 
-//Por default el id del servidor prompt es 0
-#define PROMPT_ID 0
+#define SERVER_PATH "/bomsyinc/backup"
 
-//operaciones
-#define EXIT		0
-#define NEW_CLIENT  1
-#define DIR_REQ		2 // Es atendida por un proceso dedicado
-#define FILE_ADD	3
-#define FILE_REM    4
-#define FILE_ACT	5  // Es atendida por un proceso dedicado
-#define DIR_LIST    6
-#define TOP_REQ     7
-#define TOP_USR_REQ 8
-#define PING		9 // Envia para verificar coneccion
+void InitApplication(void);
 
-void StartApplication(void);
+int NewClient(int ID,string name);
+int ListDirs(int reqID, string *out);
+int TopList(string *out);
+int TopListUser(int userID, string *out);
+void InitApplication(void);
+byte* ReqFile( fileT file );
+int DirAdd( string dirName  );
+int FileRem( fileT file );
+int FileAdd( fileT file, byte *data );
 
 #endif
