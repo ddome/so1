@@ -14,8 +14,22 @@
 #include "../Lib/defines.h"
 #include "../App/fileHandler.h"
 
-//	Manda una senial esperando contestacion a un user
+//Por default el id del servidor prompt es 0
+#define PROMPT_ID 0
 
+//operaciones para armado del paquete
+#define EXIT		0
+#define NEW_CLIENT  1
+#define DIR_REQ		2 // Es atendida por un proceso dedicado
+#define FILE_ADD	3
+#define FILE_REM    4
+#define FILE_ACT	5  // Es atendida por un proceso dedicado
+#define DIR_LIST    6
+#define TOP_REQ     7
+#define TOP_USR_REQ 8
+#define PING		9 // Envia para verificar coneccion
+
+//	Manda una senial esperando contestacion a un user
 
 boolean SendPingSignal(int userID);
 
@@ -27,7 +41,7 @@ boolean	SendFileAdd(int userID, fileT * file, void *fileData);
 
 boolean SendFileRem(int userID, fileT * file);
 
-boolean SendFileChange(int userID fileT * file, void *fileData);
+boolean SendFileChange(int userID, fileT * file, void *fileData);
 
 boolean TopListRequest(int *nitems,string *list);
 

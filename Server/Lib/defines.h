@@ -18,4 +18,6 @@ typedef char * string;
 
 typedef unsigned int uInt;
 
+typedef char byte;
+
 #endif

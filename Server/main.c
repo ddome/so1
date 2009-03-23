@@ -22,7 +22,17 @@
 
 int main( void )
 {
-    StartApplication();
+	fileT filein,fileout;
+	byte *data;
+		
+    InitApplication();
+	
+	filein = NewFileT("/SO", "Prueba2");
+	fileout = NewFileT("/OUT", "Prueba2");
+	
+	data = ReqFile(filein);		
+	FileAdd(fileout,data);
+		
     return 0;
 }
 
