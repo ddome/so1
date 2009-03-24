@@ -34,9 +34,7 @@ int main( void )
         exit(EXIT_FAILURE);
     }
 	
-    
-	Listen();
-	
+	Listen();	
     return 0;
 }
 
