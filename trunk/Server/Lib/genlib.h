@@ -19,4 +19,6 @@ string Concat( string s1, string s2 );
 
 string CreateString( string copy );
 
+char* CopyString(char * string);
+
 #endif

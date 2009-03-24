@@ -10,15 +10,17 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define SERVER_PATH "/bomsyinc/backup"
+#define SERVER_PATH "~/bomsyinc/backup"
+#include "../sqliteADT/sqliteADT.h"
+#include "../Lib/pqADT.h"
+#include "DBexec.h"
 
-void InitApplication(void);
 
-int NewClient(int ID,string name);
-int ListDirs(int reqID, string *out);
+int NewClient(string name);
+int ListDirs( const char * userName,string **out);
 int TopList(string *out);
 int TopListUser(int userID, string *out);
-void InitApplication(void);
+int InitApplication(void);
 byte* ReqFile( fileT file );
 int DirAdd( string dirName  );
 int FileRem( fileT file );
