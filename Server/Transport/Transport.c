@@ -14,13 +14,13 @@ Listen(void)
 {
     int status;
     pid_t pid;
-    void * data;
+    char  data;
     status = InitIPC(0);
     while(TRUE)
     {
-        pid = ReadRequest(data);
+        pid = ReadRequest(&data);
         /* se manda a que sea procesado */
-        ProcessRequest(data, pid);
+        ProcessRequest(&data, pid);
     };
     return;
 }
