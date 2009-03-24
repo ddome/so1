@@ -2,11 +2,6 @@
 #include "TransportDefines.h"
 #include "ipcInterface.h"
 
-typedef struct {
-	int dni;
-	int esgay;
-}cacaT;
-
 int
 InitTransport(void)
 {
