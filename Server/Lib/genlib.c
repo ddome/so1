@@ -31,3 +31,23 @@ CreateString( string copy )
 	strcpy(aux,copy);
 	return aux;
 }
+
+
+char*
+CopyString(char * string)
+{
+    char * newStr;
+    int len;
+    if(string==NULL)
+	return NULL;
+    len=strlen(string);
+    
+    if( (newStr=calloc( len,sizeof(char) ))==NULL )
+    {
+	fprintf(stderr,"No hay memoria suficiente para encolar.\n");
+	return NULL;
+    }
+    strncpy(newStr,string,len);
+    
+    return newStr;
+}

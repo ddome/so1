@@ -10,6 +10,10 @@
 #ifndef _DEFINES_
 #define _DEFINES_
 
+#define MAX_DIR_NAME 100
+#define MAX_USR_NAME 100
+#define MAX_LINE 120
+
 enum  {ERROR = -1, OK = 1};
 
 typedef enum boolean{ FALSE = 0, TRUE = 1} boolean;

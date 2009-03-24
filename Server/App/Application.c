@@ -1,17 +1,21 @@
 #include "Application.h"
 
+
+
 int
-NewClient(int ID,string name)
+NewClient(string name)
 {
-	//ADDCLIENT(DATABASE,ID,nombre);
-	return OK;
+    AddClient(name);
+    SetClientOnline(name);
+    return OK;
 }
 
 int
-ListDirs(int reqID, string *out)
+ListDirs( const char * userName,string **out)
 {
-	//out = GetDirsName(DATABASE);
-	return OK;
+    GetListDirs(userName,out);
+    
+    return OK;
 }	
 
 int
@@ -93,11 +97,18 @@ int
 ReqDir( string dir, fileT *files, byte **databuffer )
 {
 	return OK;
-}	
-void
+}
+
+int
 InitApplication(void)
 {
-  //INICIAR DATABASE
+    if(InitBD()==ERROR)
+    {
+	fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
+	return ERROR;
+    }
+    
+    return OK;
 }
 
 
