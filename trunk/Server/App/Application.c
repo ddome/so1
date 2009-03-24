@@ -106,6 +106,8 @@ ReqFile( fileT file )
 int
 ReqDir( string dir, fileT *files, byte **databuffer )
 {
+	
+	
 	return OK;
 }
 
