@@ -1,23 +1,16 @@
 #include "Application.h"
 
-
-
 int
 NewClient(string name)
 {
-    int ret;
-/*    if(ret==DB_ALREADY_EXISTS)
-	printf("El Directorio ya existia.\n");
-    else if(ret==DB_INTERNAL_ERROR)
-	printf("Error interno de la base de datos.\n");
-    else
-	printf("Directorio agregado satisfactoriamente.\n");*/
-    ret=AddClient(name);
-    if(ret==OK)
+    if(AddClient(name)==OK) {
 		SetClientOnline(name);
-    else
+		return OK;
+	}
+    else {
 		printf("El usuario ya esta conectado.\n");
-    return ret;
+		return ERROR;
+	}
 }
 
 int
@@ -58,6 +51,7 @@ FileAdd( fileT file, byte *data )
 		//Armo el archivo con la informacion que llego
 		fwrite(data,sizeof(byte),GetSize(file),fptr);
 		printf("%d\n",GetSize(file));
+		
 	}
 	
 	return OK;
@@ -80,6 +74,7 @@ FileRem( fileT file )
 int
 DirAdd( string dirName  )
 {
+	//ADDDIR(DATABASE,PATHDIR);
 	return CopyDir(dirName, SERVER_PATH);		
 }
 	
