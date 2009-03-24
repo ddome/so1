@@ -39,9 +39,9 @@ main(void)
     }
   
   
-  if(  readFifo_FD = open(readFifo_PathArray, O_WRONLY  | O_NONBLOCK) < 0)
+  if(  readFifo_FD = open(readFifo_PathArray, O_RDWR  | O_NONBLOCK) < 0)
   	printf("fallo la apertura del fifo");
-  	
+  	printf("%d \n", readFifo_FD);
   
     
     if(write(readFifo_FD,data,strlen(data) +1) == -1)
