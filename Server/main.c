@@ -22,7 +22,6 @@
 
 int main( void )
 {
-    fileT filein,fileout;
     byte *data;
 	    
     InitApplication();
