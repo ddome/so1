@@ -13,7 +13,7 @@ char ** writeFifo_PathArray = NULL;
 /*por ahora, solamente comunica 2 procesos */
 char * readFifo_PathArray = NULL;
 char * writeFifo_PathArray = NULL;
-
+int recibidos = 0;
 int mainFifo_FD,
     writeFifo_FD,
     readFifo_FD;
@@ -49,6 +49,7 @@ InitMainIPC(void)
 int InitIPC(int pid)
 {
     int status = OK;
+	char a='x';
     if( readFifo_PathArray == NULL && readFifo_PathArray == NULL)
     {
         status = ((readFifo_PathArray = calloc(MAX_PATH, sizeof(char))) != NULL &&
@@ -89,7 +90,8 @@ int InitIPC(int pid)
 
     writeFifo_FD = open(writeFifo_PathArray, O_RDWR  | O_NONBLOCK);
     readFifo_FD = open(readFifo_PathArray, O_RDWR  | O_NONBLOCK);
-
+	printf("%d", readFifo_FD);
+	getchar();
     if(readFifo_FD == -1 || writeFifo_FD == -1 )
     {
 	printf("no se puede abrir el fifo");
@@ -105,7 +107,8 @@ int
 WriteIPC(void * data, size_t size)
 {
     /******************* ver si es necesario poner locks *************/
-    write(writeFifo_FD,data,size);
+    int status=write(writeFifo_FD,data,size);
+
     return OK;
 }
 
@@ -115,8 +118,18 @@ pid_t
 ReadIPC(void * data)
 {
     int status = OK;
-    status = read(readFifo_FD, (char*)data, sizeof(char));
-	printf("%s - %d - %d\n", readFifo_PathArray, readFifo_FD, status);
+    headerIPC_t header;
+    status = read(readFifo_FD, &header, sizeof(headerIPC_t));
+    if(status>0)
+    {
+	printf("\n\npaquete numero: %d\n", header.nPacket);
+        status=read(readFifo_FD, data, header.size);
+	if(status > 0)
+	{
+	    printf("recibidos: %d\n", recibidos);
+	    recibidos++;
+	}
+    }
 
     return (status <= 0) ? ERROR : ClientPID;
 }

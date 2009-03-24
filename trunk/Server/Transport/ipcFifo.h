@@ -10,6 +10,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
+
 
 /* Defines de los Fifo's en particular
 */

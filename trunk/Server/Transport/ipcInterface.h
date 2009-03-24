@@ -14,6 +14,11 @@
 #define __DEFAULT_PID__         0
 #define __DEFAULT_CHILD_PID__   1
 
+typedef struct {
+	size_t size;
+	int nPacket;
+}headerIPC_t;
+
 
 /* Funciones
 */

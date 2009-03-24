@@ -1,4 +1,4 @@
-
+   
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,28 +23,42 @@ int mainFifo_FD,
     writeFifo_FD,
     readFifo_FD;
 
+typedef struct {
+	int dni;
+	int esgay;
+}cacaT;
+
+typedef struct {
+	size_t size;
+	int nPacket;
+}headerIPC_t;
 
 int
 main(void)
 {
 	printf("enviando mensaje...");
-    char data[8] = "lalalala";
- 
+    char data = 'x';
+    headerIPC_t header;
+ 	cacaT caca;
+	caca.dni=5453;
+	caca.esgay=1;
+    header.size=sizeof(cacaT);
+    header.nPacket=0;
     	
-
-    if ( mkfifo(readFifo_PathArray, 0777) == ERROR )
-    {
-        if(errno != EEXIST)
-            return ERROR;
-    }
-  
-  
-  if(  readFifo_FD = open(readFifo_PathArray, O_RDWR  | O_NONBLOCK) < 0)
-  	printf("fallo la apertura del fifo");
-  	printf("%d \n", readFifo_FD);
-  
+  for(int i = 0; i < 16; i++)
+  {
+    header.nPacket = i;
+    if(  (readFifo_FD = open("0_rd", O_WRONLY  | O_NONBLOCK)) < 0)
+	    printf("fallo la apertura del fifo");
+	    printf("%d \n", readFifo_FD);
     
-    if(write(readFifo_FD,data,strlen(data) +1) == -1)
-    	printf("no se puede escribir fifo");
+	if(write(readFifo_FD ,&header,sizeof(headerIPC_t)) == -1)
+	    printf("no se puede escribir fifo");
+
+	if(write(readFifo_FD ,&caca,sizeof(cacaT)) == -1)
+	    printf("no se puede escribir fifo");
+ }
+	    return 0;
+   
 }
 
