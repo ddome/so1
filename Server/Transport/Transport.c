@@ -2,6 +2,11 @@
 #include "TransportDefines.h"
 #include "ipcInterface.h"
 
+typedef struct {
+	int dni;
+	int esgay;
+}cacaT;
+
 int
 InitTransport(void)
 {
@@ -43,8 +48,8 @@ ReadRequest(void* data)
 void 
 ProcessRequest(void * data, pid_t requestPid)
 {
-	printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
-	/*
+	/*	printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
+
     pid_t childProcess;
 
     childProcess = fork();
