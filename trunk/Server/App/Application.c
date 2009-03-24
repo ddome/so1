@@ -14,9 +14,9 @@ NewClient(string name)
 	printf("Directorio agregado satisfactoriamente.\n");*/
     ret=AddClient(name);
     if(ret==OK)
-	SetClientOnline(name);
+		SetClientOnline(name);
     else
-	printf("El usuario ya esta conectado.\n");
+		printf("El usuario ya esta conectado.\n");
     return ret;
 }
 

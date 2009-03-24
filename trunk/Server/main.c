@@ -7,12 +7,14 @@
 #include <string.h>
 #include <ctype.h>
 
+
 /*
  *	Proyect includes
  */
 #include "Lib/scannerADT.h"
 #include "Lib/tree.h"
 #include "App/Application.h"
+#include "Transport/Transport.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -22,13 +24,19 @@
 
 int main( void )
 {
-    byte *data;
-	    
-    InitApplication();
+	int status;
+	InitApplication();
+	status = InitTransport();
+	
+    if(status == ERROR )
+    {
+        fprintf(stderr,"No es posible iniciar el servidor.\n");
+        exit(EXIT_FAILURE);
+    }
+	
     
-    NewClient("Damian");
-    
-		
+	Listen();
+	
     return 0;
 }
 
