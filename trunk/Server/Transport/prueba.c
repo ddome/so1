@@ -28,21 +28,18 @@ int
 main(void)
 {
 	printf("enviando mensaje...");
-    char*data = calloc(1, 10);
-    if(data == NULL)
-    	printf("No hay menmoria");
-    	/*
-   	strcpy(data, "lalalal");
+    char data[8] = "lalalala";
+ 
+    	
+
     if ( mkfifo(readFifo_PathArray, 0777) == ERROR )
     {
         if(errno != EEXIST)
             return ERROR;
     }
-	
-    mkfifo(writeFifo_PathArray, 0777);
-  */
   
-  if(  readFifo_FD = open(readFifo_PathArray, O_RDWR  | O_NONBLOCK) < 0)
+  
+  if(  readFifo_FD = open(readFifo_PathArray, O_WRONLY  | O_NONBLOCK) < 0)
   	printf("fallo la apertura del fifo");
   	
   
