@@ -22,16 +22,13 @@
 
 int main( void )
 {
-	fileT filein,fileout;
-	byte *data;
-		
+    fileT filein,fileout;
+    byte *data;
+	    
     InitApplication();
-	
-	filein = NewFileT("/SO", "Prueba2");
-	fileout = NewFileT("/OUT", "Prueba2");
-	
-	data = ReqFile(filein);		
-	FileAdd(fileout,data);
+    
+    NewClient("Damian");
+    
 		
     return 0;
 }
