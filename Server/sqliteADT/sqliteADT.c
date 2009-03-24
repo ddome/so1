@@ -359,6 +359,40 @@ AddUser(sqliteADT db, const char * userName)
 }
 
 DB_STAT
+IsUserOnline(sqliteADT db, const char * userName,int * boolRet)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char *userN;
+    char *sqlSelect = "SELECT online FROM users WHERE user='%s'";
+
+    if (db == NULL || userName == NULL)
+        return DB_INVALID_ARG;
+
+    if ( ( userN = EscapeString( db, userName ) ) == NULL )
+        return DB_NO_MEMORY;
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, userN);
+    *boolRet=sqlite3_column_int(statement,0);
+    free(userN);
+
+    switch (ret)
+    {
+        case SQLITE_DONE:
+            sqlite3_finalize( statement );
+            return DB_SUCCESS;
+
+        case SQLITE_CONSTRAINT:
+            sqlite3_finalize( statement );
+            return DB_ALREADY_EXISTS;
+
+        default:
+            sqlite3_finalize(statement);
+            return DB_INTERNAL_ERROR;
+    }
+}
+
+DB_STAT
 UserOnline(sqliteADT db,const char * userName)
 {
     sqlite3_stmt *statement;

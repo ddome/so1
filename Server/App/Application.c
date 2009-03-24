@@ -5,9 +5,19 @@
 int
 NewClient(string name)
 {
-    AddClient(name);
-    SetClientOnline(name);
-    return OK;
+    int ret;
+/*    if(ret==DB_ALREADY_EXISTS)
+	printf("El Directorio ya existia.\n");
+    else if(ret==DB_INTERNAL_ERROR)
+	printf("Error interno de la base de datos.\n");
+    else
+	printf("Directorio agregado satisfactoriamente.\n");*/
+    ret=AddClient(name);
+    if(ret==OK)
+	SetClientOnline(name);
+    else
+	printf("El usuario ya esta conectado.\n");
+    return ret;
 }
 
 int

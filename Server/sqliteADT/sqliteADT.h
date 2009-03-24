@@ -71,6 +71,8 @@ DB_STAT UserOnline(sqliteADT db,const char * userName);/*TESTEADA*/
 /*online en 0 es offline*/
 DB_STAT UserOffline(sqliteADT db,const char * userName);/*TESTEADA*/
 
+DB_STAT IsUserOnline(sqliteADT db, const char * userName,int * boolRet);
+
 DB_STAT AllOffline(sqliteADT db);/*TESTEADA*/
 
 DB_STAT ShowOnline(sqliteADT db,pqADT queue);/*TESTEADA*/
