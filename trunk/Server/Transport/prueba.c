@@ -36,6 +36,7 @@ typedef struct {
 int
 main(void)
 {
+int i;
 	printf("enviando mensaje...");
     char data = 'x';
     headerIPC_t header;
@@ -45,18 +46,18 @@ main(void)
     header.size=sizeof(cacaT);
     header.nPacket=0;
     	
-  for(int i = 0; i < 16; i++)
+  for( i = 0; i < 16; i++)
   {
     header.nPacket = i;
-    if(  (readFifo_FD = open("0_rd", O_WRONLY  | O_NONBLOCK)) < 0)
+    if(  (readFifo_FD = open("0_rd", O_WRONLY )) < 0)
 	    printf("fallo la apertura del fifo");
-	    printf("%d \n", readFifo_FD);
     
 	if(write(readFifo_FD ,&header,sizeof(headerIPC_t)) == -1)
 	    printf("no se puede escribir fifo");
 
 	if(write(readFifo_FD ,&caca,sizeof(cacaT)) == -1)
 	    printf("no se puede escribir fifo");
+getchar();
  }
 	    return 0;
    

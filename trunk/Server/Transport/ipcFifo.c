@@ -13,7 +13,7 @@ char ** writeFifo_PathArray = NULL;
 /*por ahora, solamente comunica 2 procesos */
 char * readFifo_PathArray = NULL;
 char * writeFifo_PathArray = NULL;
-int recibidos = 0;
+
 int mainFifo_FD,
     writeFifo_FD,
     readFifo_FD;
@@ -88,10 +88,9 @@ int InitIPC(int pid)
     	   return ERROR;
     }
 
-    writeFifo_FD = open(writeFifo_PathArray, O_RDWR  | O_NONBLOCK);
-    readFifo_FD = open(readFifo_PathArray, O_RDWR  | O_NONBLOCK);
-	printf("%d", readFifo_FD);
-	getchar();
+    writeFifo_FD = open(writeFifo_PathArray, O_RDWR );
+    readFifo_FD = open(readFifo_PathArray, O_RDWR  );
+
     if(readFifo_FD == -1 || writeFifo_FD == -1 )
     {
 	printf("no se puede abrir el fifo");
@@ -122,13 +121,7 @@ ReadIPC(void * data)
     status = read(readFifo_FD, &header, sizeof(headerIPC_t));
     if(status>0)
     {
-	printf("\n\npaquete numero: %d\n", header.nPacket);
         status=read(readFifo_FD, data, header.size);
-	if(status > 0)
-	{
-	    printf("recibidos: %d\n", recibidos);
-	    recibidos++;
-	}
     }
 
     return (status <= 0) ? ERROR : ClientPID;
