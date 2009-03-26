@@ -41,17 +41,12 @@ Serve(int op,int reqID, void *data)
 		case NEW_CLIENT:
 			//return NewClient(reqID,data);
 			break;
-		case TOP_REQ:
-			//return TopList();
-			break;
-		case TOP_USR_REQ:
-			//return TopListUser(data);
+
 		default:
 			fprintf(stderr,"Operacion no definida\n"); //solo para debug
 			return FALSE;
 	}
 }
-
 void
 StartListening(void)
 {

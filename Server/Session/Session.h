@@ -23,13 +23,11 @@
 #define DIR_REQ		2 // Es atendida por un proceso dedicado
 #define FILE_ADD	3
 #define FILE_REM    4
-#define FILE_ACT	5  // Es atendida por un proceso dedicado
+#define FILE_UPD	5  // Es atendida por un proceso dedicado
 #define DIR_LIST    6
-#define TOP_REQ     7
-#define TOP_USR_REQ 8
 #define PING		9 // Envia para verificar coneccion
 
-//	Manda una senial esperando contestacion a un user
+//	Manda una senial
 
 boolean SendPingSignal(int userID);
 

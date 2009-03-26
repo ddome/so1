@@ -716,12 +716,12 @@ DeleteDir(sqliteADT db ,const char * pathName)
 }
 
 DB_STAT
-UnlinkUserToDir(sqliteADT db,const char * userName)
+UnlinkUserToDir(sqliteADT db,const char * pathName,const char * userName)
 {
     sqlite3_stmt *statement;
     int ret;
     char *userN;
-    char *sqlSelect =   "DELETE FROM users_dir WHERE user_id = (SELECT id FROM users WHERE user = '%s')";
+    char *sqlSelect =   "DELETE FROM users_dir WHERE user_id = (SELECT id FROM users WHERE user = '%s') AND dir_id=(SELECT id FROM dirs WHERE dirname = '%s')";
 
     if (db == NULL || userName == NULL)
         return DB_INVALID_ARG;

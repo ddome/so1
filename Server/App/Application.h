@@ -26,4 +26,7 @@ int DirAdd( string dirName  );
 int FileRem( fileT file );
 int FileAdd( fileT file, byte *data );
 
+int ReqDir( string userName, string dir, fileT **files, byte ***databuffer );
+
+
 #endif

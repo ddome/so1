@@ -94,7 +94,7 @@ DB_STAT LinkDirToUser(sqliteADT db,const char * pathName,const char * userName);
 
 DB_STAT DeleteDir(sqliteADT db,const char * pathName);/*TESTEADA*/
 
-DB_STAT UnlinkUserToDir(sqliteADT db,const char * userName);/*TESTEADA*/
+DB_STAT UnlinkUserToDir(sqliteADT db,const char * pathName ,const char * userName);/*TESTEADA*/
 
 DB_STAT ListAllDirs(sqliteADT db,pqADT queue);/*TESTEADA*/
 /*Lista los usuarios registrados a un directorio determinado*/

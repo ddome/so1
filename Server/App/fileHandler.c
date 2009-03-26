@@ -11,7 +11,7 @@
 
 #define FILE_T 0x8
 
-static string
+string
 GetPath( fileT file )
 {
 	string aux1,aux2;
@@ -19,7 +19,7 @@ GetPath( fileT file )
 	aux1 = Concat(file.path, "/");
 	aux2 = Concat(aux1,file.fName);
 	
-	free(aux1);
+	//free(aux1);
 	return aux2;
 }
 
@@ -30,12 +30,12 @@ NewFileT( string dir, string fName )
 	fileT aux;
 	string path;
 	
-	aux.path = dir;
-	aux.fName = fName;
+	aux.path = CopyString(dir);
+	aux.fName = CopyString(fName);
 	
 	path = GetPath(aux);
     stat(path,&(aux.sb));
-	free(path);
+//	free(path);
 	
 	return aux;
 }
@@ -250,25 +250,6 @@ CopyDir( string srcDir, string destDir  )
 	return OK;
 }
 	
-int
-DirFilesNumber( string dir )
-{
-	DIR *dptr;
-	int fnumber;
-	
-	if ( (dptr = opendir(dir)) == NULL ) {
-		return ERROR;
-	}
-	
-	fnumber = 0;
-	while( readdir(dptr) ) {
-		fnumber++;
-	}
-
-	return fnumber;
-}
-	
-	
 FILE *
 OpenFile( fileT file )
 {
@@ -295,10 +276,83 @@ OpenReadFile( fileT file )
 	return fptr;
 }
 
-fileT *
-DirFiles(string dir)
+static int
+pDirFilesList( string dir, fileT *files, int *pos )
 {
+	DIR *dptr;
+	int nfiles;
+	struct dirent *d;
+	string aux1;
+	string aux2;
+	
+	if ( (dptr = opendir(dir)) == NULL ) {
+		return ERROR;
+	}
+	
+	nfiles = 0;
+	while( (d=readdir(dptr)) ) {
+		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0)  {
+			if( d->d_type == FILE_T ) {
+				files[*pos] = NewFileT(dir, d->d_name);
+				nfiles++;
+				*pos = *pos + 1;
+			}
+			else {
+				aux1 = Concat( aux2 = Concat(dir,"/"),d->d_name);
+				nfiles += pDirFilesList( aux1, files, pos );
+				free(aux1);
+				free(aux2);
+			}
+		}	
+	}
+	
+	return nfiles;
+}
 
+int
+DirFilesNumber( string dir )
+{
+	DIR *dptr;
+	int nfiles;
+	struct dirent *d;
+	string aux1;
+	string aux2;
+	
+	if ( (dptr = opendir(dir)) == NULL ) {
+		return ERROR;
+	}
+	
+	nfiles = 0;
+	while( (d=readdir(dptr)) ) {
+		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0)  {
+			if( d->d_type == FILE_T ) {				
+				nfiles++;
+			}
+			else {
+				aux1 = Concat( aux2 = Concat(dir,"/"),d->d_name);
+				nfiles += DirFilesNumber( aux1  );
+				free(aux1);
+				free(aux2);
+			}
+		}	
+	}
+	
+	return nfiles;
+}
+
+int
+DirFilesList(string dir, fileT **files)
+{
+	int nfiles;
+	int i;
+	int aux=0;
+	
+	nfiles  = DirFilesNumber(dir);
+	*files = malloc(sizeof(fileT)*nfiles);
+	
+	pDirFilesList(dir,*files,&aux);		
+									
+	return nfiles;
 }
 	
 
