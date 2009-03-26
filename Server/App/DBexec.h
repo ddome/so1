@@ -5,6 +5,7 @@
 #include "../sqliteADT/sqliteADT.h"
 #include "../Lib/defines.h"
 #include "../Lib/genlib.h"
+
 int InitBD();
 
 int GetListDirs(const char * userName, string **out);
@@ -13,6 +14,6 @@ int AddClient(const char * userName);
 
 int SetClientOnline(const char * userName);
 
-int GetUserStatus(const char * name);
+int GetUserStatus(const char * nameName);
 
 #endif

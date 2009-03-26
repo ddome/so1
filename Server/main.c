@@ -26,7 +26,7 @@ int main( void )
 {
 	int status;
 	InitApplication();
-	status = InitTransport();
+	//status = InitTransport();
 	
     if(status == ERROR )
     {
@@ -34,7 +34,7 @@ int main( void )
         exit(EXIT_FAILURE);
     }
 	
-	Listen();	
+	//Listen();	
     return 0;
 }
 
