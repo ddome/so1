@@ -97,6 +97,27 @@ GetUserStatus(const char * nameName)
     IsUserOnline(db,nameName,&boolRet);
     return boolRet;
 }
+
+int
+AddDir(const char * pathName)
+{
+	RegisterDir(db,pathName);
+	return OK;
+}
+
+int
+RegisterDirToUser(const char * pathName,const char *userName)
+{
+	LinkDirToUser(db,pathName,userName);
+	return OK;
+}
+
+int
+UnRegisterDirFromUser(const char * pathName,const char * userName)
+{
+	UnlinkUserToDir(db,pathName,userName);
+	return OK;
+}
 /*
 static int
 GetListUsersByID(int ** userID)

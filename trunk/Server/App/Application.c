@@ -74,7 +74,7 @@ FileRem( fileT file )
 int
 DirAdd( string dirName  )
 {
-	//ADDDIR(DATABASE,PATHDIR);
+	AddDir(dirName);
 	return CopyDir(dirName, SERVER_PATH);		
 }
 	
@@ -99,10 +99,28 @@ ReqFile( fileT file )
 }
 
 int
-ReqDir( string dir, fileT *files, byte **databuffer )
+ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
 {
+	int nfiles;
+	int i;
 	
+	//RegisterDirToUser(dir,userName);
+	nfiles = DirFilesList(dir,files);
 	
+	***databuffer = malloc(sizeof(byte**)*nfiles);
+	
+	for(i=0; i<nfiles; i++) {
+		if( ((**databuffer)[i] = ReqFile((*files)[i])) == NULL )
+			return ERROR;
+	}
+	
+	return nfiles;
+}
+
+int
+DelDir( string userName, string dir, fileT *files, byte **databuffer )
+{
+	UnRegisterDirFromUser(dir,userName);
 	return OK;
 }
 
@@ -111,8 +129,8 @@ InitApplication(void)
 {
     if(InitBD()==ERROR)
     {
-	fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
-	return ERROR;
+		fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
+		return ERROR;
     }
     
     return OK;

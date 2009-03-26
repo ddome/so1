@@ -16,4 +16,9 @@ int SetClientOnline(const char * userName);
 
 int GetUserStatus(const char * nameName);
 
+int AddDir(const char * pathName);
+
+int RegisterDirToUser(const char * pathName,const char * userName);
+
+int UnRegisterDirFromUser(const char * pathName,const char * userName);
 #endif

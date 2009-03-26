@@ -41,6 +41,8 @@ boolean AnyCanWrite( string path );
 
 fileT NewFileT( string path, string fName );
 
+string GetPath( fileT file );
+
 int FilesWatch( string *path, int nfiles );
 
 int FilesHasChanged( fileT *files, int nfile );
@@ -57,14 +59,16 @@ int CopyFile( string srcFile, string destFile );
 
 int CopyDir( string srcDir, string destDir );
 
-fileT NewFileT( string path, string fName );
-
 FILE * OpenFile( fileT file );
 
 int GetSize(fileT file);
 
-static string GetPath( fileT file );
+string GetPath( fileT file );
 
 FILE *OpenReadFile( fileT file );
+
+int DirFilesNumber( string dir );
+
+int DirFilesList(string dir, fileT **files);
 
 #endif
