@@ -91,10 +91,11 @@ SetClientOnline(const char * userName)
 }
 
 int
-GetUserStatus(const char * name)
+GetUserStatus(const char * nameName)
 {
     int boolRet;
-    return IsUserOnline(db,name,&boolRet);
+    IsUserOnline(db,nameName,&boolRet);
+    return boolRet;
 }
 /*
 static int
