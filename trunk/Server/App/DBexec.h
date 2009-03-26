@@ -6,7 +6,7 @@
 #include "../Lib/defines.h"
 #include "../Lib/genlib.h"
 
-int InitBD();
+int InitBD(void);
 
 int GetListDirs(const char * userName, string **out);
 

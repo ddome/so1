@@ -14,7 +14,7 @@ FreeString(char * string)
 
 /*Esta funcion iniciaria la base de datos.*/
 int
-InitBD()
+InitBD(void)
 {
     sqliteADT dbAux;
     FILE * errorFile;
