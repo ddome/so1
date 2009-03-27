@@ -49,7 +49,6 @@ InitMainIPC(void)
 int InitIPC(int pid)
 {
     int status = OK;
-	char a='x';
     if( readFifo_PathArray == NULL && readFifo_PathArray == NULL)
     {
         status = ((readFifo_PathArray = calloc(MAX_PATH, sizeof(char))) != NULL &&
