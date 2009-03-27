@@ -43,15 +43,16 @@ FileAdd( fileT file, byte *data )
 	
 	if( FileExists(file) ){
 		//CONFLICTO
+		DeleteFile(file);
 	}
-	else {
-		if( (fptr = CreateFile(file)) == NULL ) {
+
+	if( (fptr = CreateFile(file)) == NULL ) {
 			return ERROR;
-		}
-		//Armo el archivo con la informacion que llego
-		fwrite(data,sizeof(byte),GetSize(file),fptr);
-		printf("%d\n",GetSize(file));		
 	}
+	//Armo el archivo con la informacion que llego
+	fwrite(data,sizeof(byte),GetSize(file),fptr);
+	printf("%d\n",GetSize(file));		
+
 	
 	return OK;
 }
@@ -73,7 +74,7 @@ FileRem( fileT file )
 int
 DirAdd( string dirName  )
 {
-	AddDir(dirName);
+	AddDir(dirName); //jujuaju, muy ambiguo, cambiar el nombre de la func de database!
 	return CopyDir(dirName, SERVER_PATH);		
 }
 	
