@@ -69,11 +69,11 @@ GetListDirs(const char * userName, string **out)
 }
 
 int
-AddClient(const char * userName)
+AddClient(const char * userName, int pid)
 {
     int ret;
     int boolRet;
-    ret=AddUser(db, userName);
+    ret=AddUser(db, userName,pid);
     if( ret==DB_ALREADY_EXISTS )
     {
 	IsUserOnline(db,userName,&boolRet);

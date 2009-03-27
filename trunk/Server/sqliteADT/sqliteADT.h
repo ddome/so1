@@ -65,7 +65,7 @@ void FreeSqliteADT(sqliteADT db);
 
 
 /*por default el user esta offline*/
-DB_STAT AddUser(sqliteADT db, const char * userName);/*TESTEADA*/
+DB_STAT AddUser(sqliteADT db, const char * userName,int pid);/*TESTEADA*/
 /*Online en 1*/
 DB_STAT UserOnline(sqliteADT db,const char * userName);/*TESTEADA*/
 /*online en 0 es offline*/

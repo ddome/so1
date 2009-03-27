@@ -324,22 +324,36 @@ BuildDatabase( sqliteADT db, const char * schemaPath )
 }
 
 DB_STAT
-AddUser(sqliteADT db, const char * userName)
+AddUser(sqliteADT db, const char * userName, int pid)
 {
     sqlite3_stmt *statement;
     int ret;
     char *userN;
-    char *sqlSelect = "INSERT INTO users VALUES (NULL, '%s',0)";
+    char * pidI;
+    char * idAux;
+    char *sqlSelect = "INSERT INTO users VALUES (NULL, '%s',0,'%s')";
 
     if (db == NULL || userName == NULL)
         return DB_INVALID_ARG;
 
+    if( (idAux=calloc(50,sizeof(char)))==NULL )
+    {
+	logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
+	return DB_NO_MEMORY;
+    }
+    sprintf(idAux,"%d",pid);
+
     if ( ( userN = EscapeString( db, userName ) ) == NULL )
         return DB_NO_MEMORY;
 
-    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, userN);
+    if ( ( pidI = EscapeString( db, idAux ) ) == NULL )
+        return DB_NO_MEMORY;
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 2, userN,pidI);
 
     free(userN);
+    free(pidI);
+    free(idAux);
 
     switch (ret)
     {
@@ -837,7 +851,7 @@ GetUserWithID(sqliteADT db,int ID, char ** userName)
     
     if ( db == NULL || userName == NULL )
         return DB_INVALID_ARG;
-    if( (idStr=malloc(50*sizeof(char)))==NULL )
+    if( (idStr=calloc(50,sizeof(char)))==NULL )
     {
 	logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
 	return DB_NO_MEMORY;

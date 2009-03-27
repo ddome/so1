@@ -1,9 +1,9 @@
 #include "Application.h"
 
 int
-NewClient(string name)
+NewClient(string name,int pid)
 {
-    if(AddClient(name)==OK) {
+    if(AddClient(name,pid)==OK) {
 		SetClientOnline(name);
 		return OK;
 	}
