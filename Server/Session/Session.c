@@ -1,19 +1,42 @@
 /*
- *  Session.c
- *  server
- *
- *  Created by Damian Dome on 3/18/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+*  Project Includes
+*/
 
 #include "Session.h"
 
+/*
+*  Functions
+*/
+
+typedef struct{
+    int dni;
+    int esgay;
+} cacaT;
+
+int
+InitCommunication(pid_t pid)
+{
+    return InitIPC(pid);
+}
+
+pid_t GetRequest(void * data)
+{
+    return ReadIPC(data);
+}
+
+void 
+ProcessRequest(void * data, pid_t requestPid)
+{
+	printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
+
+}
+
+/***************************************************************************/
 static int
 EndApp()
 {
 	int exit;
-	int * userIDs;
+	/*int * userIDs;*/
 	/* 
 	 userIDs = GETLISTOFUSERS(DATABASE);
 	 for(i=0; i<cantidad de usuarios; i++ )
@@ -27,8 +50,8 @@ ReadOp(int *op,int *reqID,void *data)
 {
 	
 }
+/*
 
-//Aca esta la posta
 static boolean
 Serve(int op,int reqID, void *data)
 {	
@@ -46,8 +69,8 @@ Serve(int op,int reqID, void *data)
 			fprintf(stderr,"Operacion no definida\n"); //solo para debug
 			return FALSE;
 	}
-}
-void
+}*/
+/*void
 StartListening(void)
 {
 	int op;
@@ -64,4 +87,4 @@ StartListening(void)
 		exitFlag = Serve(op, reqID, data);
 	}
 	
-}
+}*/

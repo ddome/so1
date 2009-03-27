@@ -1,18 +1,24 @@
 /*
- *  Session.h
- *  server
- *
- *  Created by Damian Dome on 3/18/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+*  System Includes
+*/
 
 #ifndef _SESSION_H
 #define _SESSION_H
 
+/*
+*  Project Includes
+*/
+
 #include "../Lib/genlib.h"
 #include "../Lib/defines.h"
 #include "../App/fileHandler.h"
+#include "../App/Application.h"
+#include "../Transport/Transport.h"
+#include "../Transport/ipcInterface.h"
+
+/*
+*  Defines
+*/
 
 //Por default el id del servidor prompt es 0
 #define PROMPT_ID 0
@@ -25,8 +31,24 @@
 #define FILE_REM    4
 #define FILE_UPD	5  // Es atendida por un proceso dedicado
 #define DIR_LIST    6
-#define PING		9 // Envia para verificar coneccion
+#define PING		9 // Envia para verificar conexion
 
+/*
+*  Functions
+*/
+
+int InitCommunication(pid_t pid);
+
+pid_t GetRequest(void * data);
+
+void ProcessRequest(void * data, pid_t requestPid);
+
+
+
+
+
+
+/*****************************************/
 //	Manda una senial
 
 boolean SendPingSignal(int userID);

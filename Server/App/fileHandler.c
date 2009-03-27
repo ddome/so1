@@ -224,7 +224,7 @@ CopyDir( string srcDir, string destDir  )
 	
 	mkdir(destDir,0777);
 	while( d = readdir(sptr) ) {
-		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0) {
+		if( (d->d_ino != 0) && (strcmp(d->d_name,"..") != 0) && (strcmp(d->d_name, ".") != 0) ) {
 			if( d->d_type == FILE_T ) {
 				aux1 = Concat( aux11 = Concat(srcDir,"/"),d->d_name);
 				aux2 = Concat( aux22 = Concat(destDir,"/"),d->d_name);
@@ -344,7 +344,6 @@ int
 DirFilesList(string dir, fileT **files)
 {
 	int nfiles;
-	int i;
 	int aux=0;
 	
 	nfiles  = DirFilesNumber(dir);

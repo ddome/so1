@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <unistd.h>
 #include "../Lib/defines.h"
 #include "../Lib/genlib.h"
 

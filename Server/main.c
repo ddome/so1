@@ -9,12 +9,16 @@
 
 
 #include <stdio.h>
-#include "Application.h"
-
+#include "./App/Server.h"
+#include "./App/Application.h"
+#include "./Session/Session.h"
+#include "./Transport/Transport.h"
 
 int
 main(void)
 {
-
-	return 0;
+    InitTransport();
+    InitApplication();
+    StartListening();
+    return 0;
 }	
