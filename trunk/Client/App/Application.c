@@ -1,40 +1,10 @@
 #include "Application.h"
 
-int
-NewClient(string name)
+string *
+DirList(void)
 {
-    if(AddClient(name)==OK) {
-		SetClientOnline(name);
-		return OK;
-	}
-    else {
-		printf("El usuario ya esta conectado.\n");
-		return ERROR;
-	}
-}
-
-int
-ListDirs( const string userName,string **out)
-{
-    GetListDirs(userName,out);
-    
     return OK;
 }	
-
-int
-TopList(string *out)
-{	
-	//out = GetTopList(userID, DATABASE);
-	return OK;
-}
-
-int
-TopListUser(int userID, string *out)
-{
-	//out = GetTopList(userID, DATABASE);
-	
-	return OK;
-}
 
 int
 FileAdd( fileT file, byte *data )
@@ -51,9 +21,7 @@ FileAdd( fileT file, byte *data )
 	}
 	//Armo el archivo con la informacion que llego
 	fwrite(data,sizeof(byte),GetSize(file),fptr);
-	printf("%d\n",GetSize(file));		
-
-	
+		
 	return OK;
 }
 
@@ -119,22 +87,17 @@ ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
 }
 
 int
-DelDir( string userName, string dir, fileT *files, byte **databuffer )
-{
-	UnRegisterDirFromUser(dir,userName);
-	return OK;
-}
-
-int
 InitApplication(void)
 {
-	if(InitBD()==ERROR)
+/*	if(InitBD()==ERROR)
 	{
 		fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
 		return ERROR;
 	}
 
     return OK;
+*/
+	
 }
 
 
