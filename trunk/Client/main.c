@@ -1,17 +1,20 @@
 /*
- *  mainClient.c
- *  tpSO1
+ *  main.c
+ *  server
  *
- *  Created by Damian Dome on 3/15/09.
+ *  Created by Damian Dome on 3/25/09.
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
 
-#include "main.h"
+
+#include <stdio.h>
+#include "Application.h"
+
 
 int
 main(void)
 {
-	InitClientApp();
-	printf("Fin de la ejecucion\n");
-}
+
+	return 0;
+}	

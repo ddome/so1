@@ -1,94 +1,140 @@
-/*
- *  client.c
- *  tpSO1
- *
- *  Created by Damian Dome on 3/15/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Application.h"
 
-static string *
-MakeFilesArray(fileT *files, int nfiles)
+int
+NewClient(string name)
 {
-	string *array;
-	int i;
+    if(AddClient(name)==OK) {
+		SetClientOnline(name);
+		return OK;
+	}
+    else {
+		printf("El usuario ya esta conectado.\n");
+		return ERROR;
+	}
+}
+
+int
+ListDirs( const string userName,string **out)
+{
+    GetListDirs(userName,out);
+    
+    return OK;
+}	
+
+int
+TopList(string *out)
+{	
+	//out = GetTopList(userID, DATABASE);
+	return OK;
+}
+
+int
+TopListUser(int userID, string *out)
+{
+	//out = GetTopList(userID, DATABASE);
 	
-	if( (array=malloc(sizeof(string)*nfiles)) == NULL )
+	return OK;
+}
+
+int
+FileAdd( fileT file, byte *data )
+{
+	FILE *fptr;
+	
+	if( FileExists(file) ){
+		//CONFLICTO
+		DeleteFile(file);
+	}
+
+	if( (fptr = CreateFile(file)) == NULL ) {
+			return ERROR;
+	}
+	//Armo el archivo con la informacion que llego
+	fwrite(data,sizeof(byte),GetSize(file),fptr);
+	printf("%d\n",GetSize(file));		
+
+	
+	return OK;
+}
+
+int
+FileRem( fileT file )
+{
+	if( !FileExists(file) ) {
+		return ERROR;
+	}
+	else {
+		DeleteFile(file);
+	}
+	
+	return OK;
+}
+
+
+int
+DirAdd( string dirName  )
+{
+	AddDir(dirName); //jujuaju, muy ambiguo, cambiar el nombre de la func de database!
+	return CopyDir(dirName, SERVER_PATH);		
+}
+	
+byte *
+ReqFile( fileT file )
+{
+	FILE *fptr;
+	byte *data;
+	int a;
+	
+	if( (fptr = OpenReadFile(file)) == NULL ) {
 		return NULL;
-
-	for( i=0; i<nfiles; i++ ) {
-		array[i] = Concat(files[i].path,files[i].fName);
-	}
-
-	return array;
-}
-
-static int
-FilesHandler()
-{
-	fileT * fileList;
-	int idFile;
-	
-	//Hasta que no se salga del programa
-	//el problema es que no puedo detectar cuando se agregan nuevos archivos
-	//para vigilar
-	fileList = InitFiles();
-	while(1) {
-		idFile = FilesHasChanged(fileList, 5);
-		if( idFile != -1 )
-			printf("HAGO ALGO CON EL ARCHIVO QUE CAMBIO%d\n",idFile);
 	}
 	
-	return OK;
+	if( (data=malloc(a=GetSize(file))) == NULL ) {
+		return NULL;
+	}
+	
+	
+	fread( data, 1, GetSize(file), fptr );
+	
+	return data;
 }
 
 int
-InitClientApp()
+ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
 {
-	switch(fork()) {
-		case 0: 
-			return FilesHandler();
-		default:
-			ClientPrompt();
-			wait(NULL); //tengo que esperar que termine el hijo antes creado
-	}		
-	return OK;
-}
-
-int
-ClientPrompt()
-{
-	Prompt();
-	return OK;
-}
-
-fileT *
-InitFiles()
-{
+	int nfiles;
 	int i;
 	
-	//Por ahora tenemos 5 fijos
-	//creados en ejecucion
-	//deberiamos levantarlos al iniciar, de alguna manera global.
-	fileT *array;	
-	
-	array = malloc(sizeof(fileT)*5);
-	
-	for( i=0; i<5; i++ ) {
-		array[i].idFile = i;
-		array[i].path = "/SO/";
+	//RegisterDirToUser(dir,userName);
+	nfiles = DirFilesList(dir,files);
+		
+	(*databuffer) = malloc(sizeof(byte**)*nfiles);
+			
+	for(i=0; i<nfiles; i++) {
+		if( ((*databuffer)[i] = ReqFile((*files)[i])) == NULL )
+			return ERROR;
 	}
-	array[0].fName = "Prueba1";
-	array[1].fName = "Prueba2";
-	array[2].fName = "Prueba3";
-	array[3].fName = "Prueba4";
-	array[4].fName = "Prueba5";		
-	for( i=0; i<5; i++ ) {
-		CreateFile(array[i].path, array[i].fName);
-	}
-	InitFilesStat(array,5);
 	
-	return array;		
+	return nfiles;
 }
+
+int
+DelDir( string userName, string dir, fileT *files, byte **databuffer )
+{
+	UnRegisterDirFromUser(dir,userName);
+	return OK;
+}
+
+int
+InitApplication(void)
+{
+	if(InitBD()==ERROR)
+	{
+		fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
+		return ERROR;
+	}
+
+    return OK;
+}
+
+

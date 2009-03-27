@@ -46,39 +46,32 @@ static char * ReadLine( FILE * inputFile )
 /* Comandos el Prompt
 */
 
-static int SelectServer(scannerADT scanner, void * data)
+static int RegisterDirectory(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
     return retValue;    
 }
 
-static int LogOn(scannerADT scanner, void * data)
+static int ListUsers(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
-    return retValue;    
+    return retValue;
 }
 
-static int ListSynchronizableDirectories(scannerADT scanner, void * data)
+static int ListUserDirectory(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
-    return retValue;    
+    return retValue;
 }
 
-static int SynchronizeDirectory(scannerADT scanner, void * data)
+static int ListLast10(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
-    return retValue;    
-}
-
-static int RemoveDirectory(scannerADT scanner, void * data)
-{
-    int retValue = OK;
-    
-    return retValue;    
+    return retValue;
 }
 
 
@@ -95,7 +88,7 @@ static int ShowCommands(scannerADT scanner, void * data)
     printf("==================\n");
     printf("Inicializando Aplicacion...\n");
     printf("Inicializando Sesion...\n");
-    printf("Inicializando Transporte...\n");
+    printf("Inicializando Aplicacion...\n");
     printf("==================\n");
     printf("Comandos disponibles:\n");
 
@@ -108,11 +101,10 @@ static int ShowCommands(scannerADT scanner, void * data)
 
 static void LoadTree(treeADT tree)
 {
-    InsertExpression(tree, "Servidor",    SelectServer);
-    InsertExpression(tree, "Nombre",   LogOn);
-    InsertExpression(tree, "Lista",        ListSynchronizableDirectories);
-    InsertExpression(tree, "Agregar",     SynchronizeDirectory);
-    InsertExpression(tree, "Remover",     RemoveDirectory);
+    InsertExpression(tree, "Registrar",    RegisterDirectory);
+    InsertExpression(tree, "Usuarios",   ListUsers);
+    InsertExpression(tree, "Dir",        ListUserDirectory);
+    InsertExpression(tree, "Last10",     ListLast10);
     InsertExpression(tree, "Salir",      ExitPrompt);
     InsertExpression(tree, "Help",   ShowCommands);
 }
@@ -134,7 +126,7 @@ Prompt(void)
     /*Help(NULL, NULL);*/
     while ( !terminar )
     {
-        printf("user@host:~ $ ");
+        printf("user@server:~ $ ");
         strAux = ReadLine( stdin );
         if ( strcmp(strAux, "Salir\n") == 0 )
             terminar = TRUE;

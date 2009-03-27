@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <dirent.h>
 #include "../Lib/defines.h"
 #include "../Lib/genlib.h"
 
@@ -27,7 +28,7 @@ typedef struct {
 	int idFile;
 	string path;
 	string fName;
-	struct stat sb; //Guardo el estado inicial del archivo
+	struct stat sb; //Guardo el estado inicial del archivos
 } fileT;
 
 // Funciones de control de permisos. No estan implementadas
@@ -38,18 +39,36 @@ boolean UserCanWrite( string path );
 boolean GroupCanWrite( string path );
 boolean AnyCanWrite( string path );
 
+fileT NewFileT( string path, string fName );
 
-// Vigila archivos almacenados en path, hasta que cambie
-// alguno, devolviendo su indice dentro del arreglo.
-// si no existe algun archivo, devuelve ERROR
+string GetPath( fileT file );
+
 int FilesWatch( string *path, int nfiles );
 
 int FilesHasChanged( fileT *files, int nfile );
 
-FILE * CreateFile( string folderPath, string fileName );
+FILE * CreateFile( fileT file );
 
-boolean FileExists( string folderPath, string fileName );
+boolean FileExists( fileT file );
 
 int InitFilesStat(fileT *files, int nfile);
+
+int DeleteFile( fileT file );
+
+int CopyFile( string srcFile, string destFile );
+
+int CopyDir( string srcDir, string destDir );
+
+FILE * OpenFile( fileT file );
+
+int GetSize(fileT file);
+
+string GetPath( fileT file );
+
+FILE *OpenReadFile( fileT file );
+
+int DirFilesNumber( string dir );
+
+int DirFilesList(string dir, fileT **files);
 
 #endif

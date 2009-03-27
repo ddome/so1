@@ -14,7 +14,7 @@ NewClient(string name)
 }
 
 int
-ListDirs( const char * userName,string **out)
+ListDirs( const string userName,string **out)
 {
     GetListDirs(userName,out);
     
@@ -128,12 +128,12 @@ DelDir( string userName, string dir, fileT *files, byte **databuffer )
 int
 InitApplication(void)
 {
-    if(InitBD()==ERROR)
-    {
+	if(InitBD()==ERROR)
+	{
 		fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
 		return ERROR;
-    }
-    
+	}
+
     return OK;
 }
 
