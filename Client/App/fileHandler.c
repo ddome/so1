@@ -355,8 +355,23 @@ DirFilesList(string dir, fileT **files)
 	return nfiles;
 }
 	
+int 
+CreateDir( string dirName )
+{
+	mkdir(dirName,0777);
+	return OK;
+}
 
-	
+boolean
+DirExists( string dirName )
+{
+	if( chdir(dirName) == 0 ) {
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}	
 	
 	
 	
