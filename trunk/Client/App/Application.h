@@ -11,9 +11,7 @@
 #include <stdio.h>
 
 #define SERVER_PATH "/client/backup"
-#include "../sqliteADT/sqliteADT.h"
 #include "../Lib/pqADT.h"
-#include "DBexec.h"
 
 
 /*---------------------------------------------------------------- 
@@ -25,9 +23,9 @@ int InitApplication(void);
 /*---------------------------------------------------------------- 
  Agrega un directorio 'dir', que contiene la lista de archivos
  'filesList, con su contenido binario almacenado en la posición
- correspondiente de data.
+ correspondiente de data, con 'nfiles' elementos almacenados.
  ----------------------------------------------------------------*/
-int DirAdd( string dir, fileT *filesList, byte **data  );
+int DirAdd( string dirName, fileT *files, byte **data, int nfiles  );
 
 /*---------------------------------------------------------------- 
  Borra un archivo del cliente
@@ -46,12 +44,6 @@ int FileAdd( fileT file, byte *data );
  por 'file'. El usuario es responsable de liberar data.
  ----------------------------------------------------------------*/
 int FileReq( fileT file, byte *data );
-
-/*---------------------------------------------------------------- 
- Retorna un arreglo de strings por cada directorio que utiliza 
- el cliente. Devuelve NULL en caso de error o de estar vacia.
- ----------------------------------------------------------------*/
-string * DirList(void);
 
 /*---------------------------------------------------------------- 
  Vigila un directorio hasta que haya un cambio, devolviendo

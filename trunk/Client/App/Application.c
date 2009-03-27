@@ -3,7 +3,7 @@
 string *
 DirList(void)
 {
-    return OK;
+    return NULL;
 }	
 
 int
@@ -12,7 +12,7 @@ FileAdd( fileT file, byte *data )
 	FILE *fptr;
 	
 	if( FileExists(file) ){
-		//CONFLICTO
+		//RESOLVER CONFLICTO
 		DeleteFile(file);
 	}
 
@@ -40,10 +40,22 @@ FileRem( fileT file )
 
 
 int
-DirAdd( string dirName  )
-{
-	AddDir(dirName); //jujuaju, muy ambiguo, cambiar el nombre de la func de database!
-	return CopyDir(dirName, SERVER_PATH);		
+DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
+{	
+	
+	int i;
+	
+	for( i=0; i < nfiles; i++ ) {
+		
+		if( !DirExists(files[i].path) ) {
+			if( CreateDir(files[i].path) == ERROR ){
+				return ERROR;
+			}
+		}
+		FileAdd(files[i], data[i]); 
+	}
+	
+	return OK;
 }
 	
 byte *
@@ -60,44 +72,16 @@ ReqFile( fileT file )
 	if( (data=malloc(a=GetSize(file))) == NULL ) {
 		return NULL;
 	}
-	
-	
+		
 	fread( data, 1, GetSize(file), fptr );
 	
 	return data;
 }
 
 int
-ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
-{
-	int nfiles;
-	int i;
-	
-	//RegisterDirToUser(dir,userName);
-	nfiles = DirFilesList(dir,files);
-		
-	(*databuffer) = malloc(sizeof(byte**)*nfiles);
-			
-	for(i=0; i<nfiles; i++) {
-		if( ((*databuffer)[i] = ReqFile((*files)[i])) == NULL )
-			return ERROR;
-	}
-	
-	return nfiles;
-}
-
-int
 InitApplication(void)
 {
-/*	if(InitBD()==ERROR)
-	{
-		fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
-		return ERROR;
-	}
-
-    return OK;
-*/
-	
+    return OK;	
 }
 
 
