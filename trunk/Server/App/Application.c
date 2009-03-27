@@ -50,8 +50,7 @@ FileAdd( fileT file, byte *data )
 		}
 		//Armo el archivo con la informacion que llego
 		fwrite(data,sizeof(byte),GetSize(file),fptr);
-		printf("%d\n",GetSize(file));
-		
+		printf("%d\n",GetSize(file));		
 	}
 	
 	return OK;
@@ -83,17 +82,18 @@ ReqFile( fileT file )
 {
 	FILE *fptr;
 	byte *data;
+	int a;
 	
 	if( (fptr = OpenReadFile(file)) == NULL ) {
 		return NULL;
 	}
 	
-	if( (data=malloc(GetSize(file))) == NULL ) {
+	if( (data=malloc(a=GetSize(file))) == NULL ) {
 		return NULL;
 	}
 	
+	
 	fread( data, 1, GetSize(file), fptr );
-	printf("%d\n",GetSize(file));
 	
 	return data;
 }
@@ -106,11 +106,11 @@ ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
 	
 	//RegisterDirToUser(dir,userName);
 	nfiles = DirFilesList(dir,files);
-	
-	***databuffer = malloc(sizeof(byte**)*nfiles);
-	
+		
+	(*databuffer) = malloc(sizeof(byte**)*nfiles);
+			
 	for(i=0; i<nfiles; i++) {
-		if( ((**databuffer)[i] = ReqFile((*files)[i])) == NULL )
+		if( ((*databuffer)[i] = ReqFile((*files)[i])) == NULL )
 			return ERROR;
 	}
 	
