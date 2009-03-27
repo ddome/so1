@@ -10,7 +10,7 @@ int InitBD(void);
 
 int GetListDirs(const char * userName, string **out);
 
-int AddClient(const char * userName);
+int AddClient(const char * userName, int pid);
 
 int SetClientOnline(const char * userName);
 

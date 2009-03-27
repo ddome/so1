@@ -27,7 +27,7 @@ int InitApplication(void);
  en caso de no existir, lo agrega a la base. En caso de existir y 
  estar conectado, devuelve un error.
  ----------------------------------------------------------------*/
-int NewClient(string name);
+int NewClient(string name,int pid);
 
 /*---------------------------------------------------------------- 
  Recibe un nombre de usuario y un puntero a arreglo de strings.

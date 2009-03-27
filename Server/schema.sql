@@ -3,6 +3,7 @@ CREATE TABLE users
     id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     user        VARCHAR(100) NOT NULL,
     online	boolean NOT NULL,
+    pid		INTEGER NOT NULL,
     UNIQUE(user)
 );
 
