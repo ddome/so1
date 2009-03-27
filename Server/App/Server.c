@@ -48,5 +48,5 @@ ReadRequest(void* data)
 int
 SpawnSubProcess(int opCode)
 {
-    
+    return 1;
 }

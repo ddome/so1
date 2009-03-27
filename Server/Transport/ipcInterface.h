@@ -7,6 +7,8 @@
 */
 
 #include "ipcFifo.h"
+#include <sys/ipc.h>
+#include <sys/types.h>
 
 /* Defines generales para todos los IPC's
 */
@@ -25,7 +27,7 @@ typedef struct {
 
 int InitMainIPC(void);
 
-int InitIPC(int pid);
+int InitIPC(key_t key);
 
 int WriteIPC(void * data, size_t size);
 
