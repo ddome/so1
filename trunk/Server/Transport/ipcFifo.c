@@ -46,7 +46,7 @@ InitMainIPC(void)
 *  Crea un ipc para comunicarse con el proceso con id = ClientPid
 *  El parametro pid esta en realidad para unificar los ipcs
 */
-int InitIPC(int pid)
+int InitIPC(key_t key)
 {
     int status = OK;
     if( readFifo_PathArray == NULL && readFifo_PathArray == NULL)
@@ -72,8 +72,8 @@ int InitIPC(int pid)
     /* Se arman los nombres de los fifos para el proceso que se pidio, 
     *  y luego se crean los fifo's propiamente.
     */
-    sprintf(readFifo_PathArray,"%d_rd",(int)ClientPID);
-    sprintf(writeFifo_PathArray,"%d_wr",(int)ClientPID);
+    sprintf(readFifo_PathArray,"%d_rd",(int)key);
+    sprintf(writeFifo_PathArray,"%d_wr",(int)key);
 
     if ( mkfifo(readFifo_PathArray, __DEFAULT_FIFO_MODE__) == ERROR )
     {
@@ -89,8 +89,7 @@ int InitIPC(int pid)
 
     writeFifo_FD = open(writeFifo_PathArray, O_RDWR );
     readFifo_FD = open(readFifo_PathArray, O_RDWR  );
-	printf("%d", readFifo_FD);
-	getchar();
+
     if(readFifo_FD == -1 || writeFifo_FD == -1 )
     {
 	printf("no se puede abrir el fifo");
