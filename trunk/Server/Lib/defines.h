@@ -12,7 +12,8 @@
 
 #define MAX_DIR_NAME 100
 #define MAX_USR_NAME 100
-#define MAX_LINE 120
+#define MAX_LINE	 120
+#define MAX_MSG		 255
 
 enum  {ERROR = -1, OK = 1};
 
