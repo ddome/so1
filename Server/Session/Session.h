@@ -1,14 +1,15 @@
-/*
-*  System Includes
-*/
-
 #ifndef _SESSION_H
 #define _SESSION_H
 
 /*
+ *  System Includes
+ */
+#include <stdio.h>
+#include <string.h>
+
+/*
 *  Project Includes
 */
-
 #include "../Lib/genlib.h"
 #include "../Lib/defines.h"
 #include "../App/fileHandler.h"
@@ -19,7 +20,6 @@
 /*
 *  Defines
 */
-
 #define MAXSENDER 255
 #define MAXMSG 255
 #define MAXLIST 255
@@ -56,9 +56,9 @@ typedef struct {
 	char msg[MAXMSG];
 	uInt opCode;
 	pid_t pid;
-	char *List[MAXLIST];
+	size_t dataSize;	
 	byte *data;
-} sesion_t;
+} session_t;
 
 /*  Functions */
 
@@ -67,5 +67,8 @@ int InitCommunication(pid_t pid);
 pid_t GetRequest(void * data);
 
 void ProcessRequest(void * data, pid_t requestPid);
+
+byte * MakeSessionData( session_t data );
+session_t GetSessionData( byte *data );
 
 #endif

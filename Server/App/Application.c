@@ -8,7 +8,7 @@ NewClient(string name,int pid)
 		return OK;
 	}
     else {
-		printf("El usuario ya esta conectado.\n");
+		//USUARIO YA CONECTADO
 		return ERROR;
 	}
 }
@@ -29,7 +29,7 @@ TopList(string *out)
 }
 
 int
-TopListUser(int userID, string *out)
+TopListUser(string userName, string *out)
 {
 	//out = GetTopList(userID, DATABASE);
 	
