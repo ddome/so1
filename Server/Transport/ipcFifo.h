@@ -11,6 +11,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "../Lib/defines.h"
+#include "Transport.h"
 
 
 /* Defines de los Fifo's en particular

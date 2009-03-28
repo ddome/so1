@@ -37,13 +37,14 @@
 /* Definiciones para creacion de procesos con fork()
 */
 
-#define __ISCHILD__		  0
+#define __ISCHILD__	  0
+#define __SHUT_DOWN__	 -2
 
 /* 
 *  Interface Functions
 */
 
-void StartListening(void);
+int StartListening(void);
 
 pid_t ReadRequest(void* data);
 
@@ -52,5 +53,7 @@ int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
 void ReadDirSubServerRequests(key_t key);
 
 int StartDirSubServer(pid_t pid, char msg[MAX_MSG]);
+
+int SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
 
 #endif

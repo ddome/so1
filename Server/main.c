@@ -17,22 +17,17 @@
 int
 main(void)
 {
-    InitApplication();
-    //StartListening();
-	
-	
-	session_t aux;
-	
-	aux.senderID[0] = 'H';
-	aux.senderID[1] = '\0';
-	
-	aux.msg[0] = '\0';	
-	aux.opCode = PR_DIR_REG;
-	aux.pid = 3;
-	aux.dataSize = 50;
-	
-	ProcessRequest(MakeSessionData(aux), 4);
-	
-	
+    int status;
+    printf("%d\n",InitTransport());
+    status = InitApplication();
+    if(status != ERROR)
+    {
+	status = StartListening();
+    }
+    else
+    {
+	fprintf(stderr, "No es posible inicializar la aplicacion.\n");
+    }
+          
     return 0;
 }	

@@ -1,10 +1,9 @@
 #include "ipcFifo.h"
 #include "ipcInterface.h"
-#include "TransportDefines.h"
 
 /*por ahora, solamente comunica 2 procesos */
-char * readFifo_PathArray = NULL;
-char * writeFifo_PathArray = NULL;
+char * readFifo = NULL;
+char * writeFifo = NULL;
 int recibidos = 0;
 int mainFifo_FD,
     writeFifo_FD,
@@ -13,45 +12,58 @@ int mainFifo_FD,
 int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 
+string
+MakeRDPath(key_t key)
+{
+    string path;
+    if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
+	return NULL;
+
+    sprintf(path,"%s%d_rd",COMM_DIR,(int)key);
+
+    return path;
+}
+
+string
+MakeWRPath(key_t key)
+{
+    string path;
+    if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
+	return NULL;
+
+    sprintf(path,"%s%d_wr",COMM_DIR,(int)key);
+
+    return path;
+}
+
 
 /* Funcion: InitIPC()
 *  ------------------
 *  Crea un ipc para comunicarse con el proceso con id = ClientPid
 *  El parametro pid esta en realidad para unificar los ipcs
 */
+
 int InitIPC(key_t key)
 {
-    int status = OK;
-    if( readFifo_PathArray == NULL && readFifo_PathArray == NULL)
-    {
-        status = ((readFifo_PathArray = calloc(MAX_PATH, sizeof(char))) != NULL &&
-                 (writeFifo_PathArray = calloc(MAX_PATH, sizeof(char))) != NULL);
-    }
-    if(status != OK)
-    {
-        return ERROR;
-    }
-
     /* Se arman los nombres de los fifos para el proceso que se pidio, 
     *  y luego se crean los fifo's propiamente.
     */
-    sprintf(readFifo_PathArray,"%d_rd",(int)key);
-    sprintf(writeFifo_PathArray,"%d_wr",(int)key);
+    
+    readFifo=MakeRDPath(key);
+    writeFifo=MakeWRPath(key);
 
-    if ( mkfifo(readFifo_PathArray, __DEFAULT_FIFO_MODE__) == ERROR )
+    if ( mkfifo(readFifo, __DEFAULT_FIFO_MODE__) == ERROR )
     {
         if(errno != EEXIST)
             return ERROR;
     }
-	
-    if ( mkfifo(writeFifo_PathArray, __DEFAULT_FIFO_MODE__) == ERROR )
+    if ( mkfifo(writeFifo, __DEFAULT_FIFO_MODE__) == ERROR )
     {
         if(errno != EEXIST)
     	   return ERROR;
     }
-
-    writeFifo_FD = open(writeFifo_PathArray, O_RDWR );
-    readFifo_FD = open(readFifo_PathArray, O_RDWR  );
+    writeFifo_FD = open(writeFifo, O_RDWR );
+    readFifo_FD = open(readFifo, O_RDWR  );
 
     if(readFifo_FD == -1 || writeFifo_FD == -1 )
     {
@@ -80,20 +92,22 @@ pid_t
 ReadIPC(void * data)
 {
     int status = OK;
+    pid_t pid=-1;
     headerIPC_t header;
-	status = read(readFifo_FD, &header, sizeof(headerIPC_t));
+    status = read(readFifo_FD, &header, sizeof(headerIPC_t));
     if(status>0)
     {
-		printf("\n\npaquete numero: %d\n", header.nPacket);
+	printf("\n\npaquete numero: %d\n", header.nPacket);
+	pid=header.pid;
         status=read(readFifo_FD, data, header.size);
-		if(status > 0)
-		{
-			printf("recibidos: %d\n", recibidos);
-			recibidos++;
-		}
+	if(status > 0)
+	{
+	    printf("recibidos: %d\n", recibidos);
+	    recibidos++;
+	}
     }
 
-    return (status <= 0) ? ERROR :OK;
+    return (status <= 0) ? ERROR :pid;
 }
 
 void

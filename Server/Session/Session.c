@@ -153,7 +153,7 @@ pid_t GetRequest(void * data)
     return ReadIPC(data);
 }
 
-void 
+int
 ProcessRequest(void * data, pid_t requestPid)
 {
 	session_t pack;
@@ -161,8 +161,30 @@ ProcessRequest(void * data, pid_t requestPid)
 	//printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
 	
 	pack = GetSessionData(data);
-	ProcessCall( pack.opCode, pack );	
+	ProcessCall( pack.opCode, pack );
+
+	/*if(((cacaT*)data)->dni>0)
+	{
+	    printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
+	    SpawnSubProcess(__SPAWN_DIR__,requestPid,"/");
+	}
+	else
+	    printf("Rock and roll neneeee!\n");*/
+	return OK;
 }
+
+void
+GoodBye(void)
+{
+    
+}
+
+void ShutDown(void)
+{
+    
+}
+
+
 
 
 

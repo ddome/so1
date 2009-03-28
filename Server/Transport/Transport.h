@@ -14,6 +14,10 @@
 #include <signal.h>
 #include <unistd.h>
 
+#define COMM_DIR "./comm/"
+
+int InitTransport(void);
+
 void InitChildProcess(pid_t pid);
 
 #endif

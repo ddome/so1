@@ -66,7 +66,7 @@ int InitCommunication(pid_t pid);
 
 pid_t GetRequest(void * data);
 
-void ProcessRequest(void * data, pid_t requestPid);
+int ProcessRequest(void * data, pid_t requestPid);
 
 byte * MakeSessionData( session_t data );
 session_t GetSessionData( byte *data );
