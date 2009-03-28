@@ -39,6 +39,11 @@ int NewClient(string name,int pid);
 int ListDirs( const string userName,string **out);
 
 /*---------------------------------------------------------------- 
+ Lista los usuarios registrados en el servidor.
+ ----------------------------------------------------------------*/
+int UserList( string **out ); // HACELAAAA!!!!!
+
+/*---------------------------------------------------------------- 
  Devuelve la cantidad de acciones realizadas por los usuarios o 
  ERROR en caso de algun error.
  Reserva en out las 10 últimas acciones de los usuarios, incluido
@@ -51,7 +56,7 @@ int TopList(string *out);
  ERROR en caso de algun error.
  Reserva en out las 10 últimas acciones del usuario userID
  ----------------------------------------------------------------*/
-int TopListUser(int userID, string *out);
+int TopListUser(string userName, string *out);
 
 /*---------------------------------------------------------------- 
  Recibe un fileT y devuelve un arreglo de bytes con el contenido

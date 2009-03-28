@@ -18,6 +18,21 @@ int
 main(void)
 {
     InitApplication();
-    StartListening();
+    //StartListening();
+	
+	
+	session_t aux;
+	
+	aux.senderID[0] = 'H';
+	aux.senderID[1] = '\0';
+	
+	aux.msg[0] = '\0';	
+	aux.opCode = PR_DIR_REG;
+	aux.pid = 3;
+	aux.dataSize = 50;
+	
+	ProcessRequest(MakeSessionData(aux), 4);
+	
+	
     return 0;
 }	
