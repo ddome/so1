@@ -32,7 +32,7 @@ CreateString( string copy )
 	return aux;
 }
 
-
+/*Esta y la de arriva hacen lo mismo*/
 char*
 CopyString(char * string)
 {
