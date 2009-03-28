@@ -43,7 +43,7 @@ static char * ReadLine( FILE * inputFile )
 }
 
 
-/* Comandos el Prompt
+/* Comandos del Prompt
 */
 
 static int RegisterDirectory(scannerADT scanner, void * data)

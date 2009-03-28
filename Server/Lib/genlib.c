@@ -42,12 +42,12 @@ CopyString(char * string)
 	return NULL;
     len=strlen(string);
     
-    if( (newStr=calloc( len,sizeof(char) ))==NULL )
+    if( (newStr=calloc( len, sizeof(char) ))==NULL )
     {
 	fprintf(stderr,"No hay memoria suficiente para encolar.\n");
 	return NULL;
     }
-    strncpy(newStr,string,len);
+    strncpy(newStr, string, len);
     
     return newStr;
 }

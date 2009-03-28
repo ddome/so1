@@ -5,13 +5,17 @@
 #include "Session.h"
 
 /*
-*  Functions
+*  Types
 */
 
 typedef struct{
     int dni;
     int esgay;
 } cacaT;
+
+/* 
+*  Functions
+*/
 
 int
 InitCommunication(pid_t pid)

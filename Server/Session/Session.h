@@ -24,20 +24,23 @@
 #define MAXMSG 255
 #define MAXLIST 255
 
-/* Prompt -> Server operations */
+/* Prompt -> Server operations 
+*/
 #define PR_DIR_REG 0
 #define PR_USR_LST 1
 #define PR_ACT_LST 2
 #define PR_DIR_USR 3
 #define PR_EXT     5
 
-/* Server -> Client operations */
+/* Server -> Client operations 
+*/
 #define SR_FIL_ADD 6
 #define SR_FIL_REM 7
 #define SR_FIL_MOD 8
 #define SR_EXT     9
 
-/* Client -> Server operations */
+/* Client -> Server operations 
+*/
 #define CL_DIR_REQ 10
 #define CL_DIR_REM 11
 #define CL_FIL_ADD 12

@@ -17,7 +17,6 @@
 int
 main(void)
 {
-    InitTransport();
     InitApplication();
     StartListening();
     return 0;

@@ -2,14 +2,6 @@
 #include "ipcInterface.h"
 #include "TransportDefines.h"
 
-char * mainFifo_Path = "mainFifo";
-/* Temporario: vector de paths donde a cada indice le corresponde
-*  el pipe para lecura o escritura para un determinado subproceso
-
-char ** readFifo_PathArray = NULL ;
-char ** writeFifo_PathArray = NULL;
-*/
-
 /*por ahora, solamente comunica 2 procesos */
 char * readFifo_PathArray = NULL;
 char * writeFifo_PathArray = NULL;
@@ -18,28 +10,9 @@ int mainFifo_FD,
     writeFifo_FD,
     readFifo_FD;
 
-int ClientPID = __DEFAULT_PID__;
-
 int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 
-/* Funcion: InitMainIPC()
-*  ----------------------
-*  Inicializa un FIFO en un path default, en el cual el servidor principal
-*  recibira los pedidos que le conciernen.
-*/
-int
-InitMainIPC(void)
-{
-    /* Se inicializa el fifo principal */
-    if ( mkfifo(mainFifo_Path, __DEFAULT_FIFO_MODE__) == ERROR )
-    {
-            if(errno != EEXIST)
-                return ERROR;
-    }
-    IPCStarted = TRUE;
-    return OK;
-}
 
 /* Funcion: InitIPC()
 *  ------------------
@@ -58,17 +31,7 @@ int InitIPC(key_t key)
     {
         return ERROR;
     }
-    /* Si el fifo principal no esta inicializado, se lo inicia ahora
-    */
-    if ( mkfifo(mainFifo_Path, __DEFAULT_FIFO_MODE__) == ERROR )
-    {
-        if(errno != EEXIST)
-            return ERROR;
-    }
-	
-    /* Se abre el FIFO
-    */
-    mainFifo_FD = open(mainFifo_Path,  O_RDWR | O_NONBLOCK);
+
     /* Se arman los nombres de los fifos para el proceso que se pidio, 
     *  y luego se crean los fifo's propiamente.
     */
@@ -92,8 +55,9 @@ int InitIPC(key_t key)
 
     if(readFifo_FD == -1 || writeFifo_FD == -1 )
     {
-	printf("no se puede abrir el fifo");
+		printf("no se puede abrir el fifo");
     }
+	
     /* IPCStarted = isChildProcess = TRUE pues es para un proceso hijo
     */
     IPCStarted = TRUE;
@@ -117,19 +81,19 @@ ReadIPC(void * data)
 {
     int status = OK;
     headerIPC_t header;
-    status = read(readFifo_FD, &header, sizeof(headerIPC_t));
+	status = read(readFifo_FD, &header, sizeof(headerIPC_t));
     if(status>0)
     {
-	printf("\n\npaquete numero: %d\n", header.nPacket);
+		printf("\n\npaquete numero: %d\n", header.nPacket);
         status=read(readFifo_FD, data, header.size);
-	if(status > 0)
-	{
-	    printf("recibidos: %d\n", recibidos);
-	    recibidos++;
-	}
+		if(status > 0)
+		{
+			printf("recibidos: %d\n", recibidos);
+			recibidos++;
+		}
     }
 
-    return (status <= 0) ? ERROR : ClientPID;
+    return (status <= 0) ? ERROR :OK;
 }
 
 void
