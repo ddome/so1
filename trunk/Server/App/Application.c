@@ -36,6 +36,12 @@ TopListUser(string userName, string *out)
 	return OK;
 }
 
+int 
+UserList( string **out )
+{
+	return OK;
+}
+
 int
 FileAdd( fileT file, byte *data )
 {

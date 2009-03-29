@@ -15,6 +15,10 @@
 #include "../Lib/pqADT.h"
 #include "DBexec.h"
 
+#define NEW_USR_EXIST 0
+#define NEW_USR_OK    1
+#define NEW_USR_ERROR 2
+
 
 /*---------------------------------------------------------------- 
  Inicia la aplicación. Requerido antes de usar cualquier función
@@ -40,6 +44,7 @@ int ListDirs( const string userName,string **out);
 
 /*---------------------------------------------------------------- 
  Lista los usuarios registrados en el servidor.
+ Devuelve la cantidad de usuarios en la lista.
  ----------------------------------------------------------------*/
 int UserList( string **out ); // HACELAAAA!!!!!
 

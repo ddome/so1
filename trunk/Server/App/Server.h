@@ -37,7 +37,7 @@
 /* Definiciones para creacion de procesos con fork()
 */
 
-#define __ISCHILD__	  0
+#define __ISCHILD__	      0
 #define __SHUT_DOWN__	 -2
 
 /* 
