@@ -24,18 +24,20 @@
 #define MAXMSG 255
 #define MAXLIST 255
 
+#define __SHUT_DOWN__	 -2
+
 /* Prompt -> Server operations 
 */
 #define PR_DIR_REG 0
 #define PR_USR_LST 1
 #define PR_ACT_LST 2
-#define PR_DIR_USR 3
+#define PR_ACT_USR 3
 #define PR_EXT     5
 
 /* Server -> Client operations 
 */
-#define SR_FIL_ADD 6
-#define SR_FIL_REM 7
+#define SR_NEW_USR_ERR 6
+#define SR_NEW_USR_OK  7
 #define SR_FIL_MOD 8
 #define SR_EXT     9
 
@@ -49,7 +51,7 @@
 #define CL_DIR_LST 15
 #define CL_EXT     16
 
-/* Struct */
+/* Paquete de session */
 
 typedef struct {
 	char senderID[MAXSENDER];
@@ -66,9 +68,10 @@ int InitCommunication(pid_t pid);
 
 pid_t GetRequest(void * data);
 
-int ProcessRequest(void * data, pid_t requestPid);
+int ProcessRequest(void ** data, pid_t requestPid);
 
 byte * MakeSessionData( session_t data );
+
 session_t GetSessionData( byte *data );
 
 #endif

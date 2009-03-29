@@ -24,67 +24,174 @@ GetDataSize( session_t data )
 			+ sizeof(size_t) + data.dataSize );
 }
 
+/* New Client */
+
 static int
-ProcessCall( uInt opCode, session_t data )
+MakeNewClientPack(int op, session_t *dataPtr )
+{
+	session_t aux;
+	int ret;
+	
+	/* Armo el paquete de respuesta */
+	aux.msg[0]      = '\0';
+	aux.senderID[0] = '\0';
+	aux.pid			= 0;
+	aux.dataSize    = 0;
+	aux.data		= NULL;
+	
+	switch(op) {
+		case NEW_USR_EXIST: 
+			aux.opCode = SR_NEW_USR_ERR;
+			ret = OK;
+			break;
+			
+		case NEW_USR_OK:
+			aux.opCode = SR_NEW_USR_OK;
+			ret = OK;
+			break;
+			
+		default:
+			aux.opCode = ERROR;
+			ret = ERROR;
+	}
+	
+	//Guardo la respuesta del Server
+    *dataPtr = aux;
+	return ret;		
+}
+
+static int 
+CallNewClient(session_t *dataPtr)
+{	
+	int ret;
+	
+	ret=NewClient((*dataPtr).msg,(*dataPtr).pid);	
+	return (MakeNewClientPack(ret, dataPtr));
+}	
+
+/* UserList */
+
+static byte *
+MakeMemBlockUsrList(string *usrLst, int nusr)
+{
+	byte *memblock;
+	int pos;
+	int i;
+	
+	/* Almaceno un bloque continuo de memoria para guardar todos los arreglos */
+	if( (memblock = malloc(sizeof(string) * (MAX_USR_NAME+1) * nusr )) == NULL ) {
+		return NULL;
+	}
+	
+	/*Copio uno por uno los strings, de manera continua sobre el bloque */
+	pos = 0;
+	for( i=0; i < nusr; i++ ) {
+		memmove(memblock + pos, usrLst[i], strlen(usrLst[i])+1 );
+		pos += MAX_USR_NAME+1;
+	}
+	
+	return memblock;
+}
+	
+static int
+MakeUserListPack(string *usrLst, int nusr, session_t *dataPtr)
+{
+	session_t aux;
+	
+	aux.opCode = (*dataPtr).opCode;
+	aux.msg[0]      = '\0';
+	aux.senderID[0] = '\0';
+	aux.pid			= 0;
+	aux.dataSize    = nusr*sizeof(string)*(MAX_USR_NAME+1);
+	if(  (aux.data = MakeMemBlockUsrList(usrLst, nusr)) == NULL ) {
+		return ERROR;
+	}
+	*dataPtr = aux;	
+	return OK;
+}
+	
+static int 
+CallUserList(session_t *dataPtr)
+{
+	string *usrLst;
+	int nusr;
+	
+	if( (nusr=UserList(&usrLst)) == ERROR ) {
+		return ERROR;
+	}
+	
+	return MakeUserListPack(usrLst, nusr, dataPtr);
+}	
+	
+
+/*
+static int CallTopList(session_t data);
+static int CallTopListUser(session_t data);
+static int CallDirReq(session_t data);
+static int CallDirRem(session_t data);
+static int CallFileAdd(session_t data);
+static int CallFileRem(session_t data);
+static int CallFileAdd(session_t data);
+static int CallDirList(session_t data);
+*/
+
+
+int
+ProcessCall( session_t *data )
 {
 
-	switch( opCode ) {
+	switch( (*data).opCode ) {
 		case PR_DIR_REG:
-			if( (NewClient(data.msg,data.pid)) == ERROR ) {
-				// MANDO AVISO DE QUE YA ESTA CONECTADO
-			}
+			return CallNewClient(data);
 			break;
 			
-		case PR_USR_LST:			
+		case PR_USR_LST:
+			return CallUserList(data);
 			break;
 			
-		case PR_ACT_LST:			
+/*		case PR_ACT_LST:			
+			return CallTopList(data);
 			break;
 			
-		case PR_DIR_USR:			
+		case PR_ACT_USR:
+			return CallTopListUser(data);
 			break;	
 			
-		case PR_EXT:			
-			break;
-			
-		case SR_FIL_ADD:			
-			break;
-		case SR_FIL_REM:			
-			printf("No andó :(\n");
-			break;
-		case SR_FIL_MOD:			
-			printf("No andó :(\n");
-			break;
-		case SR_EXT:			
-			printf("No andó :(\n");
+		case PR_EXT:
+			return __SHUT_DOWN__;
 			break;
 			
 		case CL_DIR_REQ:			
-			printf("No andó :(\n");
+			return CallDirReq(data);
 			break;
+			
 		case CL_DIR_REM:			
-			printf("No andó :(\n");
+			return CallDirRem(data);
 			break;
+			
 		case CL_FIL_ADD:			
-			printf("No andó :(\n");
+			return CallFileAdd(data);
 			break;	
+			
 		case CL_FIL_REM:			
-			printf("No andó :(\n");
-			break;		
+			return CallFileRem(data);
+			break;
+			
 		case CL_FIL_MOD:			
-			printf("No andó :(\n");
+			return CallFileAdd(data);
 			break;	
+			
 		case CL_DIR_LST:			
-			printf("No andó :(\n");
+			return CallDirList(data);
 			break;
+			
 		case CL_EXT:			
-			printf("No andó :(\n");
+			return __SHUT_DOWN__
 			break;
+*/			
 		default:
 			return ERROR;
-	}
-	
-	return OK;
+	}	
 }
 
 byte *
@@ -154,14 +261,17 @@ pid_t GetRequest(void * data)
 }
 
 int
-ProcessRequest(void * data, pid_t requestPid)
+ProcessRequest(void ** data, pid_t requestPid)
 {
 	session_t pack;
+	int ret;
 	
-	//printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
+		
+	pack  = GetSessionData(*data);
+    ret = ProcessCall( &pack );
 	
-	pack = GetSessionData(data);
-	ProcessCall( pack.opCode, pack );
+	free(*data);
+	*data = MakeSessionData(pack);
 
 	/*if(((cacaT*)data)->dni>0)
 	{
@@ -170,7 +280,9 @@ ProcessRequest(void * data, pid_t requestPid)
 	}
 	else
 	    printf("Rock and roll neneeee!\n");*/
-	return OK;
+	
+	//return (MakeSessionData(outPack)); Deberia devolver esto
+	return ret;
 }
 
 void
