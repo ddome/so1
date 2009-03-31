@@ -14,7 +14,7 @@ Concat( string s1, string s2 )
 {
 	string aux;
 	
-	if( (aux=malloc(strlen(s1)+strlen(s2)+1)) == NULL )
+	if( (aux=malloc( (strlen(s1)+strlen(s2)+1)*sizeof(char) )) == NULL )
 		return NULL;	
 	strcpy(aux,s1);
 	strcat(aux,s2);
@@ -26,13 +26,12 @@ CreateString( string copy )
 {
 	string aux;
 	
-	if( (aux=malloc(strlen(copy))+1) == NULL )
+	if( ( aux=malloc( (strlen(copy)+1)*sizeof(char) ) ) == NULL )
 		return NULL;
 	strcpy(aux,copy);
 	return aux;
 }
 
-/*Esta y la de arriva hacen lo mismo*/
 char*
 CopyString(char * string)
 {

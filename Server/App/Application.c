@@ -164,4 +164,11 @@ InitApplication(void)
     return OK;
 }
 
+int
+CloseApplication(void)
+{
+    FreeDatabase();
+    return OK;
+}
+
 

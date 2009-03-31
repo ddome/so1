@@ -1,4 +1,3 @@
-
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
@@ -103,5 +102,10 @@ int ReqDir( string userName, string dir, fileT **files, byte ***databuffer );
  ----------------------------------------------------------------*/
 int DelDir( string userName, string dir );
 
+/*---------------------------------------------------------------- 
+ Termina con la aplicacion. Libera memoria y cierra archivos en uso
+ ----------------------------------------------------------------*/
+int CloseApplication(void);
 
 #endif
+
