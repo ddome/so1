@@ -18,20 +18,21 @@
 int
 main(void)
 {
-    int status;
+   
+	/*int status;
     status = InitApplication();
-    printf("%d\n",NewClient("hola",1));
-    printf("%d\n",NewClient("hola2",1));
-    printf("%d\n",NewClient("hola",2));
-    printf("%d\n",NewClient("hola",1));
-    DirconnectUser("hola");
-    
-    
-    printf("%d\n",NewClient("hola",1));
-    /*printf("%d\n",NewClient("hola",1));
-    printf("%d\n",NewClient("hola",1));*/
-    
-    
-    
+    if(status != ERROR)
+    {
+		status = StartListening();
+    }
+    else
+    {
+		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
+    }
+	 */
+	InitApplication();
+	
+	
+	
     return 0;
 }	

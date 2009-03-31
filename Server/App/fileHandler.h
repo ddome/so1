@@ -12,6 +12,7 @@
 
 #define MFILE 15
 #define MPATHL 100 //maximo tamanio del path de un file
+#define MFILEL 100
 #define SLEEP_TIME 10
 
 
