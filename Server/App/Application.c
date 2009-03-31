@@ -146,7 +146,7 @@ ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
 }
 
 int
-DelDir( string userName, string dir, fileT *files, byte **databuffer )
+DelDir( string userName, string dir )
 {
     UnRegisterDirFromUser(dir,userName);
     return OK;

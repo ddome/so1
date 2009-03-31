@@ -97,5 +97,11 @@ int FileAdd( fileT file, byte *data );
  ----------------------------------------------------------------*/
 int ReqDir( string userName, string dir, fileT **files, byte ***databuffer );
 
+/*---------------------------------------------------------------- 
+ Borra un directorio de la base de directorios actualizables de un
+ cliente
+ ----------------------------------------------------------------*/
+int DelDir( string userName, string dir );
+
 
 #endif
