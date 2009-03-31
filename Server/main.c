@@ -22,11 +22,11 @@ main(void)
     status = InitApplication();
     if(status != ERROR)
     {
-	status = StartListening();
+		status = StartListening();
     }
     else
     {
-	fprintf(stderr, "No es posible inicializar la aplicacion.\n");
+		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
     }
           
     return 0;
