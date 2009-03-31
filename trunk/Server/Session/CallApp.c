@@ -11,20 +11,20 @@
 #include "Session.h"
 #include "CallApp.h"
 
-/* New Client */
+/* Funciones generales */
 
-session_t
+static session_t
 FillPack(string senderID, string msg, uInt opCode, 
-				pid_t pid, size_t dataSize, byte *data)
+		 pid_t pid, size_t dataSize, byte *data)
 {
 	session_t aux;
 	
-	if( msg == NULL && strlen(msg) > MAXMSG )
+	if( msg == NULL || strlen(msg) > MAXMSG )
 		strcpy(aux.msg,"");
 	else	
 		strcpy(aux.msg,msg);
 	
-	if( senderID == NULL && strlen(senderID) > MAXSENDER )
+	if( senderID == NULL || strlen(senderID) > MAXSENDER )
 		strcpy(aux.senderID,"");
 	else	
 		strcpy(aux.senderID,senderID);
@@ -37,7 +37,10 @@ FillPack(string senderID, string msg, uInt opCode,
 	return aux;
 }
 
-int
+
+/* Client -> Server: New Client */
+
+static int
 MakeNewClientRetPack(int op, session_t *dataPtr )
 {
 	session_t aux;
@@ -56,7 +59,7 @@ MakeNewClientRetPack(int op, session_t *dataPtr )
 			break;
 			
 		default:
-			opCode = ERROR;
+			opCode = NEW_USR_ERROR;
 			ret = ERROR;
 			break;
 	}
@@ -78,9 +81,9 @@ CallNewClient(session_t *dataPtr)
 	return (MakeNewClientRetPack(ret, dataPtr));
 }	
 
-/* UserList */
+/* Prompt -> Server: UserList */
 
-byte *
+static byte *
 MakeMemBlockUsrList(string *usrLst, int nusr)
 {
 	byte *memblock;
@@ -102,7 +105,7 @@ MakeMemBlockUsrList(string *usrLst, int nusr)
 	return memblock;
 }
 
-int
+static int
 MakeUserListPack(string *usrLst, int nusr, session_t *dataPtr)
 {
 	session_t aux;
@@ -133,12 +136,37 @@ CallUserList(session_t *dataPtr)
 	return MakeUserListPack(usrLst, nusr, dataPtr);
 }	
 
+/* Client -> Server: DirRem */	
+
+static string
+GetDirName(session_t data)
+{
+	if( data.dataSize == 0 ) {
+		return NULL;
+	}
+	else {
+		return data.data;
+	}
+}
+
+int 
+CallDirRem(session_t *data)
+{
+	string dir;
+	string userName;
+
+	dir = GetDirName(*data);
+	userName = (*data).msg;
+
+	return DelDir(userName,dir);
+}
+	
 
 /*
  static int CallTopList(session_t data);
  static int CallTopListUser(session_t data);
  static int CallDirReq(session_t data);
- static int CallDirRem(session_t data);
+
  static int CallFileAdd(session_t data);
  static int CallFileRem(session_t data);
  static int CallFileAdd(session_t data);
