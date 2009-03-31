@@ -99,8 +99,20 @@ ProcessCall( session_t *data )
 			break;
 
 		case CL_DIR_REM:			
-			return CallDirRem(data);
+			return CallDirRem(*data);
 			break;
+			
+		case CL_FIL_ADD:			
+			return CallFileAdd(*data);
+			break;
+			
+		case CL_FIL_REM:			
+			return CallFileRem(*data);
+			break;
+			
+		case CL_FIL_MOD:			
+			return CallFileAdd(*data);
+			break;		
 			
 			/*		case PR_ACT_LST:			
 			 return CallTopList(data);
@@ -117,18 +129,6 @@ ProcessCall( session_t *data )
 			 case CL_DIR_REQ:			
 			 return CallDirReq(data);
 			 break;
-			 
-			 case CL_FIL_ADD:			
-			 return CallFileAdd(data);
-			 break;	
-			 
-			 case CL_FIL_REM:			
-			 return CallFileRem(data);
-			 break;
-			 
-			 case CL_FIL_MOD:			
-			 return CallFileAdd(data);
-			 break;	
 			 
 			 case CL_DIR_LST:			
 			 return CallDirList(data);

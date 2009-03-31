@@ -10,3 +10,11 @@
 int CallNewClient(session_t *dataPtr);
 
 int CallUserList(session_t *dataPtr);
+
+int CallDirRem(session_t data);
+
+int CallFileAdd(session_t data);
+
+int CallFileMod(session_t data);
+
+int CallFileRem(session_t data);

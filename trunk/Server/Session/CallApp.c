@@ -10,6 +10,7 @@
 
 #include "Session.h"
 #include "CallApp.h"
+#include "fileHandler.h"
 
 /* Funciones generales */
 
@@ -63,8 +64,7 @@ MakeNewClientRetPack(int op, session_t *dataPtr )
 			ret = ERROR;
 			break;
 	}
-	
-	
+		
 	aux = FillPack(NULL,NULL, opCode, 0, 0, NULL );
 	
 	/* Guardo la respuesta del Server */
@@ -150,25 +150,88 @@ GetDirName(session_t data)
 }
 
 int 
-CallDirRem(session_t *data)
+CallDirRem(session_t data)
 {
 	string dir;
 	string userName;
 
-	dir = GetDirName(*data);
-	userName = (*data).msg;
+	dir = GetDirName(data);
+	userName = data.msg;
 
 	return DelDir(userName,dir);
 }
+
+/* Client -> Server: FileAdd */
+
+void
+GetFileData(session_t data, string *fileName, string *path, byte *fileData)
+{
+	int pos;
 	
+	pos=0;
+	memmove(fileName, data.data + pos, MFILEL );
+	pos+=MFILEL;
+	memmove(path, data.data + pos, MPATHL );
+	pos+=MPATHL;
+	
+	if( (data.dataSize - MFILEL - MPATHL) > 0 && fileData != NULL ) {
+		memmove(fileData, data.data + pos, (data.dataSize - MFILEL - MPATHL) );	
+	}	
+}	
+
+int 
+CallFileAdd(session_t data)
+{
+	fileT file;
+	string fileName;
+	string path;
+	byte *fileData;
+	string user;  // Usado solo para agregar a los Logs
+	
+	user = data.msg;
+	GetFileData(data,&fileName,&path,fileData);	
+	file = NewFileT(fileName,path);
+	
+	return FileAdd(file,fileData);	
+}	
+
+int 
+CallFileMod(session_t data)
+{
+	fileT file;
+	string fileName;
+	string path;
+	byte *fileData;
+	string user; // Usado solo para agregar a los Logs
+	
+	user = data.msg;
+	GetFileData(data,&fileName,&path,fileData);	
+	file = NewFileT(fileName,path);
+	
+	/*Lo saco y vuelvo a insertar */
+	FileRem(file);	
+	return FileAdd(file,fileData);	
+}	
+
+int 
+CallFileRem(session_t data)
+{
+	fileT file;
+	string fileName;
+	string path;
+	string user; //Usado solo para agregar a los Logs
+	
+	user = data.msg;	
+	GetFileData(data,&fileName,&path,NULL);	
+	file = NewFileT(fileName,path);
+	
+	return FileRem(file);	
+}
+
 
 /*
  static int CallTopList(session_t data);
  static int CallTopListUser(session_t data);
  static int CallDirReq(session_t data);
-
- static int CallFileAdd(session_t data);
- static int CallFileRem(session_t data);
- static int CallFileAdd(session_t data);
  static int CallDirList(session_t data);
- */
+ */ 
