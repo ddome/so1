@@ -70,8 +70,4 @@ pid_t GetRequest(void * data);
 
 int ProcessRequest(void ** data, pid_t requestPid);
 
-byte * MakeSessionData( session_t data );
-
-session_t GetSessionData( byte *data );
-
 #endif
