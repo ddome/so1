@@ -933,6 +933,126 @@ ListDirsLinkToUser(sqliteADT db,const char * userName,pqADT queue)
     return DB_SUCCESS;
 }
 
+DB_STAT
+GetLast10(sqliteADT db, pqADT queue)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char logName[MAX_LOG_LEN] = {0};
+    char *sqlSelect =  "SELECT timestamp || ' ' || 'Usuario: ' || user || ' ' || 'Accion: ' || action FROM logs LIMIT 10;";
+
+    if ( db == NULL || queue == NULL )
+        return DB_INVALID_ARG;
+
+
+    ret = QueryExecute( db, &statement, sqlSelect, 0, NULL, 0);
+
+    while ( ret == SQLITE_ROW )
+    {
+        strncpy(logName, (char *) sqlite3_column_text(statement, 0), MAX_LOG_LEN);
+        logName[MAX_LOG_LEN-1] = 0;
+
+        if ((Enqueue(queue, &logName,1)) == 1)
+            ret = sqlite3_step( statement );
+        else
+        {
+            sqlite3_finalize( statement );
+            return DB_INTERNAL_ERROR;
+        }
+    }
+
+    sqlite3_finalize( statement );
+
+    if ( ret != SQLITE_DONE )
+        return DB_INTERNAL_ERROR;
+
+    return DB_SUCCESS;
+}
+
+
+DB_STAT
+GetLast10User(sqliteADT db, const char *userName,pqADT queue)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char logName[MAX_LOG_LEN] = {0};
+    char *userE = NULL;
+    char *sqlSelect =   "SELECT timestamp || ' ' || 'Usuario: ' || user || ' ' || 'Accion: ' || action FROM logs WHERE user = '%s' LIMIT 10;";
+
+    if ( db == NULL || queue == NULL || userName == NULL)
+        return DB_INVALID_ARG;
+
+    if ( ( userE = EscapeString( db, userName ) ) == NULL )
+                return DB_NO_MEMORY;
+
+    ret = QueryExecute( db, &statement, sqlSelect, 0, NULL, 1, userE );
+    free(userE);
+
+    while ( ret == SQLITE_ROW )
+    {
+        strncpy(logName, (char *) sqlite3_column_text(statement, 0), MAX_LOG_LEN);
+        logName[MAX_LOG_LEN-1] = 0;
+
+        if ((Enqueue(queue, &logName,1)) == 1)
+            ret = sqlite3_step( statement );
+        else
+        {
+            sqlite3_finalize( statement );
+            return DB_INTERNAL_ERROR;
+        }
+    }
+
+    sqlite3_finalize( statement );
+
+    if ( ret != SQLITE_DONE )
+        return DB_INTERNAL_ERROR;
+
+    return DB_SUCCESS;
+}
+
+
+
+DB_STAT
+LogAction(sqliteADT db, const char * userName, const char *action)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char *userN, *actionN;
+    char *sqlSelect = "INSERT INTO logs VALUES ((select user from users where "
+                      "user = '%s'), '%s', DATETIME('NOW'))";
+
+    if (db == NULL || userName == NULL || action == NULL)
+        return DB_INVALID_ARG;
+
+    /*TODO: In the next lines inside the if it should free
+            malloced strings in this function */
+    if ( ( userN = EscapeString( db, userName ) ) == NULL )
+        return DB_NO_MEMORY;
+
+    if ( ( actionN = EscapeString( db, action ) ) == NULL )
+        return DB_NO_MEMORY;
+
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 2, userN, actionN);
+
+    free(userN);
+    free(actionN);
+
+    switch (ret)
+    {
+        case SQLITE_DONE:
+            sqlite3_finalize( statement );
+            return DB_SUCCESS;
+
+        case SQLITE_CONSTRAINT:
+            sqlite3_finalize( statement );
+            return DB_ALREADY_EXISTS;
+
+        default:
+            sqlite3_finalize(statement);
+            return DB_INTERNAL_ERROR;
+    }
+}
 
 
 

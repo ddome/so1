@@ -51,6 +51,11 @@ GetListDirs(const char * userName, string **out)
     pqADT queue;
     int i=0;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
+    if(queue==NULL)
+    {
+	fprintf(stderr,"Error al crear la cola en TopList.\n");
+	return ERROR;
+    }
 
     ListDirsLinkToUser(db,userName,queue);
 
@@ -99,7 +104,7 @@ GetUserStatus(const char * nameName)
 }
 
 int
-AddDir(const char * pathName)
+NewDir(const char * pathName)
 {
 	RegisterDir(db,pathName);
 	return OK;
@@ -118,33 +123,77 @@ UnRegisterDirFromUser(const char * pathName,const char * userName)
 	UnlinkUserToDir(db,pathName,userName);
 	return OK;
 }
-/*
-static int
-GetListUsersByID(int ** userID)
+
+int
+NewLogEntry(const char * userName,const char * action)
 {
-    int exit;
-    int i,cant;
-    char * auxStr;
-    int * userIDs;
+    int boolRet;
+    IsUserOnline(db,userName,&boolRet);
+    if(boolRet==0)
+	return ERROR;
+    LogAction(db,userName,action);
+    return OK;
+}
+
+int
+GetTopList(const char * userName,char ***out)
+{
     pqADT queue;
-    
-    queue=NewPQ((void*(*)(void*))sCopia,(void*(*)(void*))sLibera);
-    if(ShowOnlineByID(db,queue)!=DB_SUCCESS)
+    int i=0;
+    queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
+    if(queue==NULL)
     {
-	fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
+	fprintf(stderr,"Error al crear la cola en TopList.\n");
 	return ERROR;
     }
+    if(userName==NULL)
+	GetLast10(db,queue);
+    else
+	GetLast10User(db,userName,queue);
     
-    if( (*userID=malloc(QueueDepth(queue)*sizeof(int)))==NULL ):
+    if( (*out=calloc(QueueDepth(queue)+1,sizeof(char*)))==NULL )
     {
-	fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
+	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
 	return ERROR;
+    }
+    while(!PQIsEmpty(queue))
+    {
+	(*out)[i]=Dequeue(queue);
+	i++;
     }
     FreePQ(&queue);
-    return (exit = TRUE);
-}*/
+    
+    return OK;
+}
 
-
+int
+GetUserOnlineList( char *** out )
+{
+    pqADT queue;
+    int i=0;
+    queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
+    if(queue==NULL)
+    {
+	fprintf(stderr,"Error al crear la cola en TopList.\n");
+	return ERROR;
+    }
+    
+    ShowOnline(db,queue);
+    
+    if( ( (*out)=calloc(QueueDepth(queue)+1,sizeof(char*)) )==NULL )
+    {
+	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+	return ERROR;
+    }
+    while(!PQIsEmpty(queue))
+    {
+	(*out)[i]=(char*)Dequeue(queue);
+	i++;
+    }
+    FreePQ(&queue);
+    
+    return OK;
+}
 
 
 
