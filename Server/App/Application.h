@@ -102,6 +102,8 @@ int ReqDir( string userName, string dir, fileT **files, byte ***databuffer );
  ----------------------------------------------------------------*/
 int DelDir( string userName, string dir );
 
+int DirconnectUser(string userName);
+
 /*---------------------------------------------------------------- 
  Termina con la aplicacion. Libera memoria y cierra archivos en uso
  ----------------------------------------------------------------*/

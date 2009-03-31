@@ -7,6 +7,8 @@
 #include "../Lib/genlib.h"
 #include "../Lib/pqADT.h"
 
+#define DB_ERROR -5
+
 int InitBD(void);
 
 int GetListDirs(const char * userName, char ***out);
@@ -14,6 +16,8 @@ int GetListDirs(const char * userName, char ***out);
 int AddClient(const char * userName, int pid);
 
 int SetClientOnline(const char * userName);
+
+int SetClientOffline(const char * userName);
 
 int GetUserStatus(const char * nameName);
 

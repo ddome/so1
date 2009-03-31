@@ -82,19 +82,30 @@ AddClient(const char * userName, int pid)
     int ret;
     int boolRet;
     ret=AddUser(db, userName,pid);
-    if( ret==DB_ALREADY_EXISTS )
+    if( ret==DB_ALREADY_EXISTS || ret==DB_SUCCESS )
     {
 	IsUserOnline(db,userName,&boolRet);
 	if(boolRet==1)
 	    return ERROR;
     }
+    if(ret==DB_INTERNAL_ERROR)
+	return DB_ERROR;
     return OK;
 }
 
 int
 SetClientOnline(const char * userName)
 {
+    /*El usuario tiene q exitir*/
     UserOnline(db,userName);
+    return OK;
+}
+
+int
+SetClientOffline(const char * userName)
+{
+    /*El usuario tiene q exitir y este online*/
+    UserOffline(db,userName);
     return OK;
 }
 
@@ -109,22 +120,30 @@ GetUserStatus(const char * nameName)
 int
 NewDir(const char * pathName)
 {
-	RegisterDir(db,pathName);
-	return OK;
+    int ret=RegisterDir(db,pathName);
+    if(ret==DB_INTERNAL_ERROR)
+	return DB_ERROR;
+    return OK;
 }
 
 int
 RegisterDirToUser(const char * pathName,const char *userName)
 {
-	LinkDirToUser(db,pathName,userName);
+    int ret=LinkDirToUser(db,pathName,userName);
+    if(ret==DB_INTERNAL_ERROR)
+	return DB_ERROR;
+    else if(ret==DB_ALREADY_EXISTS)
+	return ERROR;
+    else
 	return OK;
 }
 
 int
 UnRegisterDirFromUser(const char * pathName,const char * userName)
 {
-	UnlinkUserToDir(db,pathName,userName);
-	return OK;
+    /*checkear postcondiciones*/
+    UnlinkUserToDir(db,pathName,userName);
+    return OK;
 }
 
 int

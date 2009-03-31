@@ -13,24 +13,25 @@
 #include "./App/Application.h"
 #include "./Session/Session.h"
 #include "./Transport/Transport.h"
+#include "./sqliteADT/sqliteADT.h"
 
 int
 main(void)
 {
     int status;
-    printf("%d\n",InitTransport());
     status = InitApplication();
-    if(status != ERROR)
-    {
-		status = StartListening();
-    }
-    else
-    {
-		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
-    }
-
-	
-
-		
+    printf("%d\n",NewClient("hola",1));
+    printf("%d\n",NewClient("hola2",1));
+    printf("%d\n",NewClient("hola",2));
+    printf("%d\n",NewClient("hola",1));
+    DirconnectUser("hola");
+    
+    
+    printf("%d\n",NewClient("hola",1));
+    /*printf("%d\n",NewClient("hola",1));
+    printf("%d\n",NewClient("hola",1));*/
+    
+    
+    
     return 0;
 }	

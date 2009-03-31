@@ -3,16 +3,19 @@
 int
 NewClient(string name,int pid)
 {
-    if(AddClient(name,pid)==OK)
+    int ret=AddClient(name,pid);
+    if(ret==OK)
     {
 	SetClientOnline(name);
-	return OK;
+	return NEW_USR_OK;
     }
-    else
+    else if(ret==ERROR)
     {
 	//USUARIO YA CONECTADO
-	return ERROR;
+	return NEW_USR_EXIST;
     }
+    else
+	return NEW_USR_ERROR;
 }
 
 int
@@ -168,6 +171,13 @@ int
 CloseApplication(void)
 {
     FreeDatabase();
+    return OK;
+}
+
+int
+DirconnectUser(string userName)
+{
+    SetClientOffline(userName);
     return OK;
 }
 
