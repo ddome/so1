@@ -43,6 +43,7 @@
 
 /* Client -> Server operations 
 */
+#define CL_NEW_USR 17
 #define CL_DIR_REQ 10
 #define CL_DIR_REM 11
 #define CL_FIL_ADD 12
@@ -68,6 +69,9 @@ int InitCommunication(pid_t pid);
 
 pid_t GetRequest(void * data);
 
-int ProcessRequest(void ** data, pid_t requestPid);
+int ProcessRequest(byte ** data, pid_t requestPid);
+
+byte * MakeSessionData( session_t data );
+session_t GetSessionData( byte *data );
 
 #endif

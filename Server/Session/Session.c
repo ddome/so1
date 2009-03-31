@@ -20,8 +20,8 @@ typedef struct{
 
 static int GetDataSize( session_t data );
 static int ProcessCall( session_t *data );
-static byte * MakeSessionData( session_t data );
-static session_t GetSessionData( byte *data );
+//static byte * MakeSessionData( session_t data );
+//static session_t GetSessionData( byte *data );
 
 
 /* Functions */
@@ -39,7 +39,7 @@ pid_t GetRequest(void * data)
 }
 
 int
-ProcessRequest(void ** data, pid_t requestPid)
+ProcessRequest(byte ** data, pid_t requestPid)
 {
 	session_t pack;
 	int ret;
@@ -59,7 +59,7 @@ ProcessRequest(void ** data, pid_t requestPid)
 	else
 	    printf("Rock and roll neneeee!\n");*/
 	
-	//return (MakeSessionData(outPack)); Deberia devolver esto
+	
 	return ret;
 }
 
@@ -90,12 +90,16 @@ ProcessCall( session_t *data )
 {
 	
 	switch( (*data).opCode ) {
-		case PR_DIR_REG:
+		case CL_NEW_USR:
 			return CallNewClient(data);
 			break;
 			
 		case PR_USR_LST:
 			return CallUserList(data);
+			break;
+
+		case CL_DIR_REM:			
+			return CallDirRem(data);
 			break;
 			
 			/*		case PR_ACT_LST:			
@@ -112,10 +116,6 @@ ProcessCall( session_t *data )
 			 
 			 case CL_DIR_REQ:			
 			 return CallDirReq(data);
-			 break;
-			 
-			 case CL_DIR_REM:			
-			 return CallDirRem(data);
 			 break;
 			 
 			 case CL_FIL_ADD:			
@@ -143,7 +143,7 @@ ProcessCall( session_t *data )
 	}	
 }
 
-static byte *
+byte *
 MakeSessionData( session_t data )
 {
 	byte *aux;
@@ -169,7 +169,7 @@ MakeSessionData( session_t data )
 	return aux;
 }
 
-static session_t
+session_t
 GetSessionData( byte *data )
 {
 	int pos;
@@ -192,8 +192,13 @@ GetSessionData( byte *data )
 	pos += sizeof(size_t);
 	
 	/* Reservo memoria para el data */
-	aux.data = malloc(aux.dataSize);
-	memmove(aux.data, data+pos, aux.dataSize );
+	if( aux.dataSize > 0 ) {
+		aux.data = malloc(aux.dataSize);
+		memmove(aux.data, data+pos, aux.dataSize );
+	}
+	else {
+		aux.data = NULL;
+	}
 	
 	return aux;
 }

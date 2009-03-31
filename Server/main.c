@@ -17,7 +17,7 @@
 int
 main(void)
 {
-    int status;
+  /*  int status;
     printf("%d\n",InitTransport());
     status = InitApplication();
     if(status != ERROR)
@@ -28,6 +28,23 @@ main(void)
     {
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
     }
-          
+   */
+	
+	InitApplication();
+	
+	session_t aux;
+	byte *data;
+	
+	strcpy(aux.senderID,"USER1");
+	strcpy(aux.msg, "Gaston Ponti");
+	aux.opCode = CL_NEW_USR;
+	aux.pid = 133;
+	aux.dataSize = 0;
+	aux.data = NULL;
+	
+	
+	data = MakeSessionData(aux);
+	ProcessRequest(&data, 133);
+		
     return 0;
 }	
