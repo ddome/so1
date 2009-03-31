@@ -5,6 +5,7 @@
 #include "../sqliteADT/sqliteADT.h"
 #include "../Lib/defines.h"
 #include "../Lib/genlib.h"
+#include "../Lib/pqADT.h"
 
 int InitBD(void);
 
@@ -27,5 +28,7 @@ int NewLogEntry(const char * userName,const char * action);
 int GetTopList(const char * userName,char ***out);
 
 int GetUserOnlineList( char *** out );
+
+int FreeDatabase(void);
 
 #endif

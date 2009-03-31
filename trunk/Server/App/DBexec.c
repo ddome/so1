@@ -50,6 +50,7 @@ GetListDirs(const char * userName, string **out)
 {
     pqADT queue;
     int i=0;
+    char * aux;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
@@ -66,7 +67,9 @@ GetListDirs(const char * userName, string **out)
     }
     while(!PQIsEmpty(queue))
     {
-	(*out)[i]=Dequeue(queue);
+	aux=Dequeue(queue);
+	(*out)[i]=CreateString(aux);
+	free(aux);
 	i++;
     }
     FreePQ(&queue);
@@ -140,6 +143,7 @@ GetTopList(const char * userName,char ***out)
 {
     pqADT queue;
     int i=0;
+    char * aux;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
@@ -158,7 +162,9 @@ GetTopList(const char * userName,char ***out)
     }
     while(!PQIsEmpty(queue))
     {
-	(*out)[i]=Dequeue(queue);
+	aux=Dequeue(queue);
+	(*out)[i]=CreateString(aux);
+	free(aux);
 	i++;
     }
     FreePQ(&queue);
@@ -171,6 +177,7 @@ GetUserOnlineList( char *** out )
 {
     pqADT queue;
     int i=0;
+    char * aux;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
@@ -187,11 +194,20 @@ GetUserOnlineList( char *** out )
     }
     while(!PQIsEmpty(queue))
     {
-	(*out)[i]=(char*)Dequeue(queue);
+	aux=Dequeue(queue);
+	(*out)[i]=CreateString(aux);
+	free(aux);
 	i++;
     }
     FreePQ(&queue);
     
+    return OK;
+}
+
+int
+FreeDatabase(void)
+{
+    FreeSqliteADT(db);
     return OK;
 }
 
