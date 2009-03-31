@@ -4,7 +4,8 @@ CREATE TABLE users
     user        VARCHAR(100) NOT NULL,
     online	boolean NOT NULL,
     pid		INTEGER NOT NULL,
-    UNIQUE(user)
+    UNIQUE(user),
+    UNIQUE(pid)
 );
 
 CREATE TABLE dirs

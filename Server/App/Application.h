@@ -46,7 +46,7 @@ int ListDirs( const string userName,string **out);
  Lista los usuarios registrados en el servidor.
  Devuelve la cantidad de usuarios en la lista.
  ----------------------------------------------------------------*/
-int UserList( string **out ); // HACELAAAA!!!!!
+int UserList( string **out );
 
 /*---------------------------------------------------------------- 
  Devuelve la cantidad de acciones realizadas por los usuarios o 
@@ -54,14 +54,14 @@ int UserList( string **out ); // HACELAAAA!!!!!
  Reserva en out las 10 últimas acciones de los usuarios, incluido
  el nombre de estos.
  ----------------------------------------------------------------*/
-int TopList(string *out);
+int TopList(string **out);
 
 /*---------------------------------------------------------------- 
  Devuelve la cantidad de acciones realizadas por los usuarios o 
  ERROR en caso de algun error.
  Reserva en out las 10 últimas acciones del usuario userID
  ----------------------------------------------------------------*/
-int TopListUser(string userName, string *out);
+int TopListUser(string userName, string **out);
 
 /*---------------------------------------------------------------- 
  Recibe un fileT y devuelve un arreglo de bytes con el contenido
