@@ -30,8 +30,8 @@ NewFileT( string dir, string fName )
 	fileT aux;
 	string path;
 	
-	aux.path = CopyString(dir);
-	aux.fName = CopyString(fName);
+	strcpy(aux.path,dir);
+	strcpy(aux.fName,fName);
 	
 	path = GetPath(aux);
     stat(path,&(aux.sb));
@@ -426,6 +426,9 @@ DirPathList(string dir, string **dirList)
 									
 	return ndirs;
 }
+	
+
+	
 	
 	
 	

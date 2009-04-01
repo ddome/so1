@@ -28,8 +28,8 @@
 
 typedef struct {
 	int idFile;
-	string path;
-	string fName;
+	char path[MPATHL];
+	char fName[MFILEL];
 	struct stat sb; //Guardo el estado inicial del archivos
 } fileT;
 

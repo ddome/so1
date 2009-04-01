@@ -161,21 +161,19 @@ CallDirRem(session_t data)
 	return DelDir(userName,dir);
 }
 
-/* Client -> Server: FileAdd */
+/* Client -> Server: FileAdd/FileMod/FileRem */
 
 void
-GetFileData(session_t data, string *fileName, string *path, byte *fileData)
+GetFileData(session_t data,fileT *filePtr, byte *fileData)
 {
 	int pos;
 	
 	pos=0;
-	memmove(fileName, data.data + pos, MFILEL );
-	pos+=MFILEL;
-	memmove(path, data.data + pos, MPATHL );
-	pos+=MPATHL;
+	memmove(filePtr, data.data + pos, sizeof(fileT) );
 	
-	if( (data.dataSize - MFILEL - MPATHL) > 0 && fileData != NULL ) {
-		memmove(fileData, data.data + pos, (data.dataSize - MFILEL - MPATHL) );	
+	pos += sizeof(fileT);
+	if( (data.dataSize - sizeof(fileT) ) > 0 && fileData != NULL ) {
+		memmove(fileData, data.data + pos, (data.dataSize - sizeof(fileT)) );	
 	}	
 }	
 
@@ -183,14 +181,11 @@ int
 CallFileAdd(session_t data)
 {
 	fileT file;
-	string fileName;
-	string path;
 	byte *fileData;
 	string user;  // Usado solo para agregar a los Logs
 	
 	user = data.msg;
-	GetFileData(data,&fileName,&path,fileData);	
-	file = NewFileT(fileName,path);
+	GetFileData(data,&file,fileData);	
 	
 	return FileAdd(file,fileData);	
 }	
@@ -199,14 +194,11 @@ int
 CallFileMod(session_t data)
 {
 	fileT file;
-	string fileName;
-	string path;
 	byte *fileData;
 	string user; // Usado solo para agregar a los Logs
 	
 	user = data.msg;
-	GetFileData(data,&fileName,&path,fileData);	
-	file = NewFileT(fileName,path);
+	GetFileData(data,&file,fileData);	
 	
 	/*Lo saco y vuelvo a insertar */
 	FileRem(file);	
@@ -217,13 +209,10 @@ int
 CallFileRem(session_t data)
 {
 	fileT file;
-	string fileName;
-	string path;
 	string user; //Usado solo para agregar a los Logs
 	
 	user = data.msg;	
-	GetFileData(data,&fileName,&path,NULL);	
-	file = NewFileT(fileName,path);
+	GetFileData(data,&file,NULL);	
 	
 	return FileRem(file);	
 }
