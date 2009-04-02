@@ -110,6 +110,13 @@ SetClientOffline(const char * userName)
 }
 
 int
+SetAllClientsOffline(void)
+{
+    AllOffline(db);
+    return OK;
+}
+
+int
 GetUserStatus(const char * nameName)
 {
     int boolRet;
@@ -147,13 +154,15 @@ UnRegisterDirFromUser(const char * pathName,const char * userName)
 }
 
 int
-NewLogEntry(const char * userName,const char * action)
+NewLogEntry(const char * userName,const char * fileName,const char * action)
 {
-    int boolRet;
+    int boolRet,ret;
     IsUserOnline(db,userName,&boolRet);
     if(boolRet==0)
 	return ERROR;
-    LogAction(db,userName,action);
+    ret=AddLog(sqliteADT db,userName,fileName ,action);
+    if(ret!=DB_SUCCESS)
+	return ERROR;
     return OK;
 }
 

@@ -939,7 +939,7 @@ GetLast10(sqliteADT db, pqADT queue)
     sqlite3_stmt *statement;
     int ret;
     char logName[MAX_LOG_LEN] = {0};
-    char *sqlSelect =  "SELECT timestamp || ' ' || 'Usuario: ' || user || ' ' || 'Accion: ' || action FROM logs LIMIT 10;";
+    char *sqlSelect =   "SELECT timestamp || ' ' || 'Usuario: ' || user || ' ' || 'Accion: ' || action || ' '||'Archivo: ' || fileP FROM logs LIMIT 10;";
 
     if ( db == NULL || queue == NULL )
         return DB_INVALID_ARG;
@@ -971,13 +971,13 @@ GetLast10(sqliteADT db, pqADT queue)
 
 
 DB_STAT
-GetLast10User(sqliteADT db, const char *userName,pqADT queue)
+GetLast10User(sqliteADT db, pqADT queue, char *userName)
 {
     sqlite3_stmt *statement;
     int ret;
     char logName[MAX_LOG_LEN] = {0};
     char *userE = NULL;
-    char *sqlSelect =   "SELECT timestamp || ' ' || 'Usuario: ' || user || ' ' || 'Accion: ' || action FROM logs WHERE user = '%s' LIMIT 10;";
+    char *sqlSelect = "SELECT timestamp || ' ' || 'Usuario: ' || user || ' ' || 'Accion: ' || action || ' '||'Archivo: ' || fileP FROM logs WHERE user = '%s' LIMIT 10;";
 
     if ( db == NULL || queue == NULL || userName == NULL)
         return DB_INVALID_ARG;
@@ -1013,15 +1013,15 @@ GetLast10User(sqliteADT db, const char *userName,pqADT queue)
 
 
 DB_STAT
-LogAction(sqliteADT db, const char * userName, const char *action)
+AddLog(sqliteADT db, const char *userName,const char * fileName ,const char *action)
 {
     sqlite3_stmt *statement;
     int ret;
-    char *userN, *actionN;
+    char *userN, *actionN,*fileN;
     char *sqlSelect = "INSERT INTO logs VALUES ((select user from users where "
-                      "user = '%s'), '%s', DATETIME('NOW'))";
+                      "user = '%s'), '%s','%s' ,DATETIME('NOW'))";
 
-    if (db == NULL || userName == NULL || action == NULL)
+    if (db == NULL || userName == NULL || action == NULL || fileName==NULL)
         return DB_INVALID_ARG;
 
     /*TODO: In the next lines inside the if it should free
@@ -1032,11 +1032,15 @@ LogAction(sqliteADT db, const char * userName, const char *action)
     if ( ( actionN = EscapeString( db, action ) ) == NULL )
         return DB_NO_MEMORY;
 
+    if ( ( fileN = EscapeString( db, fileName ) ) == NULL )
+        return DB_NO_MEMORY;
 
-    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 2, userN, actionN);
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 3, userN, actionN, fileN);
 
     free(userN);
     free(actionN);
+    free(fileN);
 
     switch (ret)
     {

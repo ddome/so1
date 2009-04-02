@@ -19,6 +19,8 @@ int SetClientOnline(const char * userName);
 
 int SetClientOffline(const char * userName);
 
+int SetAllClientsOffline(void);
+
 int GetUserStatus(const char * nameName);
 
 int NewDir(const char * pathName);
@@ -27,7 +29,7 @@ int RegisterDirToUser(const char * pathName,const char * userName);
 
 int UnRegisterDirFromUser(const char * pathName,const char * userName);
 
-int NewLogEntry(const char * userName,const char * action);
+int NewLogEntry(const char * userName,const char * fileName,const char * action);
 
 int GetTopList(const char * userName,char ***out);
 
