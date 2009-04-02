@@ -67,7 +67,7 @@ int TopList(void);
  ERROR en caso de algun error.
  Reserva en out las 10 últimas acciones del usuario userID
  ----------------------------------------------------------------*/
-int TopListUser(string userName, string **out);
+int TopListUser(string userName);
 
 /*---------------------------------------------------------------- 
  Recibe un fileT y devuelve un arreglo de bytes con el contenido
