@@ -72,12 +72,26 @@ TopList(void)
 }
 
 int
-TopListUser(string userName, string **out)
+TopListUser(string userName)
 {
     int ret;
-    ret=GetTopList(userName,out);
+    int i=0;
+    char ** out;
+    char * aux;
+    ret=GetTopList(userName,&out);
     if(ret==ERROR)
 	return ERROR;
+    
+    printf("Las ultimas diez acciones realizadas fueron:\n");
+    printf("============================================\n");
+    while( out[i] != NULL )
+    {
+	aux=out[i];
+	printf("%s\n",aux);
+	free(aux);
+	i++;
+    }
+    free(out);
     
     return OK;
 }
