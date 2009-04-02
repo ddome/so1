@@ -2,8 +2,10 @@
 *  Project Includes
 */
 
-#include "Session.h"
+
+#include "../App/Server.h"
 #include "CallApp.h"
+#include "Session.h"
 
 /*
 *  Types
@@ -42,11 +44,11 @@ int
 ProcessRequest(byte ** data, pid_t requestPid)
 {
 	session_t pack;
-	int ret;
-			
-	pack  = GetSessionData(*data);
-    ret   = ProcessCall( &pack );
+	process_t ret;
 	
+	pack  = GetSessionData(*data);
+    ret.opCode  = ProcessCall( &pack );
+	ret.pid = pack.pid;
 	free(*data);
 	*data = MakeSessionData(pack);
 
@@ -58,7 +60,7 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	else
 	    printf("Rock and roll neneeee!\n");*/
 	
-	return ret;
+	return ret.opCode;
 }
 
 void
