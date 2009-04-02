@@ -7,6 +7,9 @@
  *
  */
 
+#ifndef _CALL_APP_
+#define _CALL_APP_
+
 int CallNewClient(session_t *dataPtr);
 
 int CallUserList(session_t *dataPtr);
@@ -18,3 +21,7 @@ int CallFileAdd(session_t data);
 int CallFileMod(session_t data);
 
 int CallFileRem(session_t data);
+
+int CallDirReg(session_t data);
+
+#endif

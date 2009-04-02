@@ -93,10 +93,6 @@ ProcessCall( session_t *data )
 		case CL_NEW_USR:
 			return CallNewClient(data);
 			break;
-			
-		case PR_USR_LST:
-			return CallUserList(data);
-			break;
 
 		case CL_DIR_REM:			
 			return CallDirRem(*data);
@@ -112,9 +108,18 @@ ProcessCall( session_t *data )
 			
 		case CL_FIL_MOD:			
 			return CallFileAdd(*data);
-			break;		
+			break;
 			
-			/*		case PR_ACT_LST:			
+		case PR_DIR_REG:
+			return CallDirReg(*data);
+		    break;	
+			
+		case PR_USR_LST:
+			return CallUserList(data);
+			break;	
+			
+		/*	 		 
+			 case PR_ACT_LST:			
 			 return CallTopList(data);
 			 break;
 			 
@@ -129,10 +134,11 @@ ProcessCall( session_t *data )
 			 case CL_DIR_REQ:			
 			 return CallDirReq(data);
 			 break;
-			 
-			 case CL_DIR_LST:			
-			 return CallDirList(data);
-			 break;
+		 
+			case CL_DIR_LST:			
+			return CallDirList(data);
+			break;
+		 
 			 
 			 case CL_EXT:			
 			 return __SHUT_DOWN__

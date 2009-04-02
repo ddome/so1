@@ -30,8 +30,8 @@ NewFileT( string dir, string fName )
 	fileT aux;
 	string path;
 	
-	aux.path = CopyString(dir);
-	aux.fName = CopyString(fName);
+	strcpy(aux.path,dir);
+	strcpy(aux.fName,fName);
 	
 	path = GetPath(aux);
     stat(path,&(aux.sb));
@@ -223,8 +223,8 @@ CopyDir( string srcDir, string destDir  )
 	}
 	
 	mkdir(destDir,0777);
-	while( d = readdir(sptr) ) {
-		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0) {
+	while( (d = readdir(sptr)) ) {
+		if( (d->d_ino != 0) && (strcmp(d->d_name,"..") != 0) && (strcmp(d->d_name, ".") != 0) ) {
 			if( d->d_type == FILE_T ) {
 				aux1 = Concat( aux11 = Concat(srcDir,"/"),d->d_name);
 				aux2 = Concat( aux22 = Concat(destDir,"/"),d->d_name);
@@ -344,7 +344,6 @@ int
 DirFilesList(string dir, fileT **files)
 {
 	int nfiles;
-	int i;
 	int aux=0;
 	
 	nfiles  = DirFilesNumber(dir);
@@ -354,24 +353,83 @@ DirFilesList(string dir, fileT **files)
 									
 	return nfiles;
 }
-	
-int 
-CreateDir( string dirName )
+
+static int
+pDirPathList( string dir, string * dirList, int *pos )
 {
-	mkdir(dirName,0777);
-	return OK;
+	DIR *dptr;
+	int ndirs;
+	struct dirent *d;
+	string aux1;
+	string aux2;
+	
+	if ( (dptr = opendir(dir)) == NULL ) {
+		return ERROR;
+	}
+	
+	ndirs = 0;
+	while( (d=readdir(dptr)) ) {
+		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0)  {
+			if( d->d_type != FILE_T ) {	
+				aux1 = Concat( aux2 = Concat(dir,"/"),d->d_name);
+				printf("%s\n",aux1);
+				dirList[*pos] = CreateString(aux1);
+				*pos = *pos + 1;
+				ndirs += pDirPathList( aux1, dirList, pos );
+				free(aux1);
+			}
+		}	
+	}
+	
+	return ndirs;
 }
 
-boolean
-DirExists( string dirName )
+int
+DirsNumber( string dir )
 {
-	if( chdir(dirName) == 0 ) {
-		return TRUE;
+	DIR *dptr;
+	int ndirs;
+	struct dirent *d;
+	string aux1;
+	string aux2;
+	
+	if ( (dptr = opendir(dir)) == NULL ) {
+		return ERROR;
 	}
-	else {
-		return FALSE;
+	
+	ndirs = 0;
+	while( (d=readdir(dptr)) ) {
+		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0)  {
+			if( d->d_type != FILE_T ) {
+				aux1 = Concat( aux2 = Concat(dir,"/"),d->d_name);
+				ndirs += (DirFilesNumber( aux1 ) + 1);
+				free(aux1);
+				free(aux2);
+			}
+		}	
 	}
-}	
+	
+	return ndirs;
+}
+
+	
+int
+DirPathList(string dir, string **dirList)
+{
+	int ndirs;
+	int aux=0;
+	
+	ndirs   = DirsNumber(dir);
+	*dirList = malloc(sizeof(string)*ndirs);
+	
+	pDirPathList(dir,*dirList,&aux);		
+									
+	return ndirs;
+}
+	
+
+	
+	
 	
 	
 	

@@ -12,6 +12,7 @@
 
 #define MFILE 15
 #define MPATHL 100 //maximo tamanio del path de un file
+#define MFILEL 100
 #define SLEEP_TIME 10
 
 
@@ -20,14 +21,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <unistd.h>
 #include "../Lib/defines.h"
 #include "../Lib/genlib.h"
 
 
 typedef struct {
 	int idFile;
-	string path;
-	string fName;
+	char path[MPATHL];
+	char fName[MFILEL];
 	struct stat sb; //Guardo el estado inicial del archivos
 } fileT;
 
@@ -70,9 +72,5 @@ FILE *OpenReadFile( fileT file );
 int DirFilesNumber( string dir );
 
 int DirFilesList(string dir, fileT **files);
-
-int CreateDir( string dirName );
-
-boolean DirExists( string dirName );
 
 #endif

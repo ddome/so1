@@ -10,7 +10,7 @@
 
 #include "Session.h"
 #include "CallApp.h"
-#include "fileHandler.h"
+#include "../App/fileHandler.h"
 
 /* Funciones generales */
 
@@ -79,61 +79,6 @@ CallNewClient(session_t *dataPtr)
 	
 	ret=NewClient((*dataPtr).msg,(*dataPtr).pid);	
 	return (MakeNewClientRetPack(ret, dataPtr));
-}	
-
-/* Prompt -> Server: UserList */
-
-static byte *
-MakeMemBlockUsrList(string *usrLst, int nusr)
-{
-	byte *memblock;
-	int pos;
-	int i;
-	
-	/* Almaceno un bloque continuo de memoria para guardar todos los arreglos */
-	if( (memblock = malloc(sizeof(string) * (MAX_USR_NAME+1) * nusr )) == NULL ) {
-		return NULL;
-	}
-	
-	/*Copio uno por uno los strings, de manera continua sobre el bloque */
-	pos = 0;
-	for( i=0; i < nusr; i++ ) {
-		memmove(memblock + pos, usrLst[i], strlen(usrLst[i])+1 );
-		pos += MAX_USR_NAME+1;
-	}
-	
-	return memblock;
-}
-
-static int
-MakeUserListPack(string *usrLst, int nusr, session_t *dataPtr)
-{
-	session_t aux;
-	int dataSize;
-	byte *data;
-	
-	dataSize = nusr*sizeof(string)*(MAX_USR_NAME+1);
-	if(  (data = MakeMemBlockUsrList(usrLst, nusr)) == NULL ) {
-		return ERROR;
-	}
-	
-	aux = FillPack( NULL, NULL, (*dataPtr).opCode, 0, dataSize, data );
-	*dataPtr = aux;	
-	
-	return OK;
-}
-
-int 
-CallUserList(session_t *dataPtr)
-{
-	string *usrLst;
-	int nusr;
-	
-	if( (nusr=UserList(&usrLst)) == ERROR ) {
-		return ERROR;
-	}
-	
-	return MakeUserListPack(usrLst, nusr, dataPtr);
 }	
 
 /* Client -> Server: DirRem */	
@@ -217,8 +162,74 @@ CallFileRem(session_t data)
 	return FileRem(file);	
 }
 
+/* Prompt -> Server: UserList */
+
+static byte *
+MakeMemBlockUsrList(string *usrLst, int nusr)
+{
+	byte *memblock;
+	int pos;
+	int i;
+	
+	/* Almaceno un bloque continuo de memoria para guardar todos los arreglos */
+	if( (memblock = malloc(sizeof(string) * (MAX_USR_NAME+1) * nusr )) == NULL ) {
+		return NULL;
+	}
+	
+	/*Copio uno por uno los strings, de manera continua sobre el bloque */
+	pos = 0;
+	for( i=0; i < nusr; i++ ) {
+		memmove(memblock + pos, usrLst[i], strlen(usrLst[i])+1 );
+		pos += MAX_USR_NAME+1;
+	}
+	
+	return memblock;
+}
+
+static int
+MakeUserListPack(string *usrLst, int nusr, session_t *dataPtr)
+{
+	session_t aux;
+	int dataSize;
+	byte *data;
+	
+	dataSize = nusr*sizeof(string)*(MAX_USR_NAME+1);
+	if(  (data = MakeMemBlockUsrList(usrLst, nusr)) == NULL ) {
+		return ERROR;
+	}
+	
+	aux = FillPack( NULL, NULL, (*dataPtr).opCode, 0, dataSize, data );
+	*dataPtr = aux;	
+	
+	return OK;
+}
+
+int 
+CallUserList(session_t *dataPtr)
+{
+	string *usrLst;
+	int nusr;
+	
+	if( (nusr=UserList(&usrLst)) == ERROR ) {
+		return ERROR;
+	}
+	
+	return MakeUserListPack(usrLst, nusr, dataPtr);
+}	
+
+/* Prompt -> Server: Registrar Directorio */
+
+int 
+CallDirReg(session_t data)
+{
+	
+	
+}		
+
+
 
 /*
+
  static int CallTopList(session_t data);
  static int CallTopListUser(session_t data);
  static int CallDirReq(session_t data);
