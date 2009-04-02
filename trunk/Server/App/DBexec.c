@@ -216,7 +216,6 @@ GetUserOnlineList( char *** out )
     }
     
     ShowOnline(db,queue);
-    
     if( ( (*out)=calloc(QueueDepth(queue)+1,sizeof(char*)) )==NULL )
     {
 	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");

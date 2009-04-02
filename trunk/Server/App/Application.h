@@ -111,7 +111,7 @@ int DelDir( string userName, string dir );
 /*---------------------------------------------------------------- 
  Remueve al un usuario de la lista de usuarios conectados.
  ----------------------------------------------------------------*/
-int DirconnectUser(string userName);
+int DisconnectUser(string userName);
 
 
 /*---------------------------------------------------------------- 
