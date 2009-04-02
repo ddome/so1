@@ -160,7 +160,7 @@ NewLogEntry(const char * userName,const char * fileName,const char * action)
     IsUserOnline(db,userName,&boolRet);
     if(boolRet==0)
 	return ERROR;
-    ret=AddLog(sqliteADT db,userName,fileName ,action);
+    ret=AddLog(db,userName,fileName ,action);
     if(ret!=DB_SUCCESS)
 	return ERROR;
     return OK;
@@ -181,7 +181,7 @@ GetTopList(const char * userName,char ***out)
     if(userName==NULL)
 	GetLast10(db,queue);
     else
-	GetLast10User(db,userName,queue);
+	GetLast10User(db,queue,userName);
     
     if( (*out=calloc(QueueDepth(queue)+1,sizeof(char*)))==NULL )
     {

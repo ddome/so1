@@ -971,7 +971,7 @@ GetLast10(sqliteADT db, pqADT queue)
 
 
 DB_STAT
-GetLast10User(sqliteADT db, pqADT queue, char *userName)
+GetLast10User(sqliteADT db, pqADT queue,const char *userName)
 {
     sqlite3_stmt *statement;
     int ret;

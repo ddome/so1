@@ -39,13 +39,13 @@ int NewClient(string name,int pid);
  Reserva en 'out' cada uno de los directorios registrados en el
  server. El usuario debe encargarse de liberar out.
 ----------------------------------------------------------------*/
-int ListDirs( const string userName,string **out);
+int ListDirs( const string userName);
 
 /*---------------------------------------------------------------- 
  Lista los usuarios registrados en el servidor.
  Devuelve la cantidad de usuarios en la lista.
  ----------------------------------------------------------------*/
-int UserList( string **out );
+int UserList( void );
 
 /*---------------------------------------------------------------
  Almacena que tipo de accion realizo un usuario sobre un archivo
@@ -60,7 +60,7 @@ int LogAction(const char * userName,const char * fileName,const char * action);
  Reserva en out las 10 últimas acciones de los usuarios, incluido
  el nombre de estos.
  ----------------------------------------------------------------*/
-int TopList(string **out);
+int TopList(void);
 
 /*---------------------------------------------------------------- 
  Devuelve la cantidad de acciones realizadas por los usuarios o 
