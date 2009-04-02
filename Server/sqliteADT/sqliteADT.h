@@ -111,7 +111,7 @@ DB_STAT GetLast10(sqliteADT db, pqADT queue);
 
 DB_STAT GetLast10User(sqliteADT db, const char *userName,pqADT queue);
 
-DB_STAT LogAction(sqliteADT db, const char * userName, const char *action);
+DB_STAT AddLog(sqliteADT db, const char *userName,const char * fileName ,const char *action);
 
 
 

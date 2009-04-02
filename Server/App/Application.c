@@ -24,7 +24,14 @@ ListDirs( string userName,string **out)
     GetListDirs(userName,out);
     
     return OK;
-}	
+}
+
+int
+LogAction(const char * userName,const char * fileName,const char * action)
+{
+    return NewLogEntry(userName,fileName,action);
+}
+
 
 int
 TopList(string **out)

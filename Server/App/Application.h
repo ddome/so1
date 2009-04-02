@@ -47,6 +47,13 @@ int ListDirs( const string userName,string **out);
  ----------------------------------------------------------------*/
 int UserList( string **out );
 
+/*---------------------------------------------------------------
+ Almacena que tipo de accion realizo un usuario sobre un archivo
+ determinado. Retorna ERROR en caso de algun error. OK en caso
+ contrario.
+---------------------------------------------------------------*/
+int LogAction(const char * userName,const char * fileName,const char * action);
+
 /*---------------------------------------------------------------- 
  Devuelve la cantidad de acciones realizadas por los usuarios o 
  ERROR en caso de algun error.
@@ -102,7 +109,16 @@ int ReqDir( string userName, string dir, fileT **files, byte ***databuffer );
  ----------------------------------------------------------------*/
 int DelDir( string userName, string dir );
 
+/*---------------------------------------------------------------- 
+ Remueve al un usuario de la lista de usuarios conectados.
+ ----------------------------------------------------------------*/
 int DirconnectUser(string userName);
+
+
+/*---------------------------------------------------------------- 
+ Remueve a todos los usuarios de la lista de usuarios conectados.
+ ----------------------------------------------------------------*/
+int DisconnectAllUsers(void);
 
 /*---------------------------------------------------------------- 
  Termina con la aplicacion. Libera memoria y cierra archivos en uso
