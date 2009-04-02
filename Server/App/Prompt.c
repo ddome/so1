@@ -13,6 +13,8 @@
 #include "../Lib/scannerADT.h"
 #include "../Lib/tree.h"
 #include "../Session/Session.h"
+#include "../Application.h"
+
 
 #define TRUE 1
 #define FALSE 0
@@ -50,7 +52,7 @@ static char * ReadLine( FILE * inputFile )
 static int RegisterDirectory(scannerADT scanner, void * data)
 {
     int retValue = OK;
-    
+    	
     return retValue;    
 }
 

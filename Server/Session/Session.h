@@ -14,7 +14,6 @@
 #include "../Lib/defines.h"
 #include "../App/fileHandler.h"
 #include "../App/Application.h"
-#include "../App/Server.h"
 #include "../Transport/Transport.h"
 #include "../Transport/ipcInterface.h"
 
