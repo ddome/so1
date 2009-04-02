@@ -65,6 +65,9 @@ void ReadDirSubServerRequests(key_t key);
 
 int StartDirSubServer(pid_t pid, char msg[MAX_MSG]);
 
+int StartDemandSubServer(pid_t pid, char msg[MAX_MSG]);
+
 int SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
 
 #endif
+

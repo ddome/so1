@@ -139,6 +139,6 @@ Prompt(void)
         free(strAux);
     }
     FreeTree(tree);
-    GoodBye();
+  /*  GoodBye();*/
 }
 

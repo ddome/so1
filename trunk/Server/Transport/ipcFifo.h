@@ -34,3 +34,4 @@ pid_t ReadIPC(void * data);
 void CloseIPC(void);
 
 #endif
+

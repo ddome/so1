@@ -12,3 +12,4 @@ InitChildProcess(pid_t pid)
 {
     InitIPC(pid);
 }
+
