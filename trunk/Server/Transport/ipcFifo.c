@@ -86,28 +86,40 @@ WriteIPC(void * data, size_t size)
     return OK;
 }
 
-/*habria que meter en el void * un header indicando el numero de paquete
-y hacer lecturas mientras haya*/
-pid_t
-ReadIPC(void * data)
+byte ** 
+ReadIPC(void)
 {
-    int status = OK;
-    pid_t pid=-1;
-    headerIPC_t header;
-    status = read(readFifo_FD, &header, sizeof(headerIPC_t));
-    if(status>0)
-    {
-	printf("\n\npaquete numero: %d\n", header.nPacket);
-	pid=header.pid;
-        status=read(readFifo_FD, data, header.size);
-	if(status > 0)
-	{
-	    printf("recibidos: %d\n", recibidos);
-	    recibidos++;
-	}
-    }
+  int status = OK;
+  headerIPC_t header;
+  byte * data;
+  status = read(readFifo_FD, &header, sizeof(headerIPC_t));
+  if(status > 0)
+  {
+    printf("\n\npaquete numero: %d\n", header.nPacket);
 
-    return (status <= 0) ? ERROR :pid;
+    if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
+    {
+      return NULL;
+    }   
+    
+    status=read(readFifo_FD, data, header.size);
+    if(status > 0)
+    {
+      status = OK;
+      printf("recibidos: %d\n", recibidos);
+      recibidos++;
+    }
+    else
+    {
+      status = ERROR;
+    }
+  }
+  else
+  {
+    status = ERROR;
+  }
+
+  return status == ERROR ? NULL: &data ;
 }
 
 void

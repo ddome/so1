@@ -64,7 +64,7 @@ typedef struct {
 
 int InitCommunication(pid_t pid);
 
-pid_t GetRequest(void * data);
+byte ** GetRequest(void);
 
 int ProcessRequest(byte ** data, pid_t requestPid);
 

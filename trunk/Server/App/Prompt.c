@@ -13,7 +13,7 @@
 #include "../Lib/scannerADT.h"
 #include "../Lib/tree.h"
 #include "../Session/Session.h"
-#include "../Application.h"
+#include "Application.h"
 
 
 #define TRUE 1

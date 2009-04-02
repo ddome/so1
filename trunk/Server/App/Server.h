@@ -57,7 +57,7 @@ typedef struct
 
 int StartListening(void);
 
-pid_t ReadRequest(void* data);
+byte ** ReadRequest(void);
 
 int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
 

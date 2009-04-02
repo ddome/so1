@@ -19,8 +19,9 @@ int
 main(void)
 {
    
-	/*int status;
+	int status;
     status = InitApplication();
+    status = InitTransport();
     if(status != ERROR)
     {
 		status = StartListening();
@@ -29,8 +30,8 @@ main(void)
     {
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
     }
-	 */
-	InitApplication();
+	 
+	/*InitApplication();
 	
 	session_t aux;
 	fileT filein,fileout;
@@ -57,7 +58,7 @@ main(void)
 	memmove(aux.data+pos, fileData, GetSize(fileout));
 
 	sessionData = MakeSessionData(aux);
-	ProcessRequest(&sessionData, 31);
+	ProcessRequest(&sessionData, 31);*/
 
     return 0;
 }	

@@ -16,8 +16,7 @@ int
 StartListening(void)
 {
     int status;
-    pid_t pid;
-    void * data;
+    byte ** data;
     status = InitCommunication(__DEFAULT_PID__);
     if(status == ERROR)
     {
@@ -26,28 +25,36 @@ StartListening(void)
     status = status && SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);
     while(status != ERROR && status != __SHUT_DOWN__)
     {
-        pid = ReadRequest(&data);
-        /* se manda a que sea procesado en la capa de sesion 
-        */
-        status = ProcessRequest(data, pid);
+        data = ReadRequest();
+        if(data != NULL)
+        {
+            /* se manda a que sea procesado en la capa de sesion 
+            */
+            status = ProcessRequest(data, 0);
+        }
+        else
+        {
+            status = ERROR;
+        }
     }
     return status;
 }
 
-pid_t
-ReadRequest(void* data)
+byte **
+ReadRequest(void)
 {
+    byte ** data;
     int requestExists = FALSE;
-    pid_t pid;
+    int status;
     while(!requestExists)
     {
-        if( (pid = GetRequest(data)) != -1)
+        if( (data = GetRequest()) != NULL)
         {
             requestExists = TRUE;
         }
     }
 	
-    return pid;
+    return data;
 }
 
 int
@@ -79,20 +86,20 @@ int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
     int returnValue = OK;
     switch(opCode)
     {
-	case __SPAWN_PROMPT__:
-	    Prompt();
-	    break;
-	case __SPAWN_DIR__:
-	    returnValue = StartDirSubServer(pid, msg);
-	    break;
-	case __SPAWN_DEMAND__:
-        returnValue = StartDemandSubServer(pid, msg);
-	    break;
-	/* Si no era un codigo de operacion valido, se devuelve error
-	*/
-	default:
-	    returnValue = ERROR;
-	    break;
+	    case __SPAWN_PROMPT__:
+	        Prompt();
+	        break;
+	    case __SPAWN_DIR__:
+	        returnValue = StartDirSubServer(pid, msg);
+	        break;
+	    case __SPAWN_DEMAND__:
+            returnValue = StartDemandSubServer(pid, msg);
+	        break;
+	    /* Si no era un codigo de operacion valido, se devuelve error
+	    */
+	    default:
+	        returnValue = ERROR;
+	        break;
     }
     
     return returnValue;
@@ -119,7 +126,7 @@ int StartDemandSubServer(pid_t pid, char msg[MAX_MSG])
 
 void ReadDirSubServerRequests(key_t key)
 {
-    void * data;
+   /* void * data;
     pid_t pid;
     int exit=FALSE;
     while(!exit)
@@ -127,7 +134,7 @@ void ReadDirSubServerRequests(key_t key)
         pid=ReadRequest(data);
         ProcessRequest(data, pid);
 
-    }
+    }*/
 }
 
 

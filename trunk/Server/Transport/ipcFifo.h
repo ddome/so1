@@ -29,7 +29,7 @@ int InitIPC(key_t key);
 
 int WriteIPC(void * data, size_t size);
 
-pid_t ReadIPC(void * data);
+byte ** ReadIPC(void);
 
 void CloseIPC(void);
 
