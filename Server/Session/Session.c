@@ -38,15 +38,16 @@ pid_t GetRequest(void * data)
     return ReadIPC(data);
 }
 
-int
+process_t
 ProcessRequest(byte ** data, pid_t requestPid)
 {
 	session_t pack;
-	int ret;
-	
-		
+	process_t ret;
+			
 	pack  = GetSessionData(*data);
-    ret = ProcessCall( &pack );
+    ret.opCode = ProcessCall( &pack );
+	ret.pid = pack.pid;
+	
 	
 	free(*data);
 	*data = MakeSessionData(pack);
@@ -73,10 +74,8 @@ void ShutDown(void)
 {
     
 }
-
-
+	
 /* Static Functions */
-
 
 static int
 GetDataSize( session_t data )
@@ -109,28 +108,12 @@ ProcessCall( session_t *data )
 		case CL_FIL_MOD:			
 			return CallFileAdd(*data);
 			break;
-			
-		case PR_DIR_REG:
-			return CallDirReg(*data);
-		    break;	
-			
-		case PR_USR_LST:
-			return CallUserList(data);
+		
+		case PR_EXT:
+			return __SHUT_DOWN__;
 			break;	
 			
-		/*	 		 
-			 case PR_ACT_LST:			
-			 return CallTopList(data);
-			 break;
-			 
-			 case PR_ACT_USR:
-			 return CallTopListUser(data);
-			 break;	
-			 
-			 case PR_EXT:
-			 return __SHUT_DOWN__;
-			 break;
-			 
+		/*	 		 			 
 			 case CL_DIR_REQ:			
 			 return CallDirReq(data);
 			 break;
@@ -143,7 +126,8 @@ ProcessCall( session_t *data )
 			 case CL_EXT:			
 			 return __SHUT_DOWN__
 			 break;
-			 */			
+			 */	
+			
 		default:
 			return ERROR;
 	}	
