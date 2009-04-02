@@ -38,16 +38,14 @@ pid_t GetRequest(void * data)
     return ReadIPC(data);
 }
 
-process_t
+int
 ProcessRequest(byte ** data, pid_t requestPid)
 {
 	session_t pack;
-	process_t ret;
+	int ret;
 			
 	pack  = GetSessionData(*data);
-    ret.opCode = ProcessCall( &pack );
-	ret.pid = pack.pid;
-	
+    ret   = ProcessCall( &pack );
 	
 	free(*data);
 	*data = MakeSessionData(pack);
@@ -59,7 +57,6 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	}
 	else
 	    printf("Rock and roll neneeee!\n");*/
-	
 	
 	return ret;
 }
