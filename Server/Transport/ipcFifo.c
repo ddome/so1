@@ -116,3 +116,4 @@ CloseIPC(void)
     /*Liberar recursos...*/
 }
 
+

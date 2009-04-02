@@ -74,3 +74,5 @@ int DirFilesNumber( string dir );
 int DirFilesList(string dir, fileT **files);
 
 #endif
+
+

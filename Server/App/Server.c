@@ -29,7 +29,7 @@ StartListening(void)
         pid = ReadRequest(&data);
         /* se manda a que sea procesado en la capa de sesion 
         */
-        status = ProcessRequest(&data, pid);
+        status = ProcessRequest(data, pid);
     }
     return status;
 }
@@ -124,11 +124,12 @@ void ReadDirSubServerRequests(key_t key)
     int exit=FALSE;
     while(!exit)
     {
-        pid=ReadRequest(&data);
-        ProcessRequest(&data, pid);
+        pid=ReadRequest(data);
+        ProcessRequest(data, pid);
 
     }
 }
+
 
 
 

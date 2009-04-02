@@ -246,3 +246,4 @@ SubString(char * s, int p1, int p2)
     
 	return result;
 }
+
