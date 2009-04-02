@@ -166,15 +166,63 @@ CallFileRem(session_t data)
 	return FileRem(file);	
 }
 
+/* Client -> Server: Client Exit */
 
+int 
+CallClientExit(session_t data)
+{
+	return DirconnectUser(data.msg);		
+}
 
+/* Client -> Server: Cliente pide directorio */
 
-/*
+static int
+GetFileListSize( int nfiles, fileT *fileList )
+{
+	int size;
+	int i;
 
- static int CallTopList(session_t data);
- static int CallTopListUser(session_t data);
- static int CallDirReq(session_t data);
- static int CallDirList(session_t data);
- */ 
+	size = 0;
+	for( i=0; i<nfiles; i++ ) {
+		size += GetSize(fileList[i]);
+	}
 
+	return size;
+}
 
+static int
+MakeDirPack(int nfiles, fileT * fileList,byte **dataBuffer,byte **pack)
+{
+	int size;
+	
+	if( (pack = malloc(size=sizeof(fileT)*nfiles+GetFileListSize(nfiles,fileList)) ) == NULL ) {
+		return ERROR;
+	}
+	
+	return size;	
+}	
+int 
+CallDirReq(session_t *dataPtr)
+{
+	byte **dataBuffer;
+	fileT *fileList;
+	string dirPath;
+	string userName;
+	int nfiles;
+
+	dirPath  = (*dataPtr).data;
+	userName = (*dataPtr).msg;
+	
+	
+	if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
+		return ERROR;
+	}
+	else {
+		if( ((*dataPtr).dataSize = MakeDirPack(nfiles, fileList,dataBuffer,&((*dataPtr).data))) != ERROR ) {
+			return OK;
+		}
+		else {
+			return ERROR;
+		}
+	}
+}	

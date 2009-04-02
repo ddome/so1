@@ -1,4 +1,13 @@
+/* System includes */
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+
+/* Project includes */
+
+
 #include "Application.h"
+
 
 int
 NewClient(string name,int pid)

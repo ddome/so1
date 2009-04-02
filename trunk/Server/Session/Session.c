@@ -107,24 +107,26 @@ ProcessCall( session_t *data )
 		case CL_FIL_MOD:			
 			return CallFileAdd(*data);
 			break;
+			
+		case CL_EXT:			
+			return CallClientExit(*data);
+			break;	
 		
 		case PR_EXT:
 			return __SHUT_DOWN__;
 			break;	
+		
+		case CL_DIR_REQ:			
+			return CallDirReq(data);
+			break;	
 			
-		/*	 		 			 
-			 case CL_DIR_REQ:			
-			 return CallDirReq(data);
-			 break;
-		 
+		/*	 		 			 		 
 			case CL_DIR_LST:			
 			return CallDirList(data);
 			break;
 		 
 			 
-			 case CL_EXT:			
-			 return __SHUT_DOWN__
-			 break;
+
 			 */	
 			
 		default:
