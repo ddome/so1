@@ -3,7 +3,6 @@ CREATE TABLE users
     id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     user        VARCHAR(100) NOT NULL,
     online	boolean NOT NULL,
-    pid		INTEGER NOT NULL,
     UNIQUE(user)
 );
 
@@ -24,6 +23,13 @@ CREATE TABLE users_dir
     PRIMARY KEY(user_id, dir_id)
 );
 
+CREATE TABLE logs
+(
+    user        VARCHAR(100) NOT NULL,
+    action      VARCHAR(100) NOT NULL,
+    fileP	VARCHAR(100) NOT NULL,
+    timestamp   DATE
+);
 
 
 

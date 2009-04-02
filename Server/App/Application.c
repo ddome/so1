@@ -19,9 +19,22 @@ NewClient(string name,int pid)
 }
 
 int
-ListDirs( string userName,string **out)
+ListDirs( string userName)
 {
-    GetListDirs(userName,out);
+    char ** out;
+    int i=0;
+    char * aux;
+    GetListDirs(userName,&out);
+    printf("Los directorios registrador al usuario %s son:\n",userName);
+    printf("==============================================\n");
+    while( out[i] != NULL )
+    {
+	aux=out[i];
+	printf("%s\n",aux);
+	free(aux);
+	i++;
+    }
+    free(out);
     
     return OK;
 }
@@ -34,12 +47,26 @@ LogAction(const char * userName,const char * fileName,const char * action)
 
 
 int
-TopList(string **out)
+TopList(void)
 {
     int ret;
-    ret=GetTopList(NULL,out);
+    char ** out;
+    int i=0;
+    char * aux;
+    ret=GetTopList(NULL,&out);
     if(ret==ERROR)
 	return ERROR;
+    
+    printf("Las ultimas diez acciones realizadas fueron:\n");
+    printf("============================================\n");
+    while( out[i] != NULL )
+    {
+	aux=out[i];
+	printf("%s\n",aux);
+	free(aux);
+	i++;
+    }
+    free(out);
     
     return OK;
 }
@@ -56,12 +83,26 @@ TopListUser(string userName, string **out)
 }
 
 int 
-UserList( string **out )
+UserList( void )
 {
     int ret;
-    ret=GetUserOnlineList(out);
+    int i=0;
+    char * aux;
+    char ** out;
+    ret=GetUserOnlineList(&out);
     if(ret==ERROR)
 	return ERROR;
+
+    printf("Usuarios conectados en este momento al servidor:\n");
+    printf("================================================\n");
+    while( out[i] != NULL )
+    {
+	aux=out[i];
+	printf("%s\n",aux);
+	free(aux);
+	i++;
+    }
+    free(out);
     
     return OK;
 }
