@@ -37,8 +37,19 @@
 /* Definiciones para creacion de procesos con fork()
 */
 
-#define __ISCHILD__	      0
+#define __ISCHILD__	  0
 #define __SHUT_DOWN__	 -2
+
+/*
+*  Types
+*/
+
+typedef struct
+{
+    int opCode;
+    char msg[MAX_MSG];
+    pid_t pid;
+} process_t;
 
 /* 
 *  Interface Functions
