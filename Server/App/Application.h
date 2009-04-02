@@ -1,7 +1,6 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
-#include "Prompt.h"
 #include "../Lib/genlib.h"
 #include "../Lib/defines.h"
 #include "fileHandler.h"

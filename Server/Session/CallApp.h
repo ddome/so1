@@ -26,4 +26,8 @@ int CallFileRem(session_t data);
 
 int CallDirReg(session_t data);
 
+int CallClientExit(session_t data);
+
+int CallDirReq(session_t *data);
+
 #endif
