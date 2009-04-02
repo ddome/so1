@@ -35,32 +35,32 @@ InitCommunication(pid_t pid)
     return InitIPC(pid);
 }
 
-pid_t GetRequest(void * data)
+byte ** GetRequest(void)
 {
-    return ReadIPC(data);
+    return ReadIPC();
 }
 
 int
 ProcessRequest(byte ** data, pid_t requestPid)
 {
-	session_t pack;
+/*	session_t pack;
 	process_t ret;
 	
 	pack  = GetSessionData(*data);
     ret.opCode  = ProcessCall( &pack );
 	ret.pid = pack.pid;
 	free(*data);
-	*data = MakeSessionData(pack);
-
-	/*if(((cacaT*)data)->dni>0)
+	*data = MakeSessionData(pack);*/
+    int ret = 0;
+	if((*((cacaT**)data))->dni>0)
 	{
-	    printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
+	    printf("llego un mensaje!: %d - %s es gay \n", (*((cacaT**)data))->dni,(*((cacaT**)data))->esgay?"SI":"NO");
 	    SpawnSubProcess(__SPAWN_DIR__,requestPid,"/");
 	}
 	else
-	    printf("Rock and roll neneeee!\n");*/
+	    printf("Rock and roll neneeee!\n");
 	
-	return ret.opCode;
+	return ret;
 }
 
 void
