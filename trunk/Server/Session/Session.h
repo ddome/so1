@@ -14,6 +14,7 @@
 #include "../Lib/defines.h"
 #include "../App/fileHandler.h"
 #include "../App/Application.h"
+#include "../App/Server.h"
 #include "../Transport/Transport.h"
 #include "../Transport/ipcInterface.h"
 
@@ -28,10 +29,7 @@
 
 /* Prompt -> Server operations 
 */
-#define PR_DIR_REG 0
-#define PR_USR_LST 1
-#define PR_ACT_LST 2
-#define PR_ACT_USR 3
+
 #define PR_EXT     5
 
 /* Server -> Client operations 
@@ -69,7 +67,7 @@ int InitCommunication(pid_t pid);
 
 pid_t GetRequest(void * data);
 
-int ProcessRequest(byte ** data, pid_t requestPid);
+process_t ProcessRequest(byte ** data, pid_t requestPid);
 
 byte * MakeSessionData( session_t data );
 session_t GetSessionData( byte *data );

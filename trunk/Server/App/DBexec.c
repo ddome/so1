@@ -159,8 +159,10 @@ NewLogEntry(const char * userName,const char * fileName,const char * action)
     int boolRet,ret;
     IsUserOnline(db,userName,&boolRet);
     if(boolRet==0)
+
 	return ERROR;
     ret=AddLog(db,userName,fileName ,action);
+
     if(ret!=DB_SUCCESS)
 	return ERROR;
     return OK;
