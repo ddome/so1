@@ -12,6 +12,7 @@
  */
 #include "../Lib/scannerADT.h"
 #include "../Lib/tree.h"
+#include "../Session/Session.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -43,7 +44,7 @@ static char * ReadLine( FILE * inputFile )
 }
 
 
-/* Comandos el Prompt
+/* Comandos del Prompt
 */
 
 static int RegisterDirectory(scannerADT scanner, void * data)
@@ -115,15 +116,13 @@ static void LoadTree(treeADT tree)
 void
 Prompt(void)
 {
-
     char * strAux;
     int status = OK;
     int terminar = FALSE;
     treeADT tree;
     tree = NewTree();
     LoadTree(tree);
-   
-    /*Help(NULL, NULL);*/
+
     while ( !terminar )
     {
         printf("user@server:~ $ ");
@@ -140,6 +139,6 @@ Prompt(void)
         free(strAux);
     }
     FreeTree(tree);
-/* Aca poner un broadcast avisando a los clientes q el servidor se va de vacaciones*/
+    GoodBye();
 }
 
