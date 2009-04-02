@@ -32,8 +32,9 @@ main(void)
     }
 	 
 	/*InitApplication();
+	Prompt();
 	
-	session_t aux;
+	/*session_t aux;
 	fileT filein,fileout;
 	int pos;
 	byte *fileData;
@@ -59,6 +60,8 @@ main(void)
 
 	sessionData = MakeSessionData(aux);
 	ProcessRequest(&sessionData, 31);*/
+
+    CloseApplication();
 
     return 0;
 }	

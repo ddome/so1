@@ -7,6 +7,7 @@
 
 
 #include "Application.h"
+#include "Prompt.h"
 
 
 int
@@ -91,7 +92,7 @@ TopListUser(string userName)
     if(ret==ERROR)
 	return ERROR;
     
-    printf("Las ultimas diez acciones realizadas fueron:\n");
+    printf("Las ultimas diez acciones realizadas por %s fueron:\n",userName);
     printf("============================================\n");
     while( out[i] != NULL )
     {
@@ -115,17 +116,17 @@ UserList( void )
     ret=GetUserOnlineList(&out);
     if(ret==ERROR)
 	return ERROR;
-
+    
     printf("Usuarios conectados en este momento al servidor:\n");
     printf("================================================\n");
     while( out[i] != NULL )
     {
 	aux=out[i];
 	printf("%s\n",aux);
-	free(aux);
+	/*free(aux);*/
 	i++;
     }
-    free(out);
+    /*free(out);*/
     
     return OK;
 }
@@ -205,7 +206,7 @@ ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
     int nfiles;
     int i;
     
-    //RegisterDirToUser(dir,userName);/*Porq esta comentado?*/
+    RegisterDirToUser(dir,userName);
     nfiles = DirFilesList(dir,files);
 	    
     (*databuffer) = malloc(sizeof(byte**)*nfiles);

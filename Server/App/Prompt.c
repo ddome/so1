@@ -12,7 +12,7 @@
  */
 #include "../Lib/scannerADT.h"
 #include "../Lib/tree.h"
-#include "../Session/Session.h"
+#include "../Lib/defines.h"
 #include "Application.h"
 
 
@@ -52,13 +52,36 @@ static char * ReadLine( FILE * inputFile )
 static int RegisterDirectory(scannerADT scanner, void * data)
 {
     int retValue = OK;
-    	
+    char * aux;
+    if(MoreTokensExist(scanner))
+    {
+	aux=ReadToken(scanner);
+	if(DirAdd(aux)!=OK)
+	{
+	    retValue=ERROR;
+	}
+	free(aux);
+    }
+    else
+    {
+	retValue=ERROR;
+    }
+
     return retValue;    
 }
 
 static int ListUsers(scannerADT scanner, void * data)
 {
     int retValue = OK;
+    if(MoreTokensExist(scanner))
+    {
+	fprintf(stderr,"El comando no admite argumentos.\n");
+	retValue=ERROR;
+    }
+    else
+    {
+	UserList();
+    }
     
     return retValue;
 }
@@ -66,13 +89,36 @@ static int ListUsers(scannerADT scanner, void * data)
 static int ListUserDirectory(scannerADT scanner, void * data)
 {
     int retValue = OK;
-    
+    char * aux;
+    if(!MoreTokensExist(scanner))
+    {
+	fprintf(stderr,"El comando espera como argumento un nombre de usuario.\n");
+	retValue=ERROR;
+    }
+    else
+    {
+	aux=ReadToken(scanner);
+	ListDirs(aux);
+	free(aux);
+    }
+
     return retValue;
 }
 
 static int ListLast10(scannerADT scanner, void * data)
 {
     int retValue = OK;
+    char * aux;
+    if(MoreTokensExist(scanner))
+    {
+	aux=ReadToken(scanner);
+	TopListUser(aux);
+	free(aux);
+    }
+    else
+    {
+	TopList();
+    }
     
     return retValue;
 }
