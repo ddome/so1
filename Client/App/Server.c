@@ -1,12 +1,14 @@
+/* Archivo: Server.c
+*  -----------------
+*  Implementacion de la interface Server.h, la cual maneja la creacion,
+*  continuidad y comportamiento de procesos.
+*/
+
 /*
 *  Project Includes
 */
 
 #include "Server.h"
-
-/*
-*  Defines
-*/
 
 /*
 *  Functions
@@ -128,31 +130,3 @@ void ReadDirSubServerRequests(key_t key)
         ProcessRequest(&data, pid);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
