@@ -29,25 +29,27 @@
 /* Prompt -> Server operations 
 */
 
-#define PR_EXT     5
+#define PR_EXT     1
 
 /* Server -> Client operations 
 */
-#define SR_NEW_USR_ERR 6
-#define SR_NEW_USR_OK  7
-#define SR_FIL_MOD 8
-#define SR_EXT     9
+#define SR_NEW_USR_ERR 2
+#define SR_NEW_USR_OK  3
+#define SR_FIL_MOD     4
+#define SR_FIL_ADD     5
+#define SR_FIL_REM     6
+#define SR_EXT         7
 
 /* Client -> Server operations 
 */
-#define CL_NEW_USR 17
-#define CL_DIR_REQ 10
-#define CL_DIR_REM 11
-#define CL_FIL_ADD 12
-#define CL_FIL_REM 13
-#define CL_FIL_MOD 14
-#define CL_DIR_LST 15
-#define CL_EXT     16
+#define CL_NEW_USR 8
+#define CL_DIR_REQ 9
+#define CL_DIR_REM 10
+#define CL_FIL_ADD 11
+#define CL_FIL_REM 12
+#define CL_FIL_MOD 13
+#define CL_DIR_LST 14
+#define CL_EXT     15
 
 /* Paquete de session */
 
