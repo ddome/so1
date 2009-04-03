@@ -14,8 +14,7 @@
 #include "../Lib/defines.h"
 #include "../App/fileHandler.h"
 #include "../App/Application.h"
-#include "../Transport/Transport.h"
-#include "../Transport/ipcInterface.h"
+
 
 /*
 *  Defines
@@ -26,10 +25,17 @@
 
 #define __SHUT_DOWN__	 -2
 
-/* Aca poner defines
-*  de las acciones que puede realizar el cliente (serian las mismas 
-*  q en el server?)
-*/ 
+/* Server -> Client respuestas */
+
+#define SR_NEW_USR_ERR 6
+#define SR_NEW_USR_OK  7
+
+/* Server -> Client */
+
+#define SR_FIL_MOD     8
+#define SR_FIL_ADD     9
+#define SR_FIL_REM     10
+#define SR_EXT         11
 
 /* Paquete de session */
 
@@ -50,5 +56,16 @@ pid_t GetRequest(void * data);
 
 int ProcessRequest(byte ** data, pid_t requestPid);
 
+int SendFileAddPack( fileT file, byte *data );
+int SendFileModPack( fileT file, byte *data );
+int SendFileRemPack( fileT file );
+int SendDirReq( string dirPath, fileT **fileList, byte ***dataBuffer );
+string * SendDirListReq( void );
+int SendExitSignal( void );
+
+
+
+byte * MakeSessionData( session_t data );
+session_t GetSessionData( byte *data );
 
 #endif
