@@ -120,16 +120,11 @@ ProcessCall( session_t *data )
 		case CL_DIR_REQ:			
 			return CallDirReq(data);
 			break;	
-			
-		/*	 		 			 		 
-			case CL_DIR_LST:			
+										
+/*		case CL_DIR_LST:			
 			return CallDirList(data);
 			break;
-		 
-			 
-
-			 */	
-			
+*/			
 		default:
 			return ERROR;
 	}	

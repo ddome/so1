@@ -426,7 +426,30 @@ DirPathList(string dir, string **dirList)
 									
 	return ndirs;
 }
+
+boolean 
+DirExists( string dirPath )
+{
+	DIR *dptr;
 	
+	if( (dptr = opendir(dirPath)) == NULL ) {
+		return FALSE;
+	}
+	else {
+		closedir(dptr);
+		return TRUE;
+	}	
+}
+
+int
+CreateDir( string dir )
+{
+	if( mkdir(dir,0777) != 0 ) {
+		return ERROR;
+	}
+	
+	return OK;
+}	
 
 	
 	

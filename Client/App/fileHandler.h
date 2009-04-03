@@ -73,4 +73,10 @@ int DirFilesNumber( string dir );
 
 int DirFilesList(string dir, fileT **files);
 
+boolean DirExists( string dirPath );
+
+int CreateDir( string dir );
+
 #endif
+
+

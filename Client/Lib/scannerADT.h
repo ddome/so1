@@ -132,3 +132,4 @@ void SetScannerSeparatorOption(scannerADT scanner, separatorOptionT option);
 separatorOptionT GetScannerSeparatorOption(scannerADT scanner);
 
 #endif
+
