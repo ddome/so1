@@ -123,10 +123,10 @@ UserList( void )
     {
 	aux=out[i];
 	printf("%s\n",aux);
-	/*free(aux);*/
+	free(aux);
 	i++;
     }
-    /*free(out);*/
+    free(out);
     
     return OK;
 }
@@ -253,5 +253,21 @@ DisconnectUser(string userName)
     return OK;
 }
 
+int
+ListAllSyncDirs( string **out)
+{
+    int i=0;
+    char * aux;
+    GetListDirsAll(out);
+    while((*out)[i]!=NULL)
+    {
+	aux=(*out)[i];
+	printf("%s\n",aux);
+	free(aux);
+	i++;
+    }
+    free(*out);
+    return OK;
+}
 
 

@@ -124,6 +124,11 @@ int DisconnectAllUsers(void);
  ----------------------------------------------------------------*/
 int CloseApplication(void);
 
+/*----------------------------------------------------------------
+ Guarda en out la lista de todos los directorios sincronizables.
+----------------------------------------------------------------*/
+int ListAllSyncDirs( string **out);
+
 #endif
 
 

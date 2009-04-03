@@ -13,6 +13,8 @@ int InitBD(void);
 
 int GetListDirs(const char * userName, char ***out);
 
+int GetListDirsAll(char *** out);
+
 int AddClient(const char * userName, int pid);
 
 int SetClientOnline(const char * userName);

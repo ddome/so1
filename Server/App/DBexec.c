@@ -241,6 +241,37 @@ FreeDatabase(void)
 }
 
 
+int
+GetListDirsAll(char *** out)
+{
+    pqADT queue;
+    int i=0;
+    char * aux;
+    queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
+    if(queue==NULL)
+    {
+	fprintf(stderr,"Error al crear la cola en TopList.\n");
+	return ERROR;
+    }
+
+    ListAllDirs(db,queue);
+
+    if( (*out=calloc(QueueDepth(queue)+1,sizeof(char*)))==NULL )
+    {
+	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+	return ERROR;
+    }
+    while(!PQIsEmpty(queue))
+    {
+	aux=Dequeue(queue);
+	(*out)[i]=CreateString(aux);
+	free(aux);
+	i++;
+    }
+    FreePQ(&queue);
+    return OK;
+}
+
 
 
 
