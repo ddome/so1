@@ -3,10 +3,11 @@
 
 #include "scannerADT.h"
 
-typedef struct nodeCDT * nodeADT;
+
 typedef struct treeCDT * treeADT;
 
 treeADT NewTree(void);
+
 void FreeTree( treeADT tree );
 
 

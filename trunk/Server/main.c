@@ -21,7 +21,7 @@ main(void)
    
 	int status;
     status = InitApplication();
-    status = InitTransport();
+    /*status = InitTransport();
     if(status != ERROR)
     {
 		status = StartListening();
@@ -29,8 +29,8 @@ main(void)
     else
     {
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
-    }
-	 
+    }*/
+Prompt();
 	 
 /*	//InitApplication();
 	//Prompt();

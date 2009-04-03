@@ -144,7 +144,6 @@ static int ShowCommands(scannerADT scanner, void * data)
     return OK;
 }
 
-
 /* Se cargan los comandos en el arbol de expresiones
 */
 

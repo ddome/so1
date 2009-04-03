@@ -7,6 +7,8 @@
 #define COMANDO_INVALIDO -1
 #define OK 		  1
 
+typedef struct nodeCDT * nodeADT;
+
 typedef struct nodeCDT {
     char * nombre;
     struct nodeCDT * next;
@@ -61,7 +63,7 @@ Insert(nodeADT * nodes, scannerADT scanner, int (*func) (scannerADT scanner, voi
     {
         if ( (*nodes = malloc(sizeof(nodeCDT))) == NULL )
         {
-            free(token);/*ACA*/
+            free(token);
             return -1;
         }
         if ( *token == 0 ) 
