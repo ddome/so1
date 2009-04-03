@@ -128,13 +128,18 @@ CallFileAdd(session_t data)
 	fileT file;
 	byte *fileData;
 	string user;  // Usado solo para agregar a los Logs
+	int ret;
 	
 	user = data.msg;
 
 	GetFileData(data,&file,fileData);	
 	LogAction(user, GetPath(file), "Add");
 	
-	return FileAdd(file,fileData);	
+	ret = FileAdd(file,fileData);	
+	
+	free(data.data);
+	
+	return ret;
 }	
 
 int 
@@ -143,6 +148,7 @@ CallFileMod(session_t data)
 	fileT file;
 	byte *fileData;
 	string user; // Usado solo para agregar a los Logs
+	int ret;
 	
 	user = data.msg;
 	GetFileData(data,&file,fileData);	
@@ -150,7 +156,11 @@ CallFileMod(session_t data)
 		
 	/*Lo saco y vuelvo a insertar */
 	FileRem(file);	
-	return FileAdd(file,fileData);
+	ret = FileAdd(file,fileData);
+	
+	free(data.data);
+	
+	return ret;
 }	
 
 int 
@@ -171,7 +181,7 @@ CallFileRem(session_t data)
 int 
 CallClientExit(session_t data)
 {
-	return DirconnectUser(data.msg);		
+	return  DisconnectUser(data.msg);		
 }
 
 /* Client -> Server: Cliente pide directorio */
