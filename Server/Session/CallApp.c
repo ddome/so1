@@ -194,11 +194,21 @@ static int
 MakeDirPack(int nfiles, fileT * fileList,byte **dataBuffer,byte **pack)
 {
 	int size;
-	
-	if( (pack = malloc(size=sizeof(fileT)*nfiles+GetFileListSize(nfiles,fileList)) ) == NULL ) {
+	int i;
+	int pos;
+		
+	if( (*pack = malloc(size=sizeof(fileT)*nfiles+GetFileListSize(nfiles,fileList)) ) == NULL ) {
 		return ERROR;
 	}
 	
+	pos = 0;
+	for( i=0; i<nfiles; i++ ) {
+		memmove(*pack + pos, &(fileList[i]), sizeof(fileT));
+		pos += sizeof(fileT);
+		memmove(*pack + pos, &(dataBuffer[i]), GetSize(fileList[i]));
+		pos += GetSize(fileList[i]);
+	}
+
 	return size;	
 }	
 int 
