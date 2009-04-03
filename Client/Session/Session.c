@@ -12,8 +12,8 @@
 
 static int GetDataSize( session_t data );
 static int ProcessCall( session_t *data );
-//static byte * MakeSessionData( session_t data );
-//static session_t GetSessionData( byte *data );
+static byte * MakeSessionData( session_t data );
+static session_t GetSessionData( byte *data );
 
 
 /* Functions */
@@ -54,6 +54,99 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	return ret;
 }
 
+/* Send Functions */
+
+static int
+MakeFilePack( fileT file, byte *data, byte **dataBuffer )
+{
+	if( (*dataBuffer=malloc(GetSize(file)+sizeof(fileT))) == NULL ) {
+		return ERROR;
+	}
+	
+	memmove(*dataBuffer, &file, sizeof(fileT));
+	if( data != NULL ) {
+		memmove(*dataBuffer+sizeof(fileT), data, GetSize(file));
+	}
+	
+	return (GetSize(file) + sizeof(fileT));
+}	
+
+int 
+SendFileAddPack( string userName, fileT file, byte *data )
+{
+	session_t pack;
+	
+	pack.opCode = CL_FIL_ADD;
+	strcpy(pack.msg,userName);
+	pack.dataSize = MakeFilePack( file, data, &pack.data );
+	
+	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
+	
+}
+
+int 
+SendFileModPack( string userName, fileT file, byte *data )
+{
+	session_t pack;
+	
+	pack.opCode = CL_FIL_MOD;
+	strcpy(pack.msg,userName);
+	pack.dataSize = MakeFilePack( file, data, &pack.data );
+	
+	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
+}
+
+int 
+SendFileRemPack( string userName, fileT file )
+{
+	session_t pack;
+	
+	pack.opCode = CL_FIL_REM;
+	strcpy(pack.msg,userName);
+	pack.dataSize = MakeFilePack( file, NULL, &pack.data );
+	
+	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
+}
+
+int 
+SendDirReq( string userName, string dirPath, fileT **fileList, byte ***dataBuffer )
+{
+	session_t pack;
+	
+	pack.opCode = CL_DIR_REQ;
+	strcpy(pack.msg,userName);
+	pack.dataSize = 0;
+	pack.data = NULL;
+	
+	return OK; //CallAddDir( LLAMARTRANSPORTE( MakeSessionData(pack) );)
+}	
+
+int
+SendDirListReq( string userName )
+{
+	session_t pack;
+	
+	pack.opCode = CL_DIR_LST;
+	strcpy(pack.msg,userName);
+	pack.dataSize = 0;
+	pack.data = NULL;
+	
+	return OK; // string = GetString( LLAMARTRANSPORTE( MakeSessionData(pack) );)	
+}
+
+int 
+SendExitSignal( string userName )
+{
+	session_t pack;
+	
+	pack.opCode = CL_EXT;
+	strcpy(pack.msg,userName);
+	pack.dataSize = 0;
+	pack.data = NULL;	
+
+	return OK;
+}
+
 void
 GoodBye(void)
 {
@@ -78,8 +171,7 @@ GetDataSize( session_t data )
 
 static int
 ProcessCall( session_t *data )
-{
-	
+{	
 	switch ((*data).opCode) {
 		case SR_FIL_ADD:
 			return CallFileAdd(*data);
@@ -102,7 +194,7 @@ ProcessCall( session_t *data )
 	return OK;
 }
 
-byte *
+static byte *
 MakeSessionData( session_t data )
 {
 	byte *aux;
@@ -128,7 +220,7 @@ MakeSessionData( session_t data )
 	return aux;
 }
 
-session_t
+static session_t
 GetSessionData( byte *data )
 {
 	int pos;
