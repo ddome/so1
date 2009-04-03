@@ -247,7 +247,7 @@ CloseApplication(void)
 }
 
 int
-DirconnectUser(string userName)
+DisconnectUser(string userName)
 {
     SetClientOffline(userName);
     return OK;

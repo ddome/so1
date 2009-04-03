@@ -31,35 +31,26 @@ main(void)
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
     }
 	 
-	/*InitApplication();
-	Prompt();
+	 
+/*	//InitApplication();
+	//Prompt();
 	
-	/*session_t aux;
-	fileT filein,fileout;
+	session_t aux;
+	string dirpath;
 	int pos;
 	byte *fileData;
 	byte *sessionData;
 	
 	strcpy(aux.msg,"Damian");
 	aux.pid = 31;
-	aux.opCode = CL_FIL_REM;
+	aux.opCode = CL_DIR_REQ;
 	
-	filein = NewFileT("/SO","Prueba1");
-	fileData = ReqFile(filein);
-	
-	fileout = NewFileT("/OUT","Prueba1");
-	fileout.sb.st_size = filein.sb.st_size;
-	
-	
-	aux.dataSize = GetSize(fileout) + sizeof(fileT);		
-	aux.data = malloc(aux.dataSize);	
-	pos = 0;	
-	memmove(aux.data+pos, &fileout, sizeof(fileT));
-	pos += sizeof(fileT);
-	memmove(aux.data+pos, fileData, GetSize(fileout));
-
+	aux.dataSize = strlen("/SO")+1;		
+	aux.data = malloc(aux.dataSize);
+	strcpy(aux.data,"/SO");
+		
 	sessionData = MakeSessionData(aux);
-	ProcessRequest(&sessionData, 31);*/
+	ProcessRequest(&sessionData, 31); */
 
     CloseApplication();
 
