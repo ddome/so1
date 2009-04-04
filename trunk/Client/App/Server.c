@@ -18,8 +18,7 @@ int
 StartListening(void)
 {
     int status;
-    pid_t pid;
-    void * data;
+    byte ** data;
     status = InitCommunication(__DEFAULT_PID__);
     if(status == ERROR)
     {
@@ -28,28 +27,33 @@ StartListening(void)
     status = status && SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);
     while(status != ERROR && status != __SHUT_DOWN__)
     {
-        pid = ReadRequest(&data);
-        /* se manda a que sea procesado en la capa de sesion 
-        */
-        status = ProcessRequest(&data, pid);
+	if((data = ReadRequest()) != NULL)
+	{
+            /* se manda a que sea procesado en la capa de sesion 
+            */
+            status = ProcessRequest(&data, 0);
+	}
+	else
+	{
+	    status = NULL;
+	}
     }
     return status;
 }
 
-pid_t
-ReadRequest(void* data)
+byte ** 
+ReadRequest(void)
 {
     int requestExists = FALSE;
-    pid_t pid;
     while(!requestExists)
     {
-        if( (pid = GetRequest(data)) != -1)
+        if( ((data = GetRequest()) != NULL)
         {
             requestExists = TRUE;
         }
     }
 	
-    return pid;
+    return data;
 }
 
 int
