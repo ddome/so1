@@ -34,6 +34,7 @@
 
 /* Server -> Client operations 
  */
+#define SR_CONECT_OK   16
 #define SR_NEW_USR_ERR 2
 #define SR_NEW_USR_OK  3
 #define SR_FIL_MOD     4
@@ -43,6 +44,7 @@
 
 /* Client -> Server operations 
  */
+#define CL_NEW_CON 17
 #define CL_NEW_USR 8
 #define CL_DIR_REQ 9
 #define CL_DIR_REM 10
@@ -71,6 +73,8 @@ byte ** GetRequest(void);
 
 int ProcessRequest(byte ** data, pid_t requestPid);
 
+int SendConectionSignal(  pid_t pid );
+int SendNewClientSignal( string userName, pid_t pid );
 int SendFileAddPack(  string userName, fileT file, byte *data );
 int SendFileModPack(  string userName, fileT file, byte *data );
 int SendFileRemPack( string userName, fileT file );

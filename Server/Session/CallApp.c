@@ -43,7 +43,10 @@ FillPack(string senderID, string msg, uInt opCode,
 int 
 CallNewConection( session_t *dataPtr )
 {
-	
+
+	if( (NewClient((*dataPtr).pid)) != NEW_USR_OK ) {
+		return ERROR;
+	}
 	
 	(*dataPtr).opCode = SR_CONECT_OK;
 	
@@ -60,18 +63,18 @@ MakeNewClientRetPack(int op, session_t *dataPtr )
 	uInt opCode;
 	
 	switch(op) {
-		case NEW_USR_EXIST: 
+		case NEW_USRNAME_EXIST: 
 			opCode = SR_NEW_USR_ERR;
 			ret = OK;
 			break;
 			
-		case NEW_USR_OK:
+		case NEW_USRNAME_OK:
 			opCode = SR_NEW_USR_OK;
 			ret = OK;
 			break;
 			
 		default:
-			opCode = NEW_USR_ERROR;
+			opCode = SR_NEW_USR_ERR;
 			ret = ERROR;
 			break;
 	}
@@ -88,7 +91,7 @@ CallNewClient(session_t *dataPtr)
 {	
 	int ret;
 	
-	ret=NewClient((*dataPtr).pid);	
+	ret=ConnectUser((*dataPtr).pid,(*dataPtr).msg);	
 	return (MakeNewClientRetPack(ret, dataPtr));
 }	
 
