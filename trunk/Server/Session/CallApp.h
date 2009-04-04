@@ -10,7 +10,7 @@
 #ifndef _CALL_APP_
 #define _CALL_APP_
 
-int CallNewConection( session_t *data);
+int CallNewConection( session_t *dataPtr);
 
 int CallNewClient(session_t *dataPtr);
 
