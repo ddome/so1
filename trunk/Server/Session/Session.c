@@ -89,6 +89,11 @@ ProcessCall( session_t *data )
 {
 	
 	switch( (*data).opCode ) {
+			
+		case CL_NEW_CON:
+			return CallNewConection(data);
+			break;
+			
 		case CL_NEW_USR:
 			return CallNewClient(data);
 			break;
@@ -122,7 +127,7 @@ ProcessCall( session_t *data )
 			break;	
 										
 		case CL_DIR_LST:			
-			return CallDirList(*data);
+			return CallDirList(data);
 			break;
 			
 		default:
