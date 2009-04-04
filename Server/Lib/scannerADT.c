@@ -64,6 +64,8 @@ NewScanner(void)
 void
 FreeScanner(scannerADT scanner)
 {
+	if(scanner->savedToken!=NULL)
+	    free(scanner->savedToken);
 	if(scanner->str != NULL)
 		free(scanner->str);
 	free(scanner);
