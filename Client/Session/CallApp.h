@@ -8,5 +8,10 @@
  */
 
 int CallFileAdd(session_t data);
+
 int CallFileMod(session_t data);
+
 int CallFileRem(session_t data);
+
+int CallDirAdd(session_t data);
+

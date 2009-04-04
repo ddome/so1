@@ -97,3 +97,27 @@ CallFileRem(session_t data)
 	return ret;
 }
 
+
+/* Server -> Client: Agregar directorio */
+int 
+CallDirAdd(session_t data)
+{
+	fileT *fileList;
+	byte **dataBuffer;
+	
+//	GetDirData(data.data, &fileList, &dataBuffer);
+
+	return DirAdd(data.msg, fileList, dataBuffer, 0);	
+}	
+
+
+
+
+
+
+
+
+
+
+
+

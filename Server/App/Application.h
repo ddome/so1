@@ -113,7 +113,6 @@ int DelDir( string userName, string dir );
  ----------------------------------------------------------------*/
 int DisconnectUser(string userName);
 
-
 /*---------------------------------------------------------------- 
  Remueve a todos los usuarios de la lista de usuarios conectados.
  ----------------------------------------------------------------*/
