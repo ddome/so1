@@ -1,19 +1,28 @@
-/*
- *  main.c
- *  server
- *
- *  Created by Damian Dome on 3/25/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+/* Archivo: main.c
+*  ---------------
+*  Punto de inicializacion y entrada del programa.
+*/
 
 
 #include <stdio.h>
-#include "Application.h"
-
-
+#include "./App/Application.h"
+#include "./App/Server.h"
+#include "./Transport/Transport.h"
+#include "./Lib/defines.h"
 int
 main(void)
 {	
+    int status;
+    status = InitApplication();
+    status = InitTransport();
+    if(status != ERROR)
+    {
+        status = Start();
+    }
+    else
+    {
+        fprintf(stderr, "No se ha podido inicializar la aplicacion.");
+    }
+    
 	return 0;
 }	

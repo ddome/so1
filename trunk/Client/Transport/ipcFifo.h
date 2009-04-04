@@ -12,6 +12,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+/* Project Includes
+*/
+
+#include "../Lib/defines.h"
+#include "Transport.h"
 
 /* Defines de los Fifo's en particular
 */
@@ -23,7 +28,7 @@
 
 int InitMainIPC(void);
 
-int InitIPC(int pid);
+int InitIPC(key_t key);
 
 int WriteIPC(void * data, size_t size);
 

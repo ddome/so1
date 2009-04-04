@@ -1,5 +1,6 @@
 #ifndef __TRANSPORT_H__
 #define __TRANSPORT_H__
+
 /* System Includes
 */
 
@@ -13,14 +14,9 @@
 #include <signal.h>
 #include <unistd.h>
 
+#define COMM_DIR "/home/damian/Desktop/so1/Server/comm/"
+
 int InitTransport(void);
 
-pid_t ReadRequest(void* data);
-
-void ProcessRequest(void * data, pid_t requestPid);
-
-void InitChildProcess(pid_t pid);
-
-void Listen(void);
-
 #endif
+

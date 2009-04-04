@@ -23,7 +23,7 @@ MakeRDPath(key_t key)
     if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
 	return NULL;
 
-    sprintf(path,"%s%d_rd",COMM_DIR,(int)key);
+    sprintf(path,"%s%d_wr",COMM_DIR,(int)key);
 
     return path;
 }
@@ -35,7 +35,7 @@ MakeWRPath(key_t key)
     if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
 	return NULL;
 
-    sprintf(path,"%s%d_wr",COMM_DIR,(int)key);
+    sprintf(path,"%s%d_rd",COMM_DIR,(int)key);
 
     return path;
 }
@@ -46,74 +46,79 @@ MakeWRPath(key_t key)
 *  Crea un ipc para comunicarse con el proceso univocamente 
 *  representado por key
 */
-
-byte ** 
-ReadIPC(void)
+int InitIPC(key_t key)
 {
-    int status = OK;
-    headerIPC_t header;
-    byte * data;
-    status = read(readFifo_FD, &header, sizeof(headerIPC_t));
-    if(status > 0)
-    {
-	    printf("\n\npaquete numero: %d\n", header.nPacket);
+  /* Se arman los nombres de los fifos para el proceso que se pidio, 
+  *  y luego se crean los fifo's propiamente.
+  */
 
-	    if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
-	    {
-		return NULL;
-	    }   
+  readFifo=MakeRDPath(key);
+  writeFifo=MakeWRPath(key);
+  
+  writeFifo_FD = open(writeFifo, O_WRONLY );
+  readFifo_FD = open(readFifo, O_RDWR  );
 
-	    status=read(readFifo_FD, data, header.size);
-	    if(status > 0)
-	    {
-		status = OK;
-		printf("recibidos: %d\n", recibidos);
-		recibidos++;
-	    }
-	    else
-	    {
-		status = ERROR;
-	    }
-    }
-    else
-    {
-	    status = ERROR;
-    }
-
-    return status == ERROR ? NULL: &data ;
+  if(readFifo_FD == -1 || writeFifo_FD == -1 )
+  {
+    printf("no se puede abrir el fifo\n");
+  }
+    
+  IPCStarted = TRUE;
+  isChildProcess = TRUE;
+  return OK;
 }
 
 int 
 WriteIPC(void * data, size_t size)
 {
-    /******************* ver si es necesario poner locks *************/
-    int status=write(readFifo_FD,data,size);
-
-    return OK;
+    int status;
+    /* Se arma el header de transporte
+    */
+    headerIPC_t header;
+    header.nPacket = 1;
+    header.size = size;
+    status = write(writeFifo_FD, &header, sizeof(headerIPC_t));
+    if(status != ERROR)
+    {
+        status = write(writeFifo_FD,data,size);
+    }      
+    return status;
 }
 
-/*habria que meter en el void * un header indicando el numero de paquete
-y hacer lecturas mientras haya*/
-byte **
+byte ** 
 ReadIPC(void)
 {
-    int status = OK;
-    pid_t pid=-1;
-    headerIPC_t header;
-    status = read(writeFifo_FD, &header, sizeof(headerIPC_t));
-    if(status>0)
-    {
-	printf("\n\npaquete numero: %d\n", header.nPacket);
-	pid=header.pid;
-        status=read(writeFifo_FD, data, header.size);
-	if(status > 0)
-	{
-	    printf("recibidos: %d\n", recibidos);
-	    recibidos++;
-	}
-    }
+  int status = OK;
+  headerIPC_t header;
+  byte * data;
+  status = read(readFifo_FD, &header, sizeof(headerIPC_t));
+  if(status > 0)
+  {
+    printf("\n\npaquete numero: %d\n", header.nPacket);
 
-    return NULL;
+    if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
+    {
+      return NULL;
+    }   
+
+    status=read(readFifo_FD, data, header.size);
+    if(status > 0)
+    {
+      status = OK;
+      printf("recibidos: %d\n", recibidos);
+      recibidos++;
+    }
+    else
+    {
+      status = ERROR;
+    }
+  }
+  else
+  {
+    status = ERROR;
+  }
+
+  return status == ERROR ? NULL: &data ;
 }
 
 void

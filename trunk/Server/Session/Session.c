@@ -43,7 +43,7 @@ byte ** GetRequest(void)
 int
 ProcessRequest(byte ** data, pid_t requestPid)
 {
-	session_t pack;
+	/*session_t pack;
 	/*int ret;
 	
 	pack  = GetSessionData(*data);

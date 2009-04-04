@@ -25,6 +25,10 @@ main(void)
     if(status != ERROR)
     {
 		status = StartListening();
+		if(status == ERROR)
+		{
+			printf("Se ha producido un error\n");
+		}
     }
     else
     {

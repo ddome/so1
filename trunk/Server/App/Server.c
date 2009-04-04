@@ -107,16 +107,47 @@ int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
 
 int StartDirSubServer(pid_t pid, char msg[MAX_MSG])
 {
+	int status;
 	key_t key;
+	byte ** data;
 	key = ftok(msg, pid);
 	if(InitCommunication(key) == ERROR)
 	{
-		return ERROR;
+		status = ERROR;
 	}
 	
-	ReadDirSubServerRequests(key);
+	while(status != ERROR && status != __SHUT_DOWN__)
+    {
+        data = ReadDirSubServerRequests();
+        if(data != NULL)
+        {
+            /* se manda a que sea procesado en la capa de sesion 
+            */
+            status = ProcessRequest(data, 0);
+        }
+        else
+        {
+            status = ERROR;
+        }
+    }
 	
-	return OK;
+	return status;
+}
+
+byte ** ReadDirSubServerRequests(void)
+{
+    byte ** data;
+    int requestExists = FALSE;
+    int status;
+    while(!requestExists)
+    {
+        if( (data = GetRequest()) != NULL)
+        {
+            requestExists = TRUE;
+        }
+    }
+	
+    return data;
 }
 
 int StartDemandSubServer(pid_t pid, char msg[MAX_MSG])
@@ -124,18 +155,7 @@ int StartDemandSubServer(pid_t pid, char msg[MAX_MSG])
     return 1;
 }
 
-void ReadDirSubServerRequests(key_t key)
-{
-   /* void * data;
-    pid_t pid;
-    int exit=FALSE;
-    while(!exit)
-    {
-        pid=ReadRequest(data);
-        ProcessRequest(data, pid);
 
-    }*/
-}
 
 
 

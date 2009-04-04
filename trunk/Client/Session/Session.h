@@ -14,6 +14,8 @@
 #include "../Lib/defines.h"
 #include "../App/fileHandler.h"
 #include "../App/Application.h"
+#include "../Transport/ipcInterface.h"
+#include "../App/Server.h"
 
 
 /*
@@ -63,7 +65,7 @@ typedef struct {
 
 /*  Functions */
 
-int InitCommunication(pid_t pid);
+int InitCommunication(key_t key);
 
 byte ** GetRequest(void);
 

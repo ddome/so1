@@ -1,7 +1,6 @@
 #include "ipcFifo.h"
 #include "ipcInterface.h"
 
-/*por ahora, solamente comunica 2 procesos */
 char * readFifo = NULL;
 char * writeFifo = NULL;
 int recibidos = 0;
@@ -80,10 +79,18 @@ int InitIPC(key_t key)
 int 
 WriteIPC(void * data, size_t size)
 {
-    /******************* ver si es necesario poner locks *************/
-    int status=write(writeFifo_FD,data,size);
-
-    return OK;
+    int status;
+    /* Se arma el header de transporte
+    */
+    headerIPC_t header;
+    header.nPacket = 1;
+    header.size = size;
+    status = write(writeFifo_FD, &header, sizeof(headerIPC_t));
+    if(status != ERROR)
+    {
+        status = write(writeFifo_FD,data,size);
+    }      
+    return status;
 }
 
 byte ** 
@@ -99,7 +106,7 @@ ReadIPC(void)
 
 	    if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
 	    {
-		return NULL;
+			return NULL;
 	    }   
 
 	    status=read(readFifo_FD, data, header.size);

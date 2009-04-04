@@ -55,16 +55,16 @@ static int RegisterDirectory(scannerADT scanner, void * data)
     char * aux;
     if(MoreTokensExist(scanner))
     {
-	aux=ReadToken(scanner);
-	if(DirAdd(aux)!=OK)
+		aux=ReadToken(scanner);
+		if(DirAdd(aux)!=OK)
 	{
 	    retValue=ERROR;
 	}
-	free(aux);
+		free(aux);
     }
     else
     {
-	retValue=ERROR;
+		retValue=ERROR;
     }
 
     return retValue;    
@@ -75,12 +75,12 @@ static int ListUsers(scannerADT scanner, void * data)
     int retValue = OK;
     if(MoreTokensExist(scanner))
     {
-	fprintf(stderr,"El comando no admite argumentos.\n");
-	retValue=ERROR;
+		fprintf(stderr,"El comando no admite argumentos.\n");
+		retValue=ERROR;
     }
     else
     {
-	UserList();
+		UserList();
     }
     
     return retValue;
@@ -92,14 +92,14 @@ static int ListUserDirectory(scannerADT scanner, void * data)
     char * aux;
     if(!MoreTokensExist(scanner))
     {
-	fprintf(stderr,"El comando espera como argumento un nombre de usuario.\n");
-	retValue=ERROR;
+		fprintf(stderr,"El comando espera como argumento un nombre de usuario.\n");
+		retValue=ERROR;
     }
     else
     {
-	aux=ReadToken(scanner);
-	ListDirs(aux);
-	free(aux);
+		aux=ReadToken(scanner);
+		ListDirs(aux);
+		free(aux);
     }
 
     return retValue;
@@ -111,13 +111,13 @@ static int ListLast10(scannerADT scanner, void * data)
     char * aux;
     if(MoreTokensExist(scanner))
     {
-	aux=ReadToken(scanner);
-	TopListUser(aux);
-	free(aux);
+		aux=ReadToken(scanner);
+		TopListUser(aux);
+		free(aux);
     }
     else
     {
-	TopList();
+		TopList();
     }
     
     return retValue;

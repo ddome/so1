@@ -20,9 +20,9 @@ static session_t GetSessionData( byte *data );
 
 
 int
-InitCommunication(pid_t pid)
+InitCommunication(key_t key)
 {
-   //return InitIPC(pid);
+   return InitIPC(key);
 }
 
 byte ** GetRequest(void)
@@ -172,17 +172,6 @@ SendExitSignal( string userName )
 	pack.data = NULL;	
 
 	return OK;
-}
-
-void
-GoodBye(void)
-{
-    
-}
-
-void ShutDown(void)
-{
-    
 }
 
 
