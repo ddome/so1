@@ -324,16 +324,15 @@ BuildDatabase( sqliteADT db, const char * schemaPath )
 }
 
 DB_STAT
-AddUser(sqliteADT db, const char * userName, int pid)
+AddUser(sqliteADT db,int pid)
 {
     sqlite3_stmt *statement;
     int ret;
-    char *userN;
     char * pidI;
     char * idAux;
-    char *sqlSelect = "INSERT INTO users VALUES (NULL, '%s',0,'%s')";
+    char *sqlSelect = "INSERT INTO users VALUES (NULL, NULL,0,'%s')";
 
-    if (db == NULL || userName == NULL)
+    if (db == NULL || pid == 0)
         return DB_INVALID_ARG;
 
     if( (idAux=calloc(50,sizeof(char)))==NULL )
@@ -343,15 +342,11 @@ AddUser(sqliteADT db, const char * userName, int pid)
     }
     sprintf(idAux,"%d",pid);
 
-    if ( ( userN = EscapeString( db, userName ) ) == NULL )
-        return DB_NO_MEMORY;
-
     if ( ( pidI = EscapeString( db, idAux ) ) == NULL )
         return DB_NO_MEMORY;
 
-    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 2, userN,pidI);
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1,pidI);
 
-    free(userN);
     free(pidI);
     free(idAux);
 
@@ -370,6 +365,98 @@ AddUser(sqliteADT db, const char * userName, int pid)
             return DB_INTERNAL_ERROR;
     }
     
+}
+
+int
+AddNameByPid(sqliteADT db,int pid,const char * userName)
+{
+        sqlite3_stmt *statement;
+    int ret;
+    char *userN;
+    char * pidI;
+    char * idAux;
+    char *sqlSelect = "UPDATE users SET online = 1,user='%s' WHERE pid ='%s'";
+
+    if (db == NULL || userName == NULL || pid==0 )
+        return DB_INVALID_ARG;
+
+    if( (idAux=calloc(50,sizeof(char)))==NULL )
+    {
+	logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
+	return DB_NO_MEMORY;
+    }
+    sprintf(idAux,"%d",pid);
+
+    if ( ( pidI = EscapeString( db, idAux ) ) == NULL )
+        return DB_NO_MEMORY;
+    free(idAux);
+
+    if ( ( userN = EscapeString( db, userName ) ) == NULL )
+        return DB_NO_MEMORY;
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 2, userN,pidI);
+
+    free(pidI);
+    free(userN);
+
+    switch (ret)
+    {
+        case SQLITE_DONE:
+            sqlite3_finalize( statement );
+            return DB_SUCCESS;
+
+        case SQLITE_CONSTRAINT:
+            sqlite3_finalize( statement );
+            return DB_ALREADY_EXISTS;
+
+        default:
+            sqlite3_finalize(statement);
+            return DB_INTERNAL_ERROR;
+    }
+}
+
+DB_STAT
+UserPidExist(sqliteADT db, int pid,int * boolRet)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char * idAux;
+    char *pidI;
+    char *sqlSelect = "SELECT pid FROM users WHERE pid='%s'";
+
+    if (db == NULL || pid==0)
+        return DB_INVALID_ARG;
+
+    if( (idAux=calloc(50,sizeof(char)))==NULL )
+    {
+	logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
+	return DB_NO_MEMORY;
+    }
+    sprintf(idAux,"%d",pid);
+
+    if ( ( pidI = EscapeString( db, idAux ) ) == NULL )
+        return DB_NO_MEMORY;
+
+    free(idAux);
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, pidI);
+    *boolRet=sqlite3_column_int(statement,0);
+
+    free(pidI);
+
+    switch (ret)
+    {
+        case SQLITE_DONE:
+            sqlite3_finalize( statement );
+            return DB_SUCCESS;
+
+        case SQLITE_CONSTRAINT:
+            sqlite3_finalize( statement );
+            return DB_ALREADY_EXISTS;
+
+        default:
+            sqlite3_finalize(statement);
+            return DB_INTERNAL_ERROR;
+    }
 }
 
 DB_STAT

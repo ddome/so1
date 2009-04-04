@@ -44,13 +44,13 @@ int
 ProcessRequest(byte ** data, pid_t requestPid)
 {
 	session_t pack;
-	int ret;
+	/*int ret;
 	
 	pack  = GetSessionData(*data);
     ret   = ProcessCall( &pack );
 
 	free(*data);
-	*data = MakeSessionData(pack);/*
+	*data = MakeSessionData(pack);*/
 	 
     int ret = 0;
 	if((*((cacaT**)data))->dni>0)
@@ -59,7 +59,7 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	    SpawnSubProcess(__SPAWN_DIR__,requestPid,"/");
 	}
 	else
-	    printf("Rock and roll neneeee!\n"); */
+	    printf("Rock and roll neneeee!\n"); 
 	
 	return ret;
 }

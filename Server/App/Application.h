@@ -17,6 +17,10 @@
 #define NEW_USR_OK    1
 #define NEW_USR_ERROR 2
 
+#define NEW_USRNAME_EXIST 3
+#define NEW_USRNAME_OK    4
+#define NEW_USRNAME_ERROR 5
+
 
 /*---------------------------------------------------------------- 
  Inicia la aplicación. Requerido antes de usar cualquier función
@@ -29,7 +33,9 @@ int InitApplication(void);
  en caso de no existir, lo agrega a la base. En caso de existir y 
  estar conectado, devuelve un error.
  ----------------------------------------------------------------*/
-int NewClient(string name,int pid);
+int NewClient(int pid);
+
+int ConnectUser(int pid,char * userName);
 
 /*---------------------------------------------------------------- 
  Recibe un nombre de usuario y un puntero a arreglo de strings.

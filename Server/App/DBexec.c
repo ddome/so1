@@ -77,20 +77,38 @@ GetListDirs(const char * userName, string **out)
 }
 
 int
-AddClient(const char * userName, int pid)
+AddClient(int pid)
+{
+    int ret;
+    ret=AddUser(db,pid);
+    if(ret==DB_SUCCESS)
+	return OK;
+    else if(ret==DB_ALREADY_EXISTS)
+	return ERROR;
+    else
+	return DB_ERROR;
+    return OK;
+}
+
+int
+SetName(int pid,const char * userName)
 {
     int ret;
     int boolRet;
-    ret=AddUser(db, userName,pid);
-    if( ret==DB_ALREADY_EXISTS || ret==DB_SUCCESS )
+    UserPidExist(db,pid,&boolRet);
+    if(boolRet<=0)
+	return ERROR;
+    ret=AddNameByPid(db,pid,userName);
+    if(ret==DB_SUCCESS)
     {
-	IsUserOnline(db,userName,&boolRet);
-	if(boolRet==1)
-	    return ERROR;
+	return OK;
     }
-    if(ret==DB_INTERNAL_ERROR)
+    else if(ret==DB_ALREADY_EXISTS)
+    {
+	return ERROR;
+    }
+    else
 	return DB_ERROR;
-    return OK;
 }
 
 int
