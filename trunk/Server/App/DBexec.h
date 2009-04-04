@@ -15,7 +15,9 @@ int GetListDirs(const char * userName, char ***out);
 
 int GetListDirsAll(char *** out);
 
-int AddClient(const char * userName, int pid);
+int AddClient(int pid);
+
+int SetName(int pid,const char * userName);
 
 int SetClientOnline(const char * userName);
 

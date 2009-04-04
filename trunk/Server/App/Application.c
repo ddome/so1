@@ -11,12 +11,11 @@
 
 
 int
-NewClient(string name,int pid)
+NewClient(int pid)
 {
-    int ret=AddClient(name,pid);
+    int ret=AddClient(pid);
     if(ret==OK)
     {
-	SetClientOnline(name);
 	return NEW_USR_OK;
     }
     else if(ret==ERROR)
@@ -26,6 +25,20 @@ NewClient(string name,int pid)
     }
     else
 	return NEW_USR_ERROR;
+}
+
+int
+ConnectUser(int pid,char * userName)
+{
+    int ret;
+    ret=SetName(pid,userName);
+    if(ret==OK)
+	return NEW_USRNAME_OK;
+    else if(ret==ERROR)
+	return NEW_USRNAME_EXIST;
+    else
+	return NEW_USRNAME_ERROR;
+    return OK;
 }
 
 int

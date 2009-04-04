@@ -88,7 +88,7 @@ CallNewClient(session_t *dataPtr)
 {	
 	int ret;
 	
-	ret=NewClient((*dataPtr).msg,(*dataPtr).pid);	
+	ret=NewClient((*dataPtr).pid);	
 	return (MakeNewClientRetPack(ret, dataPtr));
 }	
 

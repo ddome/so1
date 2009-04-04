@@ -65,21 +65,26 @@ void FreeSqliteADT(sqliteADT db);
 
 
 /*por default el user esta offline*/
-DB_STAT AddUser(sqliteADT db, const char * userName,int pid);/*TESTEADA*/
+DB_STAT AddUser(sqliteADT db,int pid);
+/*Asigna el nombre segun el pid q se envie.*/
+int AddNameByPid(sqliteADT db,int pid,const char * userName);
+/*Pregunta si un usuario con determinado pid ya esta en la base de datos.*/
+DB_STAT UserPidExist(sqliteADT db, int pid,int * boolRet);
+
 /*Online en 1*/
-DB_STAT UserOnline(sqliteADT db,const char * userName);/*TESTEADA*/
+DB_STAT UserOnline(sqliteADT db,const char * userName);/*VER*/
 /*online en 0 es offline*/
-DB_STAT UserOffline(sqliteADT db,const char * userName);/*TESTEADA*/
+DB_STAT UserOffline(sqliteADT db,const char * userName);/*VER*/
 
 DB_STAT IsUserOnline(sqliteADT db, const char * userName,int * boolRet);
 
-DB_STAT AllOffline(sqliteADT db);/*TESTEADA*/
+DB_STAT AllOffline(sqliteADT db);/*VER*/
 
-DB_STAT ShowOnline(sqliteADT db,pqADT queue);/*TESTEADA*/
+DB_STAT ShowOnline(sqliteADT db,pqADT queue);
 
-DB_STAT ShowOnlineByID(sqliteADT db,pqADT queue);/*TESTEADA*/
+DB_STAT ShowOnlineByID(sqliteADT db,pqADT queue);
 
-DB_STAT DeleteUser(sqliteADT db ,const char * userName);
+DB_STAT DeleteUser(sqliteADT db ,const char * userName);/*VER*/
 
 DB_STAT GetUserID(sqliteADT db ,const char * userName,int * ID);
 
