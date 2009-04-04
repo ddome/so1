@@ -25,10 +25,11 @@ InitCommunication(pid_t pid)
    //return InitIPC(pid);
 }
 
-pid_t GetRequest(void * data)
+byte ** GetRequest(void)
 {
-     //return ReadIPC(data);
+    return ReadIPC();
 }
+
 
 int
 ProcessRequest(byte ** data, pid_t requestPid)
