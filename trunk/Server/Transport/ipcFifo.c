@@ -44,6 +44,7 @@ MakeWRPath(key_t key)
 
 int InitIPC(key_t key)
 {
+	int status = OK;
     /* Se arman los nombres de los fifos para el proceso que se pidio, 
     *  y luego se crean los fifo's propiamente.
     */
@@ -61,11 +62,12 @@ int InitIPC(key_t key)
         if(errno != EEXIST)
     	   return ERROR;
     }
-    writeFifo_FD = open(writeFifo, O_RDWR );
+    writeFifo_FD = open(writeFifo, O_WRONLY );
     readFifo_FD = open(readFifo, O_RDWR  );
 
     if(readFifo_FD == -1 || writeFifo_FD == -1 )
     {
+    	status = ERROR;
 		printf("no se puede abrir el fifo");
     }
 	
@@ -73,7 +75,7 @@ int InitIPC(key_t key)
     */
     IPCStarted = TRUE;
     isChildProcess = TRUE;
-    return OK;
+    return status;
 }
 
 int 
@@ -109,6 +111,8 @@ ReadIPC(void)
 			return NULL;
 	    }   
 
+		printf("size :%d",header.size);
+		
 	    status=read(readFifo_FD, data, header.size);
 	    if(status > 0)
 	    {

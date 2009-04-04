@@ -12,7 +12,7 @@
 
 static int GetDataSize( session_t data );
 static int ProcessCall( session_t *data );
-static byte * MakeSessionData( session_t data );
+static size_t MakeSessionData( session_t data, byte ** pack );
 static session_t GetSessionData( byte *data );
 
 
@@ -41,7 +41,7 @@ ProcessRequest(byte ** data, pid_t requestPid)
     ret = ProcessCall( &pack );
 	
 	free(*data);
-	*data = MakeSessionData(pack);
+	MakeSessionData(pack,data);
 
 	/*if(((cacaT*)data)->dni>0)
 	{
@@ -61,11 +61,16 @@ int
 SendConectionSignal(  pid_t pid )
 {
 	session_t aux;
-	
+    byte * data;
+    size_t size;
+	int status;
+    
 	aux.pid = pid;
 	aux.opCode = CL_NEW_CON;
+    aux.dataSize = 0;
 	
-	// MANDO POR TRANSPORTE PAQUETITO
+    size = MakeSessionData(aux, &data);
+	WriteIPC(data, size);
 	return OK;
 }	
 	
@@ -77,6 +82,7 @@ SendNewClientSignal( string userName, pid_t pid )
 	aux.pid = pid;
 	strcpy(aux.msg,userName);
 	aux.opCode = CL_NEW_USR;
+    aux.dataSize = 0;
 	
 	//MANDO EL PAQUETITOOOO
 	return OK;
@@ -153,7 +159,7 @@ static int
 GetDirList( session_t pack, string **out )
 {
 	int i;
-	int ndirs;
+    int ndirs;
 	int pos;
 	
 	
@@ -205,7 +211,7 @@ SendExitSignal( string userName )
 /* Static Functions */
 static int
 GetDataSize( session_t data )
-{
+{  
 	return ( MAXSENDER + MAXMSG + sizeof(uInt) + sizeof(pid_t) 
 			+ sizeof(size_t) + data.dataSize );
 }
@@ -235,14 +241,14 @@ ProcessCall( session_t *data )
 	return OK;
 }
 
-static byte *
-MakeSessionData( session_t data )
+static size_t
+MakeSessionData( session_t data, byte **dataBuffer )
 {
 	byte *aux;
 	uInt pos;
-	
+
 	if( (aux=malloc(sizeof(byte)*GetDataSize(data))) == NULL ) {
-		return NULL;
+		return ERROR;
 	}
 	
 	pos = 0;
@@ -256,9 +262,13 @@ MakeSessionData( session_t data )
 	pos += sizeof(pid_t);
 	memmove(aux+pos, &(data.dataSize), sizeof(size_t) );
 	pos += sizeof(size_t);
+    
 	memmove(aux+pos, data.data, data.dataSize );
-	
-	return aux;
+    pos += data.dataSize;
+    
+    *dataBuffer = aux;
+    
+	return pos;
 }
 
 static session_t

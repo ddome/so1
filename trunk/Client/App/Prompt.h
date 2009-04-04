@@ -1,6 +1,6 @@
 #ifndef __PROMPT_H__
 #define __PROMPT_H__
 
-void Prompt(void);
+int Prompt(void);
 
 #endif

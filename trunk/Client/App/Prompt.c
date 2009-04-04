@@ -17,7 +17,7 @@
 #define TRUE 1
 #define FALSE 0
 #define OK 1
-
+#define RETURN 2
 
 #define MAX_LINE 120
 
@@ -47,28 +47,35 @@ static char * ReadLine( FILE * inputFile )
 /* Comandos del Prompt
 */
 
-static int RegisterDirectory(scannerADT scanner, void * data)
+static int Server(scannerADT scanner, void * data)
 {
-    int retValue = OK;
+    int retValue = ERROR;
+    if(!MoreTokensExist(scanner))
+    {
+      if(SendConectionSignal(getppid())==OK)
+      {
+        retValue=OK;
+      }
+    }
     
     return retValue;    
 }
 
-static int ListUsers(scannerADT scanner, void * data)
+static int Name(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
     return retValue;
 }
 
-static int ListUserDirectory(scannerADT scanner, void * data)
+static int ListSincDirs(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
     return retValue;
 }
 
-static int ListLast10(scannerADT scanner, void * data)
+static int AddDir(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
@@ -76,44 +83,45 @@ static int ListLast10(scannerADT scanner, void * data)
 }
 
 
-static int ExitPrompt(scannerADT scanner, void * data)
+static int RemDir(scannerADT scanner, void * data)
 {
     int retValue = OK;
     
     return retValue;
 }
 
-static int ShowCommands(scannerADT scanner, void * data)
+static int Exit(scannerADT scanner, void * data)
 {
-    printf("\nBombSync - Server\n");
-    printf("==================\n");
-    printf("Inicializando Aplicacion...\n");
-    printf("Inicializando Sesion...\n");
-    printf("Inicializando Aplicacion...\n");
-    printf("==================\n");
-    printf("Comandos disponibles:\n");
+
 
     return OK;
 }
 
+static int Help(scannerADT scanner, void * data)
+{
+
+
+  return OK;
+}
 
 /* Se cargan los comandos en el arbol de expresiones
 */
 
 static void LoadTree(treeADT tree)
 {
-    InsertExpression(tree, "Registrar",    RegisterDirectory);
-    InsertExpression(tree, "Usuarios",   ListUsers);
-    InsertExpression(tree, "Dir",        ListUserDirectory);
-    InsertExpression(tree, "Last10",     ListLast10);
-    InsertExpression(tree, "Salir",      ExitPrompt);
-    InsertExpression(tree, "Help",   ShowCommands);
+    InsertExpression(tree, "Servidor",    Server);
+    InsertExpression(tree, "Nombre",      Name);
+    InsertExpression(tree, "Lista",       ListSincDirs);
+    InsertExpression(tree, "Agregar",     AddDir);
+    InsertExpression(tree, "Remover",     RemDir);
+    InsertExpression(tree, "Salir",       Exit);
+    InsertExpression(tree, "Help",        Help);
 }
 
 /* Prompt
 */
 
-void
+int
 Prompt(void)
 {
     char * strAux;
@@ -139,6 +147,6 @@ Prompt(void)
         free(strAux);
     }
     FreeTree(tree);
-    //CERRAR PROgRAMA!!!GoodBye();
+    return status == ERROR ? ERROR : RETURN;
 }
 

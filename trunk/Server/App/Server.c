@@ -22,9 +22,11 @@ StartListening(void)
     {
 	    return ERROR;
     }
-    status = status && SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);
+
+    status = SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);
     while(status != ERROR && status != __SHUT_DOWN__)
     {
+    	printf("2");
         data = ReadRequest();
         if(data != NULL)
         {
