@@ -30,4 +30,6 @@ int CallClientExit(session_t data);
 
 int CallDirReq(session_t *data);
 
+int CallDirList(session_t data);
+
 #endif

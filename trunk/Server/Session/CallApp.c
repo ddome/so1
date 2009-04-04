@@ -207,12 +207,15 @@ MakeDirPack(int nfiles, fileT * fileList,byte **dataBuffer,byte **pack)
 	int i;
 	int pos;
 		
-	if( (*pack = malloc(size=sizeof(fileT)*nfiles+GetFileListSize(nfiles,fileList)) ) == NULL ) {
+	if( (*pack = malloc(size=sizeof(int)+sizeof(fileT)*nfiles+GetFileListSize(nfiles,fileList)) ) == NULL ) {
 		return ERROR;
 	}
-	
+
 	pos = 0;
-	for( i=0; i<nfiles; i++ ) {
+	memmove(*pack + pos, &nfiles, sizeof(int));
+	pos += sizeof(int);
+
+	for( i=0; i<nfiles; i++ ) {		
 		memmove(*pack + pos, &(fileList[i]), sizeof(fileT));
 		pos += sizeof(fileT);
 		memmove(*pack + pos, &(dataBuffer[i]), GetSize(fileList[i]));
@@ -233,6 +236,8 @@ CallDirReq(session_t *dataPtr)
 	dirPath  = (*dataPtr).data;
 	userName = (*dataPtr).msg;
 	
+	free((*dataPtr).data);
+	strcpy((*dataPtr).msg,dirPath);
 	
 	if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
 		return ERROR;
@@ -246,3 +251,52 @@ CallDirReq(session_t *dataPtr)
 		}
 	}
 }	
+
+/* Client -> Server: Pedido de lista de directorios */
+
+static int
+MakeDirListPack( int ndirs, string *dirList, byte **dataBuffer )
+{
+	int pos;
+	int size;
+	int i;
+	
+	*dataBuffer = malloc(size=ndirs*MAX_DIR_NAME*sizeof(char)+sizeof(int));
+	
+	pos = 0;
+	memmove(*dataBuffer, &ndirs, sizeof(int));
+	pos += sizeof(int);
+	
+	for( i=0; i<ndirs; i++ ) {
+		memmove(*dataBuffer+pos, &(dirList[i]), MAX_DIR_NAME);
+		pos += MAX_DIR_NAME;
+	}
+		
+	return size;
+}
+
+
+int
+CallDirList(session_t data)
+{
+	string *out;
+	int ndirs;
+		int i;
+	
+	ndirs = ListAllSyncDirs( &out );
+	
+	data.dataSize = MakeDirListPack( ndirs, out, &(data.data) );
+	
+	for( i=0; i<ndirs; i++ ) {
+		free(out[i]);
+	}
+	free(out);	
+	return OK;
+}	
+	
+	
+	
+	
+
+
+

@@ -94,8 +94,8 @@ WriteIPC(void * data, size_t size)
 
 /*habria que meter en el void * un header indicando el numero de paquete
 y hacer lecturas mientras haya*/
-pid_t
-ReadIPC(void * data)
+byte **
+ReadIPC(void)
 {
     int status = OK;
     pid_t pid=-1;
@@ -113,7 +113,7 @@ ReadIPC(void * data)
 	}
     }
 
-    return (status <= 0) ? ERROR :pid;
+    return NULL;
 }
 
 void

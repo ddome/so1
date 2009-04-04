@@ -49,6 +49,7 @@
 #define CL_FIL_MOD 13
 #define CL_DIR_LST 14
 #define CL_EXT     15
+
 /* Paquete de session */
 
 typedef struct {

@@ -27,7 +27,8 @@ InitCommunication(pid_t pid)
 
 byte ** GetRequest(void)
 {
-    return ReadIPC();
+s
+     return ReadIPC();
 }
 
 
@@ -122,6 +123,32 @@ SendDirReq( string userName, string dirPath, fileT **fileList, byte ***dataBuffe
 	return OK; //CallAddDir( LLAMARTRANSPORTE( MakeSessionData(pack) );)
 }	
 
+static int 
+GetDirList( session_t pack, string **out )
+{
+	int i;
+	int ndirs;
+	int pos;
+	
+	
+	if( (*out=malloc(sizeof(char)*MAX_DIR_NAME)) == NULL ) {
+		return ERROR;
+	}
+	
+	pos = 0;
+	memmove(&ndirs, pack.data, sizeof(int));
+	pos += sizeof(int);
+	
+	for( i=0; i<ndirs; i++ ) {
+		memmove(&((*out)[i]), pack.data, MAX_DIR_NAME );
+		pos += MAX_DIR_NAME;
+	}
+	
+	return ndirs;	
+}	
+	
+
+
 int
 SendDirListReq( string userName )
 {
@@ -161,8 +188,6 @@ void ShutDown(void)
 
 
 /* Static Functions */
-
-
 static int
 GetDataSize( session_t data )
 {
