@@ -57,6 +57,33 @@ ProcessRequest(byte ** data, pid_t requestPid)
 
 /* Send Functions */
 
+int 
+SendConectionSignal(  pid_t pid )
+{
+	session_t aux;
+	
+	aux.pid = pid;
+	aux.opCode = CL_NEW_CON;
+	
+	// MANDO POR TRANSPORTE PAQUETITO
+	return OK;
+}	
+	
+int 
+SendNewClientSignal( string userName, pid_t pid )
+{
+	session_t aux;
+	
+	aux.pid = pid;
+	strcpy(aux.msg,userName);
+	aux.opCode = CL_NEW_USR;
+	
+	//MANDO EL PAQUETITOOOO
+	return OK;
+}
+	
+
+
 static int
 MakeFilePack( fileT file, byte *data, byte **dataBuffer )
 {
