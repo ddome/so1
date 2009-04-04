@@ -262,12 +262,11 @@ ListAllSyncDirs( string **out)
     while((*out)[i]!=NULL)
     {
 	aux=(*out)[i];
-	printf("%s\n",aux);
 	free(aux);
 	i++;
     }
     free(*out);
-    return OK;
+    return i;
 }
 
 
