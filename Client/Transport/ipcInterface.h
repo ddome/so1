@@ -25,7 +25,7 @@ typedef struct {
 
 int InitMainIPC(void);
 
-int InitIPC(int pid);
+int InitIPC(key_t key);
 
 int WriteIPC(void * data, size_t size);
 

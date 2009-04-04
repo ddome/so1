@@ -19,7 +19,6 @@
 typedef struct {
 	size_t size;
 	int nPacket;
-	pid_t pid;
 }headerIPC_t;
 
 

@@ -14,123 +14,168 @@
 *  Functions
 */
 
+typedef struct {
+  int dni;
+  int esgay;
+}cacaT;
+
+int
+Start(void)
+{
+  int status;
+  status = SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);  
+  return status;
+}
+
 int
 StartListening(void)
 {
-    int status;
-    byte ** data;
-    status = InitCommunication(__DEFAULT_PID__);
-    if(status == ERROR)
+  int status;
+  byte ** data;
+  status = InitCommunication(__DEFAULT_PID__);
+  if(status == ERROR)
+  {
+    return ERROR;
+  }
+  while(status != ERROR && status != __SHUT_DOWN__)
+  {
+    printf("hay proceso escuchando requests");
+    data = ReadRequest();
+    if(data != NULL)
     {
-	    return ERROR;
+        /* se manda a que sea procesado en la capa de sesion 
+        */
+      status = ProcessRequest(data, 0);
     }
-    status = status && SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);
-    while(status != ERROR && status != __SHUT_DOWN__)
+    else
     {
-	if((data = ReadRequest()) != NULL)
-	{
-            /* se manda a que sea procesado en la capa de sesion 
-            */
-            status = ProcessRequest(&data, 0);
-	}
-	else
-	{
-	    status = NULL;
-	}
+      status = ERROR;
     }
-    return status;
+  }
+  return status;
 }
 
-byte ** 
+byte **
 ReadRequest(void)
 {
-    int requestExists = FALSE;
-    while(!requestExists)
+  byte ** data;
+  int requestExists = FALSE;
+  int status;
+  while(!requestExists)
+  {
+    if( (data = GetRequest()) != NULL)
     {
-        if( ((data = GetRequest()) != NULL)
-        {
-            requestExists = TRUE;
-        }
+      requestExists = TRUE;
     }
-	
-    return data;
+  }
+    
+  return data;
 }
 
 int
 SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
 {
-    pid_t childPid;
-    int returnValue = OK;
-	
-    switch(childPid = fork())
-    {
-        case ERROR: 
-            returnValue = ERROR;
-            break;
-        case __ISCHILD__:
-            returnValue = StartSubProcess(opCode, pid, msg);
-            break;
+  pid_t childPid;
+  int returnValue = OK;
+    
+  switch(childPid = fork())
+  {
+    case ERROR: 
+      returnValue = ERROR;
+      break;
+    case __ISCHILD__:
+      returnValue = StartSubProcess(opCode, getppid(), msg);
+      break;
         /*  Si es el padre no se hace nada
         */
-        default:
-            break;
-    }
+    default:
+      break;
+  }
 
-    return returnValue;
+  return returnValue;
 }
 
 
 int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
 {
-    int returnValue = OK;
-    switch(opCode)
-    {
-	case __SPAWN_PROMPT__:
-	    Prompt();
-	    break;
-	case __SPAWN_DIR__:
-	    returnValue = StartDirSubServer(pid, msg);
-	    break;
-	case __SPAWN_DEMAND__:
-        returnValue = StartDemandSubServer(pid, msg);
-	    break;
-	/* Si no era un codigo de operacion valido, se devuelve error
-	*/
-	default:
-	    returnValue = ERROR;
-	    break;
-    }
+  int returnValue = OK;
+  switch(opCode)
+  {
+    case __SPAWN_PROMPT__:
+      Prompt();
+      break;
+    case __SPAWN_DIR__:
+      returnValue = StartDirSubServer(pid, msg);
+      break;
+    /*case __SPAWN_INOTIFY__:
+      returnValue = */
+    case __SPAWN_PING__:
+      returnValue = StartPingServer(pid, msg);
+      break;
+    case __SPAWN_DEMAND__:
+      returnValue = StartDemandSubServer(pid, msg);
+      break;
+    /* Si no era un codigo de operacion valido, se devuelve error
+    */
+    default:
+      returnValue = ERROR;
+      break;
+  }
     
-    return returnValue;
+  return returnValue;
 }
 
 int StartDirSubServer(pid_t pid, char msg[MAX_MSG])
 {
-	key_t key;
-	key = ftok(msg, pid);
-	if(InitCommunication(key) == ERROR)
-	{
-		return ERROR;
-	}
-	
-	ReadDirSubServerRequests(key);
-	
-	return OK;
+  int status;
+  key_t key;
+  byte ** data;
+  key = ftok(msg, pid);
+  if(InitCommunication(key) == ERROR)
+  {
+    status = ERROR;
+  }
+    
+  while(status != ERROR && status != __SHUT_DOWN__)
+  {
+    data = ReadDirSubServerRequests();
+    if(data != NULL)
+    {
+            /* se manda a que sea procesado en la capa de sesion 
+            */
+      status = ProcessRequest(data, 0);
+    }
+    else
+    {
+      status = ERROR;
+    }
+  }
+    
+  return status;
+}
+
+byte ** ReadDirSubServerRequests(void)
+{
+  byte ** data;
+  int requestExists = FALSE;
+  int status;
+  while(!requestExists)
+  {
+    if( (data = GetRequest()) != NULL)
+    {
+      requestExists = TRUE;
+    }
+  }
+    
+  return data;
 }
 
 int StartDemandSubServer(pid_t pid, char msg[MAX_MSG])
 {
-    return 1;
+  return 1;
 }
 
-void ReadDirSubServerRequests(key_t key)
+int StartPingServer(pid_t pid, char msg[MAX_MSG])
 {
-    void * data;
-    pid_t pid;
-    int exit=FALSE;
-    while(!exit)
-    {
-        pid=ReadRequest(&data);
-        ProcessRequest(&data, pid);
-    }
+    return 1;
 }

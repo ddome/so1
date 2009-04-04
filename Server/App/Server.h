@@ -61,7 +61,7 @@ byte ** ReadRequest(void);
 
 int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
 
-void ReadDirSubServerRequests(key_t key);
+byte ** ReadDirSubServerRequests(void);
 
 int StartDirSubServer(pid_t pid, char msg[MAX_MSG]);
 
