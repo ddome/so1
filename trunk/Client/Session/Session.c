@@ -26,9 +26,8 @@ InitCommunication(pid_t pid)
 }
 
 byte ** GetRequest(void)
-{
-s
-     return ReadIPC();
+{	
+	return ReadIPC();
 }
 
 
