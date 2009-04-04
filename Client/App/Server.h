@@ -48,7 +48,7 @@
 
 #define __ISCHILD__	      0
 #define __SHUT_DOWN__	 -2
-
+#define CHILD_RETURN      2
 
 
 int

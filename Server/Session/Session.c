@@ -6,24 +6,14 @@
 #include "../App/Server.h"
 #include "CallApp.h"
 #include "Session.h"
-
-/*
-*  Types
-*/
-
-typedef struct{
-    int dni;
-    int esgay;
-} cacaT;
-
  
 /* Static Functions */
 
 
 static int GetDataSize( session_t data );
 static int ProcessCall( session_t *data );
-//static byte * MakeSessionData( session_t data );
-//static session_t GetSessionData( byte *data );
+static size_t MakeSessionData( session_t data, byte **pack );
+static session_t GetSessionData( byte *data );
 
 
 /* Functions */
@@ -43,24 +33,16 @@ byte ** GetRequest(void)
 int
 ProcessRequest(byte ** data, pid_t requestPid)
 {
-	/*session_t pack;
-	/*int ret;
+	session_t pack;
+	size_t size;
+	int ret;
 	
 	pack  = GetSessionData(*data);
     ret   = ProcessCall( &pack );
-
+	printf("llego un mensaje, opcode:%d", pack.opCode);
 	free(*data);
-	*data = MakeSessionData(pack);*/
-	 
-    int ret = 0;
-	if((*((cacaT**)data))->dni>0)
-	{
-	    printf("llego un mensaje!: %d - %s es gay \n", (*((cacaT**)data))->dni,(*((cacaT**)data))->esgay?"SI":"NO");
-	    SpawnSubProcess(__SPAWN_DIR__,requestPid,"/");
-	}
-	else
-	    printf("Rock and roll neneeee!\n"); 
-	
+	size = MakeSessionData(pack, data);
+	ret = WriteIPC(*data, size);
 	return ret;
 }
 
@@ -135,14 +117,15 @@ ProcessCall( session_t *data )
 	}	
 }
 
-byte *
-MakeSessionData( session_t data )
+static size_t
+MakeSessionData( session_t data, byte **dataBuffer )
 {
 	byte *aux;
 	uInt pos;
-	
+
+    
 	if( (aux=malloc(sizeof(byte)*GetDataSize(data))) == NULL ) {
-		return NULL;
+		return ERROR;
 	}
 	
 	pos = 0;
@@ -157,8 +140,11 @@ MakeSessionData( session_t data )
 	memmove(aux+pos, &(data.dataSize), sizeof(size_t) );
 	pos += sizeof(size_t);
 	memmove(aux+pos, data.data, data.dataSize );
-	
-	return aux;
+    pos += data.dataSize;
+    
+    *dataBuffer = aux;
+    
+	return pos;
 }
 
 session_t

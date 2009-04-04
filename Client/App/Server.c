@@ -14,42 +14,33 @@
 *  Functions
 */
 
-typedef struct {
-  int dni;
-  int esgay;
-}cacaT;
-
-int
-Start(void)
-{
-  int status;
-  status = SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);  
-  return status;
-}
-
 int
 StartListening(void)
 {
   int status;
   byte ** data;
+  
   status = InitCommunication(__DEFAULT_PID__);
   if(status == ERROR)
   {
     return ERROR;
   }
+  
+  status = SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL); 
+  if(status == CHILD_RETURN)
+  {
+    return OK;
+  }
+
   while(status != ERROR && status != __SHUT_DOWN__)
   {
-    printf("hay proceso escuchando requests");
     data = ReadRequest();
+    getchar();
     if(data != NULL)
     {
         /* se manda a que sea procesado en la capa de sesion 
         */
       status = ProcessRequest(data, 0);
-    }
-    else
-    {
-      status = ERROR;
     }
   }
   return status;
@@ -102,7 +93,7 @@ int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
   switch(opCode)
   {
     case __SPAWN_PROMPT__:
-      Prompt();
+      returnValue = Prompt();
       break;
     case __SPAWN_DIR__:
       returnValue = StartDirSubServer(pid, msg);

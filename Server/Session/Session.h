@@ -72,9 +72,6 @@ byte ** GetRequest(void);
 
 int ProcessRequest(byte ** data, pid_t requestPid);
 
-byte * MakeSessionData( session_t data );
-
-session_t GetSessionData( byte *data );
 
 #endif
 

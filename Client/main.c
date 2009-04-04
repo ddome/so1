@@ -17,7 +17,7 @@ main(void)
     status = InitTransport();
     if(status != ERROR)
     {
-        status = Start();
+        status = StartListening();
     }
     else
     {

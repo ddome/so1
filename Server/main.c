@@ -19,7 +19,7 @@ int
 main(void)
 {
    
-	/*int status;
+	int status;
     status = InitApplication();
     status = InitTransport();
     if(status != ERROR)
@@ -33,20 +33,20 @@ main(void)
     else
     {
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
-    }*/
-	 
+    }
+/*	 
 	InitApplication();
 	printf("%d\n",NewClient(1));
 	printf("%d\n",NewClient(2));
 	/*printf("%d\n",NewClient(1));*/
-	printf("%d\n",NewClient(3));
+/*	printf("%d\n",NewClient(3));
 	printf("%d\n",NewClient(4));
 	printf("%d\n",NewClient(5));
 	
 	printf("Conectando...\n");
 	printf("%d\n",ConnectUser(1,"puto"));
 	printf("%d\n",ConnectUser(2,"puto"));
-	printf("%d\n",ConnectUser(11345,"puertgto"));
+	printf("%d\n",ConnectUser(11345,"puertgto"));*/
 
 	/*session_t aux;
 	string dirpath;
