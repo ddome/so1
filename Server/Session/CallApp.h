@@ -10,6 +10,8 @@
 #ifndef _CALL_APP_
 #define _CALL_APP_
 
+int CallNewConection( session_t *data);
+
 int CallNewClient(session_t *dataPtr);
 
 int CallUserList(session_t *dataPtr);
@@ -30,6 +32,6 @@ int CallClientExit(session_t data);
 
 int CallDirReq(session_t *data);
 
-int CallDirList(session_t data);
+int CallDirList(session_t *data);
 
 #endif

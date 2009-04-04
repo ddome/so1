@@ -38,6 +38,17 @@ FillPack(string senderID, string msg, uInt opCode,
 	return aux;
 }
 
+/* Client -> Server: Nueva conección */
+
+int 
+CallNewConection( session_t *dataPtr )
+{
+	
+	
+	(*dataPtr).opCode = SR_CONECT_OK;
+	
+	return OK;
+}
 
 /* Client -> Server: New Client */
 
@@ -277,15 +288,16 @@ MakeDirListPack( int ndirs, string *dirList, byte **dataBuffer )
 
 
 int
-CallDirList(session_t data)
+CallDirList(session_t *dataPtr)
 {
 	string *out;
 	int ndirs;
-		int i;
+	int i;
+	
 	
 	ndirs = ListAllSyncDirs( &out );
 	
-	data.dataSize = MakeDirListPack( ndirs, out, &(data.data) );
+	(*dataPtr).dataSize = MakeDirListPack( ndirs, out, &((*dataPtr).data) );
 	
 	for( i=0; i<ndirs; i++ ) {
 		free(out[i]);
