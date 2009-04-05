@@ -110,14 +110,14 @@ SetName(int pid,const char * userName)
     else
 	return DB_ERROR;
 }
-
+/* BORRAR
 int
 SetClientOnline(const char * userName)
 {
-    /*El usuario tiene q exitir*/
+    El usuario tiene q exitir
     UserOnline(db,userName);
     return OK;
-}
+}*/
 
 int
 SetClientOffline(const char * userName)
