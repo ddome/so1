@@ -14,10 +14,10 @@ static int GetDataSize( session_t data );
 static int ProcessCall( session_t *data );
 static size_t MakeSessionData( session_t data, byte ** pack );
 static session_t GetSessionData( byte *data );
-
+static int MakeFilePack( fileT file, byte *data, byte **dataBuffer );
+static int GetDirList( session_t pack, string **out );
 
 /* Functions */
-
 
 int
 InitCommunication(key_t key)
@@ -29,7 +29,6 @@ byte ** GetRequest(void)
 {	
 	return ReadIPC();
 }
-
 
 int
 ProcessRequest(byte ** data, pid_t requestPid)
@@ -77,45 +76,34 @@ SendNewClientSignal( string userName, pid_t pid )
 	//MANDO EL PAQUETITOOOO
 	return OK;
 }
-	
-
-
-static int
-MakeFilePack( fileT file, byte *data, byte **dataBuffer )
-{
-	if( (*dataBuffer=malloc(GetSize(file)+sizeof(fileT))) == NULL ) {
-		return ERROR;
-	}
-	
-	memmove(*dataBuffer, &file, sizeof(fileT));
-	if( data != NULL ) {
-		memmove(*dataBuffer+sizeof(fileT), data, GetSize(file));
-	}
-	
-	return (GetSize(file) + sizeof(fileT));
-}	
 
 int 
-SendFileAddPack( string userName, fileT file, byte *data )
+SendFileAddPack( string userName, fileT file, byte *dataBuffer )
 {
 	session_t pack;
+	byte *data;
 	
 	pack.opCode = CL_FIL_ADD;
 	strcpy(pack.msg,userName);
-	pack.dataSize = MakeFilePack( file, data, &pack.data );
+	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
+	
+	MakeSessionData(pack, &data);
 	
 	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
 	
 }
 
 int 
-SendFileModPack( string userName, fileT file, byte *data )
+SendFileModPack( string userName, fileT file, byte *dataBuffer )
 {
 	session_t pack;
+	byte *data;
 	
 	pack.opCode = CL_FIL_MOD;
 	strcpy(pack.msg,userName);
-	pack.dataSize = MakeFilePack( file, data, &pack.data );
+	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
+	
+	MakeSessionData(pack, &data);
 	
 	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
 }
@@ -124,10 +112,13 @@ int
 SendFileRemPack( string userName, fileT file )
 {
 	session_t pack;
+	byte *data;
 	
 	pack.opCode = CL_FIL_REM;
 	strcpy(pack.msg,userName);
 	pack.dataSize = MakeFilePack( file, NULL, &pack.data );
+
+	MakeSessionData(pack, &data);
 	
 	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
 }
@@ -136,69 +127,53 @@ int
 SendDirReq( string userName, string dirPath )
 {
 	session_t pack;
+	byte *data;
 	
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;
 	pack.data = NULL;
 	
+	MakeSessionData(pack, &data);
+	
 	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
 }	
-
-static int 
-GetDirList( session_t pack, string **out )
-{
-	int i;
-    int ndirs;
-	int pos;
-	
-	
-	if( (*out=malloc(sizeof(char)*MAX_DIR_NAME)) == NULL ) {
-		return ERROR;
-	}
-	
-	pos = 0;
-	memmove(&ndirs, pack.data, sizeof(int));
-	pos += sizeof(int);
-	
-	for( i=0; i<ndirs; i++ ) {
-		memmove(&((*out)[i]), pack.data, MAX_DIR_NAME );
-		pos += MAX_DIR_NAME;
-	}
-	
-	return ndirs;	
-}	
-	
-
 
 int
 SendDirListReq( string userName )
 {
 	session_t pack;
+	byte *data;
 	
 	pack.opCode = CL_DIR_LST;
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;
 	pack.data = NULL;
 	
-	return OK; // string = GetString( LLAMARTRANSPORTE( MakeSessionData(pack) );)	
+	MakeSessionData(pack, &data);
+	
+	return OK; // Llamar transporte	
 }
 
 int 
 SendExitSignal( string userName )
 {
 	session_t pack;
+	byte *data;
 	
 	pack.opCode = CL_EXT;
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;
 	pack.data = NULL;	
+	
+	MakeSessionData(pack, &data);	
 
 	return OK;
 }
 
 
 /* Static Functions */
+
 static int
 GetDataSize( session_t data )
 {  
@@ -310,6 +285,42 @@ GetSessionData( byte *data )
 	return aux;
 }
 
+static int
+MakeFilePack( fileT file, byte *data, byte **dataBuffer )
+{
+	if( (*dataBuffer=malloc(GetSize(file)+sizeof(fileT))) == NULL ) {
+		return ERROR;
+	}
+	
+	memmove(*dataBuffer, &file, sizeof(fileT));
+	if( data != NULL ) {
+		memmove(*dataBuffer+sizeof(fileT), data, GetSize(file));
+	}
+	
+	return (GetSize(file) + sizeof(fileT));
+}
 
 
-
+static int 
+GetDirList( session_t pack, string **out )
+{
+	int i;
+    int ndirs;
+	int pos;
+	
+	
+	if( (*out=malloc(sizeof(char)*MAX_DIR_NAME)) == NULL ) {
+		return ERROR;
+	}
+	
+	pos = 0;
+	memmove(&ndirs, pack.data, sizeof(int));
+	pos += sizeof(int);
+	
+	for( i=0; i<ndirs; i++ ) {
+		memmove(&((*out)[i]), pack.data, MAX_DIR_NAME );
+		pos += MAX_DIR_NAME;
+	}
+	
+	return ndirs;	
+}	

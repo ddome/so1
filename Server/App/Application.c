@@ -16,15 +16,15 @@ NewClient(int pid)
     int ret=AddClient(pid);
     if(ret==OK)
     {
-	return NEW_USR_OK;
+		return NEW_USR_OK;
     }
-    else if(ret==ERROR)
+		else if(ret==ERROR)
     {
 	//USUARIO YA CONECTADO
-	return NEW_USR_EXIST;
+		return NEW_USR_EXIST;
     }
     else
-	return NEW_USR_ERROR;
+		return NEW_USR_ERROR;
 }
 
 int
@@ -199,12 +199,12 @@ ReqFile( fileT file )
     
     if( (fptr = OpenReadFile(file)) == NULL )
     {
-	return NULL;
+		return NULL;
     }
     
     if( (data=malloc(a=GetSize(file))) == NULL )
     {
-	return NULL;
+		return NULL;
     }
     
     

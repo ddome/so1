@@ -20,9 +20,9 @@
 /*
 *  Defines
 */
-#define MAXSENDER 255
-#define MAXMSG 255
-#define MAXLIST 255
+#define MAXSENDER 150
+#define MAXMSG 150
+#define MAXLIST 150
 
 #define __SHUT_DOWN__	 -2
 
@@ -75,6 +75,7 @@ int ProcessRequest(byte ** data, pid_t requestPid);
 
 int  SendConectionSignal(  pid_t pid );
 
+int SendFileAddPack( string userName, fileT file, byte *data );
 
 #endif
 

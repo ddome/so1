@@ -93,7 +93,7 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_FIL_MOD:			
-			return CallFileAdd(*data);
+			return CallFileMod(*data);
 			break;
 			
 		case CL_EXT:			
@@ -181,6 +181,9 @@ GetSessionData( byte *data )
 	return aux;
 }
 
+/* DEBUGUEO */
+
+
 int 
 SendConectionSignal(  pid_t pid )
 {
@@ -201,5 +204,35 @@ SendConectionSignal(  pid_t pid )
 }	
 
 
+static int
+MakeFilePack( fileT file, byte *data, byte **dataBuffer )
+{
+	if( (*dataBuffer=malloc(GetSize(file)+sizeof(fileT))) == NULL ) {
+		return ERROR;
+	}
+	
+	memmove(*dataBuffer, &file, sizeof(fileT));
+	if( data != NULL ) {
+		memmove(*dataBuffer+sizeof(fileT), data, GetSize(file));
+	}
+	
+	return (GetSize(file) + sizeof(fileT));
+}	
 
+int 
+SendFileAddPack( string userName, fileT file, byte *dataBuffer )
+{
+	session_t pack;
+	byte *data;
+	
+	pack.opCode = CL_FIL_ADD;
+	strcpy(pack.msg,userName);
+	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
+	
+	MakeSessionData(pack, &data);
+	ProcessRequest(&data,55);
+	
+	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
+	
+}
 
