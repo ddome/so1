@@ -20,9 +20,9 @@
 /*
 *  Defines
 */
-#define MAXSENDER 150
-#define MAXMSG 150
-#define MAXLIST 150
+#define MAXSENDER 255
+#define MAXMSG 255
+#define MAXLIST 255
 
 #define __SHUT_DOWN__	 -2
 
@@ -69,7 +69,7 @@ typedef struct {
 
 int InitCommunication(pid_t pid);
 
-byte ** GetRequest(void);
+byte * GetRequest(void);
 
 int ProcessRequest(byte ** data, pid_t requestPid);
 

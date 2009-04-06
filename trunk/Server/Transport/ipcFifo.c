@@ -95,7 +95,7 @@ WriteIPC(void * data, size_t size)
     return status;
 }
 
-byte ** 
+byte * 
 ReadIPC(void)
 {
     int status = OK;
@@ -130,7 +130,7 @@ ReadIPC(void)
 	    status = ERROR;
     }
 
-    return status == ERROR ? NULL: &data ;
+    return status == ERROR ? NULL: data ;
 }
 
 void

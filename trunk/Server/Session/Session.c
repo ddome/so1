@@ -25,7 +25,7 @@ InitCommunication(pid_t pid)
     return InitIPC(pid);
 }
 
-byte ** GetRequest(void)
+byte * GetRequest(void)
 {
     return ReadIPC();
 }
@@ -38,7 +38,7 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	int ret;
 	
 	pack  = GetSessionData(*data);
-    ret   = ProcessCall( &pack );
+        ret   = ProcessCall( &pack );
 	printf("llego un mensaje, opcode:%d", pack.opCode);
 	free(*data);
 	size = MakeSessionData(pack, data);

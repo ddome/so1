@@ -16,7 +16,7 @@ int
 StartListening(void)
 {
     int status;
-    byte ** data;
+    byte * data;
     status = InitCommunication(__DEFAULT_PID__);
     if(status == ERROR)
     {
@@ -26,13 +26,13 @@ StartListening(void)
     status = SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);
     while(status != ERROR && status != __SHUT_DOWN__)
     {
-    	printf("2");
         data = ReadRequest();
+
         if(data != NULL)
         {
             /* se manda a que sea procesado en la capa de sesion 
             */
-            status = ProcessRequest(data, 0);
+            status = ProcessRequest(&data, 0);
         }
         else
         {
