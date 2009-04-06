@@ -43,15 +43,6 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	free(*data);
 	MakeSessionData(pack,data);
 
-	/*if(((cacaT*)data)->dni>0)
-	{
-	    printf("llego un mensaje!: %d - %s es gay \n", ((cacaT*)data)->dni,((cacaT*)data)->esgay?"SI":"NO");
-	    SpawnSubProcess(__SPAWN_DIR__,requestPid,"/");
-	}
-	else
-	    printf("Rock and roll neneeee!\n");*/
-	
-	
 	return ret;
 }
 
@@ -63,7 +54,6 @@ SendConectionSignal(  pid_t pid )
 	session_t aux;
     byte * data;
     size_t size;
-	int status;
     
 	aux.pid = pid;
 	aux.opCode = CL_NEW_CON;
@@ -143,7 +133,7 @@ SendFileRemPack( string userName, fileT file )
 }
 
 int 
-SendDirReq( string userName, string dirPath, fileT **fileList, byte ***dataBuffer )
+SendDirReq( string userName, string dirPath )
 {
 	session_t pack;
 	
@@ -152,7 +142,7 @@ SendDirReq( string userName, string dirPath, fileT **fileList, byte ***dataBuffe
 	pack.dataSize = 0;
 	pack.data = NULL;
 	
-	return OK; //CallAddDir( LLAMARTRANSPORTE( MakeSessionData(pack) );)
+	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
 }	
 
 static int 
@@ -220,6 +210,21 @@ static int
 ProcessCall( session_t *data )
 {	
 	switch ((*data).opCode) {
+		case SR_CONECT_OK:
+			//funcion que imprime ok en prompt
+			return OK;
+			break;
+		case SR_NEW_USR_OK:
+			//funcion que imprime ok en prompt
+			return OK;
+			break;
+		case SR_NEW_USR_ERR:
+			//funcion que avisa que el nombre ya existe
+			return OK;
+			break;
+		case SR_DIR_ADD:
+			return CallDirAdd(*data);
+			break;			
 		case SR_FIL_ADD:
 			return CallFileAdd(*data);
 			break;

@@ -41,6 +41,7 @@
 #define SR_FIL_ADD     5
 #define SR_FIL_REM     6
 #define SR_EXT         7
+#define SR_DIR_ADD     18
 
 /* Client -> Server operations 
  */
@@ -78,7 +79,7 @@ int SendNewClientSignal( string userName, pid_t pid );
 int SendFileAddPack(  string userName, fileT file, byte *data );
 int SendFileModPack(  string userName, fileT file, byte *data );
 int SendFileRemPack( string userName, fileT file );
-int SendDirReq( string userName, string dirPath, fileT **fileList, byte ***dataBuffer );
+int SendDirReq( string userName, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );
 
