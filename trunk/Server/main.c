@@ -19,7 +19,7 @@ int
 main(void)
 {
    
-	int status;
+/*	int status;
     status = InitApplication();
     status = InitTransport();
     if(status != ERROR)
@@ -34,6 +34,7 @@ main(void)
     {
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
     } 
+*/
 	 
 /*	InitApplication();
 	printf("%d\n",NewClient(1));
@@ -48,6 +49,14 @@ main(void)
 	printf("%d\n",ConnectUser(2,"puto"));
 	printf("%d\n",ConnectUser(11345,"puertgto"));*/
 
+	
+	fileT file;
+	InitApplication();
+	
+	file = NewFileT("/SO", "Prueba1");
+	
+	SendConectionSignal(41);
+	SendFileAddPack("damian", file, ReqFile(file) );
     CloseApplication();
 
     return 0;
