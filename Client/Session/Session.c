@@ -37,7 +37,7 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	int ret;
 			
 	pack  = GetSessionData(*data);
-    ret = ProcessCall( &pack );
+        ret = ProcessCall( &pack );
 	
 	free(*data);
 	MakeSessionData(pack,data);

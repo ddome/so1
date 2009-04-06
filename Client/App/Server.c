@@ -35,7 +35,6 @@ StartListening(void)
   while(status != ERROR && status != __SHUT_DOWN__)
   {
     data = ReadRequest();
-    getchar();
     if(data != NULL)
     {
         /* se manda a que sea procesado en la capa de sesion 

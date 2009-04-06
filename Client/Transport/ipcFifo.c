@@ -54,7 +54,7 @@ int InitIPC(key_t key)
   readFifo=MakeRDPath(key);
   writeFifo=MakeWRPath(key);
 
-  writeFifo_FD = open(writeFifo, O_WRONLY );
+  writeFifo_FD = open(writeFifo, O_RDWR );
   readFifo_FD = open(readFifo, O_RDWR  );
 
   if(readFifo_FD == -1 || writeFifo_FD == -1 )
@@ -82,7 +82,7 @@ WriteIPC(void * data, size_t size)
     {
         status = write(writeFifo_FD,data,size);
 
-    }      
+    }
     return status;
 }
 
