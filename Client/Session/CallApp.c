@@ -99,13 +99,42 @@ CallFileRem(session_t data)
 
 
 /* Server -> Client: Agregar directorio */
+
+int
+GetDirData(byte *data, fileT **fileListPtr, byte ***dataBufferPtr)
+{
+	int nfiles;
+	int pos;
+	int i;
+	
+	fileT *fileList;
+	byte **dataBuffer;
+	
+	pos =0;
+	memmove(&nfiles, data, sizeof(int));
+	
+	pos+=sizeof(int);
+	for( i=0; i<nfiles; i++ ) {
+		memmove(&(fileList[i]), data + pos, sizeof(fileT));
+		pos += sizeof(fileT);
+		memmove(&(dataBuffer[i]), data + pos,  GetSize(fileList[i]));
+		pos += GetSize(fileList[i]);
+	}
+	
+	
+	*fileListPtr = fileList;
+	*dataBufferPtr = dataBuffer;
+	
+	return OK;
+}
+
 int 
 CallDirAdd(session_t data)
 {
 	fileT *fileList;
 	byte **dataBuffer;
 	
-//	GetDirData(data.data, &fileList, &dataBuffer);
+	GetDirData(data.data, &fileList, &dataBuffer);
 
 	return DirAdd(data.msg, fileList, dataBuffer, 0);	
 }	

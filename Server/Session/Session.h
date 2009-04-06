@@ -40,6 +40,7 @@
 #define SR_FIL_ADD     5
 #define SR_FIL_REM     6
 #define SR_EXT         7
+#define SR_DIR_ADD     18
 
 /* Client -> Server operations 
 */
@@ -71,6 +72,8 @@ int InitCommunication(pid_t pid);
 byte ** GetRequest(void);
 
 int ProcessRequest(byte ** data, pid_t requestPid);
+
+int  SendConectionSignal(  pid_t pid );
 
 
 #endif

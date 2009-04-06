@@ -43,11 +43,11 @@ FillPack(string senderID, string msg, uInt opCode,
 int 
 CallNewConection( session_t *dataPtr )
 {
-
+	
 	if( (NewClient((*dataPtr).pid)) != NEW_USR_OK ) {
 		return ERROR;
 	}
-	
+
 	(*dataPtr).opCode = SR_CONECT_OK;
 	
 	return OK;
@@ -227,8 +227,8 @@ MakeDirPack(int nfiles, fileT * fileList,byte **dataBuffer,byte **pack)
 
 	pos = 0;
 	memmove(*pack + pos, &nfiles, sizeof(int));
+	
 	pos += sizeof(int);
-
 	for( i=0; i<nfiles; i++ ) {		
 		memmove(*pack + pos, &(fileList[i]), sizeof(fileT));
 		pos += sizeof(fileT);
@@ -309,7 +309,7 @@ CallDirList(session_t *dataPtr)
 	return OK;
 }	
 	
-	
+
 	
 	
 

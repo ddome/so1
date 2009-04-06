@@ -42,7 +42,7 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	printf("llego un mensaje, opcode:%d", pack.opCode);
 	free(*data);
 	size = MakeSessionData(pack, data);
-	ret = WriteIPC(*data, size);
+	//ret = WriteIPC(*data, size);
 	return ret;
 }
 
@@ -181,7 +181,24 @@ GetSessionData( byte *data )
 	return aux;
 }
 
-
+int 
+SendConectionSignal(  pid_t pid )
+{
+	session_t aux;
+    byte * data;
+    size_t size;
+    
+	aux.pid = pid;
+	aux.opCode = CL_NEW_CON;
+    aux.dataSize = 0;
+	
+    size = MakeSessionData(aux, &data);
+	//WriteIPC(data, size);
+	
+	ProcessRequest(&data,pid);
+	
+	return OK;
+}	
 
 
 
