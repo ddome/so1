@@ -71,24 +71,21 @@ int AddNameByPid(sqliteADT db,int pid,const char * userName);
 /*Pregunta si un usuario con determinado pid ya esta en la base de datos.*/
 DB_STAT UserPidExist(sqliteADT db, int pid,int * boolRet);
 
-/*Online en 1*/
-DB_STAT UserOnline(sqliteADT db,const char * userName);/*VER*/
-/*online en 0 es offline*/
-DB_STAT UserOffline(sqliteADT db,const char * userName);/*VER*/
-
 DB_STAT IsUserOnline(sqliteADT db, const char * userName,int * boolRet);
 
-DB_STAT AllOffline(sqliteADT db);/*VER*/
+DB_STAT ShowOnlineByPID(sqliteADT db,pqADT queue);
 
 DB_STAT ShowOnline(sqliteADT db,pqADT queue);
 
-DB_STAT ShowOnlineByID(sqliteADT db,pqADT queue);
 
-DB_STAT DeleteUser(sqliteADT db ,const char * userName);/*VER*/
 
-DB_STAT GetUserID(sqliteADT db ,const char * userName,int * ID);
+DB_STAT UnlinkAllDirsToUser(sqliteADT db,const char * userName);
+/*online en 0 es offline*/
+DB_STAT UserOffline(sqliteADT db,const char * userName);/*VER*/
 
-DB_STAT GetUserWithID(sqliteADT db,int ID, char ** userName);
+DB_STAT AllOffline(sqliteADT db);/*VER*/
+
+DB_STAT UnlinkAllDirs(sqliteADT db);
 
 
 
@@ -104,6 +101,8 @@ DB_STAT UnlinkUserToDir(sqliteADT db,const char * pathName ,const char * userNam
 DB_STAT ListAllDirs(sqliteADT db,pqADT queue);/*TESTEADA*/
 /*Lista los usuarios registrados a un directorio determinado*/
 DB_STAT ListUsersLinkToDir(sqliteADT db,const char * pathName,pqADT queue);
+
+DB_STAT ListPIDsLinkToDir(sqliteADT db,const char * pathName,pqADT queue);
 /*Lista los directorios registrados a un usuario determinado*/
 DB_STAT ListDirsLinkToUser(sqliteADT db,const char * userName,pqADT queue);
 

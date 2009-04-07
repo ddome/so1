@@ -238,7 +238,7 @@ EscapeString( sqliteADT db, const char *str )
 
 
 /*************************************/
-/*	  FUNCOINES PUBLICAS         */
+/*	  FUNCIONES PUBLICAS         */
 /*************************************/
 
 
@@ -494,12 +494,12 @@ IsUserOnline(sqliteADT db, const char * userName,int * boolRet)
 }
 
 DB_STAT
-UserOnline(sqliteADT db,const char * userName)
+UnlinkAllDirsToUser(sqliteADT db,const char * userName)
 {
     sqlite3_stmt *statement;
     int ret;
     char *userN;
-    char *sqlSelect = "UPDATE users SET online = 1 WHERE user ='%s'";
+    char *sqlSelect =   "DELETE FROM users_dir WHERE user_id = (SELECT id FROM users WHERE user='%s')";
 
     if (db == NULL || userName == NULL)
         return DB_INVALID_ARG;
@@ -517,15 +517,12 @@ UserOnline(sqliteADT db,const char * userName)
             sqlite3_finalize( statement );
             return DB_SUCCESS;
 
-        case SQLITE_CONSTRAINT:
-            sqlite3_finalize( statement );
-            return DB_ALREADY_EXISTS;
-
         default:
             sqlite3_finalize(statement);
             return DB_INTERNAL_ERROR;
     }
 }
+
 
 DB_STAT
 UserOffline(sqliteADT db,const char * userName)
@@ -533,7 +530,7 @@ UserOffline(sqliteADT db,const char * userName)
     sqlite3_stmt *statement;
     int ret;
     char *userN;
-    char *sqlSelect =   "UPDATE users SET online = 0 WHERE user ='%s'";
+    char *sqlSelect =   "DELETE FROM users WHERE user ='%s'";
 
     if (db == NULL || userName == NULL)
         return DB_INVALID_ARG;
@@ -544,6 +541,30 @@ UserOffline(sqliteADT db,const char * userName)
     ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, userN);
 
     free(userN);
+
+    switch (ret)
+    {
+        case SQLITE_DONE:
+            sqlite3_finalize( statement );
+            return DB_SUCCESS;
+
+        default:
+            sqlite3_finalize(statement);
+            return DB_INTERNAL_ERROR;
+    }
+}
+
+DB_STAT
+UnlinkAllDirs(sqliteADT db)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char *sqlSelect =   "DELETE FROM users_dir";
+
+    if (db == NULL)
+        return DB_INVALID_ARG;
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 0);
 
     switch (ret)
     {
@@ -562,7 +583,7 @@ AllOffline(sqliteADT db)
 {
     sqlite3_stmt *statement;
     int ret;
-    char *sqlSelect = "UPDATE users SET online = 0";
+    char *sqlSelect = "DELETE FROM users";
 
     if (db == NULL )
         return DB_INVALID_ARG;
@@ -617,12 +638,11 @@ ShowOnline(sqliteADT db,pqADT queue)
 }
 
 DB_STAT
-ShowOnlineByID(sqliteADT db,pqADT queue)
+ShowOnlineByPID(sqliteADT db,pqADT queue)
 {
     sqlite3_stmt *statement;
-    int ret;
-    char userName[MAX_USR_NAME] = {0};
-    char *sqlSelect = "SELECT id FROM users WHERE online=1";
+    int ret,aux;
+    char *sqlSelect = "SELECT pid FROM users WHERE online=1";
 
     if ( db == NULL || queue == NULL )
         return DB_INVALID_ARG;
@@ -631,10 +651,9 @@ ShowOnlineByID(sqliteADT db,pqADT queue)
 
     while ( ret == SQLITE_ROW )
     {
-        strncpy(userName, (char *) sqlite3_column_text(statement, 0), MAX_USR_NAME);
-        userName[MAX_USR_NAME-1] = 0;
+        aux=sqlite3_column_int(statement,0);
 
-        if ((Enqueue(queue, &userName,1)) == 1)
+        if ((Enqueue(queue, (void *)aux,1)) == 1)
             ret = sqlite3_step( statement );
         else
         {
@@ -651,67 +670,7 @@ ShowOnlineByID(sqliteADT db,pqADT queue)
     return DB_SUCCESS;
 }
 
-DB_STAT
-DeleteUser(sqliteADT db ,const char * userName)
-{
-        sqlite3_stmt *statement;
-    int ret;
-    char *userN;
-    char *sqlSelect =   "DELETE FROM users WHERE user = '%s'";
 
-    if (db == NULL || userName == NULL)
-        return DB_INVALID_ARG;
-
-    if ( ( userN = EscapeString( db, userName ) ) == NULL )
-        return DB_NO_MEMORY;
-
-    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, userN);
-
-    free(userN);
-
-    switch (ret)
-    {
-        case SQLITE_DONE:
-            sqlite3_finalize( statement );
-            return DB_SUCCESS;
-
-        default:
-            sqlite3_finalize(statement);
-            return DB_INTERNAL_ERROR;
-    }
-}
-
-DB_STAT
-GetUserID(sqliteADT db ,const char * userName,int * ID)
-{
-    sqlite3_stmt *statement;
-    int ret;
-    char * aux;
-    char *sqlSelect = "SELECT id FROM users WHERE user= '%s'";
-
-    if ( db == NULL || ID == NULL || userName==NULL )
-        return DB_INVALID_ARG;
-
-    if ( ( aux = EscapeString( db, userName ) ) == NULL )
-        return DB_NO_MEMORY;
-
-    ret = QueryExecute( db, &statement, sqlSelect, 0, NULL, 1, aux );
-
-    free(aux);
-
-    if ( ret == SQLITE_ROW )
-    {
-        *ID=sqlite3_column_int(statement, 0);
-	ret = sqlite3_step( statement );
-    }
-
-    sqlite3_finalize( statement );
-
-    if ( ret != SQLITE_DONE )
-        return DB_INTERNAL_ERROR;
-
-    return DB_SUCCESS;
-}
 
 DB_STAT
 RegisterDir(sqliteADT db,const char * pathName)
@@ -927,51 +886,42 @@ ListUsersLinkToDir(sqliteADT db,const char * pathName,pqADT queue)
 }
 
 DB_STAT
-GetUserWithID(sqliteADT db,int ID, char ** userName)
+ListPIDsLinkToDir(sqliteADT db,const char * pathName,pqADT queue)
 {
     sqlite3_stmt *statement;
-    int ret;
-    char stmtResp[MAX_USR_NAME]={0};
-    char * idStr;
-    char * aux;
-    char *sqlSelect = "SELECT user FROM users WHERE id = '%s'";
-    
-    if ( db == NULL || userName == NULL )
-        return DB_INVALID_ARG;
-    if( (idStr=calloc(50,sizeof(char)))==NULL )
-    {
-	logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
-	return DB_NO_MEMORY;
-    }
-    sprintf(idStr,"%d",ID);
-    if ( ( aux = EscapeString( db, idStr ) ) == NULL )
-    {
-	free(idStr);
-        return DB_NO_MEMORY;
-    }
-    free(idStr);
-    ret = QueryExecute( db, &statement, sqlSelect, 0, NULL, 1 , aux );
-    
-    free(aux);
-    
-    if ( ret == SQLITE_ROW )
-    {
-	strncpy(stmtResp,(char *) sqlite3_column_text(statement, 0),MAX_USR_NAME);
-	if( (*userName=calloc(MAX_USR_NAME,sizeof(char)))==NULL )
-	{
-	    sqlite3_finalize( statement );
-	    logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
-            return DB_NO_MEMORY;
-	}
-	strncpy(*userName,stmtResp,MAX_USR_NAME);
+    int ret,aux;
+    char * dirP;
+    char *sqlSelect = "SELECT users.pid FROM users INNER JOIN users_dir ON users_dir.user_id = users.id INNER JOIN dirs ON users_dir.dir_id = dirs.id WHERE users.online = 1 AND dirs.dirname = '%s'";
+   
 
-        ret = sqlite3_step( statement );
+    if ( db == NULL || queue == NULL )
+        return DB_INVALID_ARG;
+    
+    if ( ( dirP = EscapeString( db, pathName ) ) == NULL )
+        return DB_NO_MEMORY;
+
+    ret = QueryExecute( db, &statement, sqlSelect, 0, NULL, 1,dirP );
+
+    free(dirP);
+    while ( ret == SQLITE_ROW )
+    {
+        aux=sqlite3_column_int(statement, 0);
+
+        if ((Enqueue(queue, (void *)aux,1)) == 1)
+            ret = sqlite3_step( statement );
+        else
+        {
+            sqlite3_finalize( statement );
+            return DB_INTERNAL_ERROR;
+        }
     }
 
     sqlite3_finalize( statement );
 
     if ( ret != SQLITE_DONE )
+    {
         return DB_INTERNAL_ERROR;
+    }
 
     return DB_SUCCESS;
 }
@@ -1106,7 +1056,7 @@ AddLog(sqliteADT db, const char *userName,const char * fileName ,const char *act
     int ret;
     char *userN, *actionN,*fileN;
     char *sqlSelect = "INSERT INTO logs VALUES ((select user from users where "
-                      "user = '%s'), '%s','%s' ,DATETIME('NOW'))";
+                      "user = '%s'), '%s','%s' ,DATETIME('NOW'));";
 
     if (db == NULL || userName == NULL || action == NULL || fileName==NULL)
         return DB_INVALID_ARG;

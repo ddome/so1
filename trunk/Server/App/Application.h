@@ -135,6 +135,12 @@ int CloseApplication(void);
 ----------------------------------------------------------------*/
 int ListAllSyncDirs( string **out);
 
+/*----------------------------------------------------------------
+ Devuelve la cantidad de usuarios sincronizados a un directorio
+ determinado.
+----------------------------------------------------------------*/
+int CantUsersLinkToDir(char * pathName);
+
 #endif
 
 
