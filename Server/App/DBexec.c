@@ -124,7 +124,7 @@ SetClientOffline(const char * userName)
 {
     if(userName==NULL)
         return ERROR;
-    /*El usuario tiene q exitir y este online*/
+    UnlinkAllDirsToUser(db,userName);
     UserOffline(db,userName);
     return OK;
 }
@@ -132,6 +132,7 @@ SetClientOffline(const char * userName)
 int
 SetAllClientsOffline(void)
 {
+    UnlinkAllDirs(db);
     AllOffline(db);
     return OK;
 }

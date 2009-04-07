@@ -255,6 +255,7 @@ InitApplication(void)
 int
 CloseApplication(void)
 {
+    SetAllClientsOffline();
     FreeDatabase();
     return OK;
 }
