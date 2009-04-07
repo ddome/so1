@@ -25,7 +25,7 @@ int SetClientOffline(const char * userName);
 
 int SetAllClientsOffline(void);
 
-int GetUserStatus(const char * nameName);
+int GetUserStatus(const char * userName);
 
 int NewDir(const char * pathName);
 
@@ -40,5 +40,11 @@ int GetTopList(const char * userName,char ***out);
 int GetUserOnlineList( char *** out );
 
 int FreeDatabase(void);
+
+int GetCantUsersLinkToDir(char * pathName);
+
+int GetListPIDsLinkToDir(char * pathName,int ** pids);
+
+int prueba(void);
 
 #endif

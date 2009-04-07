@@ -282,4 +282,12 @@ ListAllSyncDirs( string **out)
     return i;
 }
 
+int
+CantUsersLinkToDir(char * pathName)
+{
+    if(pathName==NULL)
+        return -1;
+    return GetCantUsersLinkToDir(pathName);
+}
+
 

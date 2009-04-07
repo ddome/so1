@@ -12,6 +12,7 @@ FreeString(char * string)
     return NULL;
 }
 
+
 /*Esta funcion iniciaria la base de datos.*/
 int
 InitBD(void)
@@ -51,6 +52,8 @@ GetListDirs(const char * userName, string **out)
     pqADT queue;
     int i=0;
     char * aux;
+    if(userName==NULL || out==NULL)
+        return ERROR;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
@@ -80,6 +83,8 @@ int
 AddClient(int pid)
 {
     int ret;
+    if(pid<=0)
+        return ERROR;
     ret=AddUser(db,pid);
     if(ret==DB_SUCCESS)
 	return OK;
@@ -95,6 +100,8 @@ SetName(int pid,const char * userName)
 {
     int ret;
     int boolRet;
+    if(pid<=0 || userName==NULL)
+        return ERROR;
     UserPidExist(db,pid,&boolRet);
     if(boolRet<=0)
 	return ERROR;
@@ -110,18 +117,13 @@ SetName(int pid,const char * userName)
     else
 	return DB_ERROR;
 }
-/* BORRAR
-int
-SetClientOnline(const char * userName)
-{
-    El usuario tiene q exitir
-    UserOnline(db,userName);
-    return OK;
-}*/
+
 
 int
 SetClientOffline(const char * userName)
 {
+    if(userName==NULL)
+        return ERROR;
     /*El usuario tiene q exitir y este online*/
     UserOffline(db,userName);
     return OK;
@@ -135,17 +137,22 @@ SetAllClientsOffline(void)
 }
 
 int
-GetUserStatus(const char * nameName)
+GetUserStatus(const char * userName)
 {
     int boolRet;
-    IsUserOnline(db,nameName,&boolRet);
+    if(userName==NULL)
+        return ERROR;
+    IsUserOnline(db,userName,&boolRet);
     return boolRet;
 }
 
 int
 NewDir(const char * pathName)
 {
-    int ret=RegisterDir(db,pathName);
+    int ret;
+    if(pathName==NULL)
+        return ERROR;
+    ret=RegisterDir(db,pathName);
     if(ret==DB_INTERNAL_ERROR)
 	return DB_ERROR;
     return OK;
@@ -154,7 +161,10 @@ NewDir(const char * pathName)
 int
 RegisterDirToUser(const char * pathName,const char *userName)
 {
-    int ret=LinkDirToUser(db,pathName,userName);
+    int ret;
+    if(pathName==NULL || userName==NULL)
+        return ERROR;
+    ret=LinkDirToUser(db,pathName,userName);
     if(ret==DB_INTERNAL_ERROR)
 	return DB_ERROR;
     else if(ret==DB_ALREADY_EXISTS)
@@ -232,7 +242,6 @@ GetUserOnlineList( char *** out )
 	fprintf(stderr,"Error al crear la cola en TopList.\n");
 	return ERROR;
     }
-    
     ShowOnline(db,queue);
     if( ( (*out)=calloc(QueueDepth(queue)+1,sizeof(char*)) )==NULL )
     {
@@ -290,12 +299,86 @@ GetListDirsAll(char *** out)
     return OK;
 }
 
+int
+GetCantUsersLinkToDir(char * pathName)
+{
+    pqADT queue;
+    int cant=0;
+    queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
+    if(queue==NULL)
+    {
+        fprintf(stderr,"Error al crear la cola en TopList.\n");
+        return ERROR;
+    }
+
+    ListUsersLinkToDir(db,pathName,queue);
+    cant=QueueDepth(queue);
+
+    FreePQ(&queue);
+    return cant;
+}
+
+int
+GetListPIDsLinkToDir(char * pathName,int ** pids)
+{
+    pqADT queue;
+    int i=0,cant;
+    int * aux;
+    queue=NewPQ(NULL,(void*(*)(void*))FreeString);
+    if(queue==NULL)
+    {
+        fprintf(stderr,"Error al crear la cola en TopList.\n");
+        return ERROR;
+    }
+
+    ListPIDsLinkToDir(db,pathName,queue);
+    cant=QueueDepth(queue);
+    if( (*pids=calloc(cant+1,sizeof(int)))==NULL )
+    {
+        fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+        return ERROR;
+    }
+    while(!PQIsEmpty(queue))
+    {
+        aux=Dequeue(queue);
+        (*pids)[i]=(int)aux;
+        i++;
+    }
+    FreePQ(&queue);
+    return OK;
+}
 
 
+int
+prueba(void)
+{
+    pqADT queue;
+    int i=0,cant;
+    int * pids;
+    int * aux;
+    queue=NewPQ(NULL,(void*(*)(void*))FreeString);
+    if(queue==NULL)
+    {
+        fprintf(stderr,"Error al crear la cola en TopList.\n");
+        return ERROR;
+    }
 
-
-
-
+    ShowOnlineByPID(db,queue);
+    cant=QueueDepth(queue);
+    if( (pids=calloc(cant+1,sizeof(int)))==NULL )
+    {
+        fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+        return ERROR;
+    }
+    while(!PQIsEmpty(queue))
+    {
+        aux=Dequeue(queue);
+        printf("%d\n",(int)aux);
+        i++;
+    }
+    FreePQ(&queue);
+    return OK;
+}
 
 
 

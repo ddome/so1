@@ -20,9 +20,10 @@ main(void)
 {
    
 	int status;
+int *pids,i=0;
     status = InitApplication();
-    status = InitTransport();
-    if(status != ERROR)
+    /*status = InitTransport();*/
+    /*if(status != ERROR)
     {
 		status = StartListening();
 		if(status == ERROR)
@@ -33,31 +34,39 @@ main(void)
     else
     {
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
-    } 
+    }*/
+    printf("%d\n",RegisterDirToUser("caca1","Puto"));
+RegisterDirToUser("caca1","Puto1");
+RegisterDirToUser("caca1","Puto2");
+RegisterDirToUser("caca1","Puto4");
+RegisterDirToUser("caca1","Puto5");
 
-	 
+    printf("%d\n",CantUsersLinkToDir("caca1"));
+    printf("%d\n",CantUsersLinkToDir("aerga"));
+
+    prueba();
 /*	InitApplication();
 	printf("%d\n",NewClient(1));
 	printf("%d\n",NewClient(2));
-	/*printf("%d\n",NewClient(1));*/
-/*	printf("%d\n",NewClient(3));
+	printf("%d\n",NewClient(1));
+	printf("%d\n",NewClient(3));
 	printf("%d\n",NewClient(4));
 	printf("%d\n",NewClient(5));
 	
 	printf("Conectando...\n");
 	printf("%d\n",ConnectUser(1,"puto"));
 	printf("%d\n",ConnectUser(2,"puto"));
-	printf("%d\n",ConnectUser(11345,"puertgto"));*/
+	printf("%d\n",ConnectUser(11345,"puertgto"));
 
 	
-/*	fileT file;
+	fileT file;
 	InitApplication();
 	
 	file = NewFileT("/SO", "Prueba1");
 	
 	SendConectionSignal(41);
-	SendFileAddPack("damian", file, ReqFile(file) );
+	SendFileAddPack("damian", file, ReqFile(file) );*/
     CloseApplication();
-*/
+
     return 0;
 }	
