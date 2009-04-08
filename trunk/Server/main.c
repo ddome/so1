@@ -20,10 +20,9 @@ main(void)
 {
    
 	int status;
-int *pids,i=0;
     status = InitApplication();
-    /*status = InitTransport();*/
-    /*if(status != ERROR)
+    status = InitTransport();
+    if(status != ERROR)
     {
 		status = StartListening();
 		if(status == ERROR)
@@ -34,8 +33,8 @@ int *pids,i=0;
     else
     {
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
-    }*/
-    printf("%d\n",RegisterDirToUser("caca1","Puto"));
+    }
+  /*  printf("%d\n",RegisterDirToUser("caca1","Puto"));
 RegisterDirToUser("caca1","Puto1");
 RegisterDirToUser("caca1","Puto2");
 RegisterDirToUser("caca1","Puto4");
@@ -45,7 +44,7 @@ RegisterDirToUser("caca1","Puto5");
     printf("%d\n",CantUsersLinkToDir("aerga"));
     DisconnectUser("Puto");
     DisconnectUser("Puto2");
-    prueba();
+    prueba();*/
 /*	InitApplication();
 	printf("%d\n",NewClient(1));
 	printf("%d\n",NewClient(2));
