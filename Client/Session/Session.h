@@ -70,7 +70,7 @@ typedef struct {
 
 int InitCommunication(key_t key);
 
-byte ** GetRequest(void);
+byte * GetRequest(void);
 
 int ProcessRequest(byte ** data, pid_t requestPid);
 

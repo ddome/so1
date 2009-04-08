@@ -86,12 +86,13 @@ WriteIPC(void * data, size_t size)
     return status;
 }
 
-byte ** 
+byte *
 ReadIPC(void)
 {
   int status = OK;
   headerIPC_t header;
   byte * data;
+
   status = read(readFifo_FD, &header, sizeof(headerIPC_t));
   if(status > 0)
   {
@@ -119,7 +120,7 @@ ReadIPC(void)
     status = ERROR;
   }
 
-  return status == ERROR ? NULL: &data ;
+  return status == ERROR ? NULL: data ;
 }
 
 void

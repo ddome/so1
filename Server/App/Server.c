@@ -4,9 +4,6 @@
 
 #include "Server.h"
 
-/*
-*  Defines
-*/
 
 /*
 *  Functions
@@ -17,6 +14,8 @@ StartListening(void)
 {
     int status;
     byte * data;
+    process_t process;
+    size_t size;
     status = InitCommunication(__DEFAULT_PID__);
     if(status == ERROR)
     {
@@ -32,7 +31,8 @@ StartListening(void)
         {
             /* se manda a que sea procesado en la capa de sesion 
             */
-            status = ProcessRequest(&data, 0);
+            process = ProcessRequest(&data, &size);
+            status = AnalyzeOperation(process, data, size);
         }
         else
         {
@@ -42,10 +42,10 @@ StartListening(void)
     return status;
 }
 
-byte **
+byte *
 ReadRequest(void)
 {
-    byte ** data;
+    byte * data;
     int requestExists = FALSE;
     int status;
     while(!requestExists)
@@ -57,6 +57,35 @@ ReadRequest(void)
     }
 	
     return data;
+}
+
+int
+AnalyzeOperation(process_t process, byte * data, size_t size)
+{
+    int status; 
+    if(process.status == ERROR)
+    {
+        status = ERROR;
+    }
+    else
+    {
+        switch(process.opCode)
+        {
+            case __NOT_SPAWN__:
+                status = ProcessSendPack(&data, size);
+                break;
+            case __SPAWN_DIR__:
+                status = SpawnSubProcess(process.opCode, process.pid, process.dir);
+                break;
+            case __SPAWN_DEMAND__:
+                status = OK;
+                break;
+            default:
+                status = ERROR;
+                break;
+        }
+    }
+    return status;
 }
 
 int
@@ -109,9 +138,10 @@ int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
 
 int StartDirSubServer(pid_t pid, char msg[MAX_MSG])
 {
+        process_t process;
 	int status;
 	key_t key;
-	byte ** data;
+	byte * data;
 	key = ftok(msg, pid);
 	if(InitCommunication(key) == ERROR)
 	{
@@ -119,13 +149,13 @@ int StartDirSubServer(pid_t pid, char msg[MAX_MSG])
 	}
 	
 	while(status != ERROR && status != __SHUT_DOWN__)
-    {
-        data = ReadDirSubServerRequests();
-        if(data != NULL)
         {
-            /* se manda a que sea procesado en la capa de sesion 
-            */
-            status = ProcessRequest(data, 0);
+            data = ReadDirSubServerRequests();
+            if(data != NULL)
+            {
+                /* se manda a que sea procesado en la capa de sesion 
+                */
+                process = ProcessRequest(&data, 0);
         }
         else
         {
@@ -136,9 +166,9 @@ int StartDirSubServer(pid_t pid, char msg[MAX_MSG])
 	return status;
 }
 
-byte ** ReadDirSubServerRequests(void)
+byte * ReadDirSubServerRequests(void)
 {
-    byte ** data;
+    byte * data;
     int requestExists = FALSE;
     int status;
     while(!requestExists)
