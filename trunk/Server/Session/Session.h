@@ -17,6 +17,7 @@
 #include "../Transport/Transport.h"
 #include "../Transport/ipcInterface.h"
 
+
 /*
 *  Defines
 */
@@ -65,13 +66,24 @@ typedef struct {
 	byte *data;
 } session_t;
 
+typedef struct
+{
+    int opCode;
+    char dir[MAX_MSG];
+    pid_t pid;
+    int status;
+} process_t;
+
+
 /*  Functions */
 
 int InitCommunication(pid_t pid);
 
 byte * GetRequest(void);
 
-int ProcessRequest(byte ** data, pid_t requestPid);
+process_t ProcessRequest(byte ** data, size_t * size);
+
+int ProcessSendPack(byte ** data, size_t size);
 
 int  SendConectionSignal(  pid_t pid );
 

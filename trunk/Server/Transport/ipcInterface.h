@@ -1,11 +1,6 @@
 #ifndef __IPC_INTERFACE_H__
 #define __IPC_INTERFACE_H__
 
-/* Aca se podria determinar a que funcion llama en funcion de una variable
-*  de entorno o argumento en linea de comando, determinando que ipc se usa.
-*  Por ahora solo fifos.
-*/
-
 #include "ipcFifo.h"
 #include <sys/ipc.h>
 #include <sys/types.h>

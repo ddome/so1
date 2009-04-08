@@ -25,7 +25,7 @@ InitCommunication(key_t key)
    return InitIPC(key);
 }
 
-byte ** GetRequest(void)
+byte * GetRequest(void)
 {	
 	return ReadIPC();
 }
@@ -35,7 +35,7 @@ ProcessRequest(byte ** data, pid_t requestPid)
 {
 	session_t pack;
 	int ret;
-			
+		
 	pack  = GetSessionData(*data);
         ret = ProcessCall( &pack );
 	
@@ -45,36 +45,39 @@ ProcessRequest(byte ** data, pid_t requestPid)
 	return ret;
 }
 
-/* Send Functions */
+/* Send Functions  */
 
 int 
 SendConectionSignal(  pid_t pid )
 {
 	session_t aux;
-    byte * data;
-    size_t size;
+        byte * data;
+        size_t size;
     
 	aux.pid = pid;
 	aux.opCode = CL_NEW_CON;
-    aux.dataSize = 0;
+        aux.dataSize = 0;
 	
-    size = MakeSessionData(aux, &data);
-	WriteIPC(data, size);
-	return OK;
+        size = MakeSessionData(aux, &data);
+	
+	return WriteIPC(data, size);
 }	
 	
 int 
 SendNewClientSignal( string userName, pid_t pid )
 {
 	session_t aux;
-	
+	byte * data;
+        size_t size;
+
 	aux.pid = pid;
 	strcpy(aux.msg,userName);
 	aux.opCode = CL_NEW_USR;
-    aux.dataSize = 0;
+        aux.dataSize = 0;
 	
-	//MANDO EL PAQUETITOOOO
-	return OK;
+        size = MakeSessionData(aux, &data);
+	
+	return WriteIPC(data, size);
 }
 
 int 
@@ -159,6 +162,7 @@ int
 SendExitSignal( string userName )
 {
 	session_t pack;
+        size_t size;
 	byte *data;
 	
 	pack.opCode = CL_EXT;
@@ -166,9 +170,9 @@ SendExitSignal( string userName )
 	pack.dataSize = 0;
 	pack.data = NULL;	
 	
-	MakeSessionData(pack, &data);	
-
-	return OK;
+        size = MakeSessionData(pack, &data);
+	
+	return WriteIPC(data, size);
 }
 
 

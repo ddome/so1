@@ -18,7 +18,7 @@ int
 StartListening(void)
 {
   int status;
-  byte ** data;
+  byte * data;
   
   status = InitCommunication(__DEFAULT_PID__);
   if(status == ERROR)
@@ -39,16 +39,16 @@ StartListening(void)
     {
         /* se manda a que sea procesado en la capa de sesion 
         */
-      status = ProcessRequest(data, 0);
+      status = ProcessRequest(&data, 0);
     }
   }
   return status;
 }
 
-byte **
+byte *
 ReadRequest(void)
 {
-  byte ** data;
+  byte * data;
   int requestExists = FALSE;
   int status;
   while(!requestExists)
@@ -119,34 +119,34 @@ int StartDirSubServer(pid_t pid, char msg[MAX_MSG])
 {
   int status;
   key_t key;
-  byte ** data;
+  byte * data;
   key = ftok(msg, pid);
   if(InitCommunication(key) == ERROR)
   {
     status = ERROR;
   }
-    
+
   while(status != ERROR && status != __SHUT_DOWN__)
   {
     data = ReadDirSubServerRequests();
     if(data != NULL)
     {
-            /* se manda a que sea procesado en la capa de sesion 
-            */
-      status = ProcessRequest(data, 0);
+        /* se manda a que sea procesado en la capa de sesion 
+        */
+        status = ProcessRequest(&data, 0);
     }
     else
     {
       status = ERROR;
     }
   }
-    
+
   return status;
 }
 
-byte ** ReadDirSubServerRequests(void)
+byte * ReadDirSubServerRequests(void)
 {
-  byte ** data;
+  byte * data;
   int requestExists = FALSE;
   int status;
   while(!requestExists)

@@ -63,22 +63,30 @@ static int Server(scannerADT scanner, void * data)
 
 static int Name(scannerADT scanner, void * data)
 {
-    int retValue = OK;
-    
+    int retValue = ERROR;
+    char * aux;
+    if(MoreTokensExist(scanner))
+    {
+        aux = ReadToken(scanner);
+        if(!MoreTokensExist(scanner) && SendNewClientSignal( aux, getppid()) == OK)
+        {
+            retValue = OK;
+        }
+    }
     return retValue;
 }
 
 static int ListSincDirs(scannerADT scanner, void * data)
 {
     int retValue = OK;
-    
+
     return retValue;
 }
 
 static int AddDir(scannerADT scanner, void * data)
 {
     int retValue = OK;
-    
+
     return retValue;
 }
 
@@ -92,9 +100,16 @@ static int RemDir(scannerADT scanner, void * data)
 
 static int Exit(scannerADT scanner, void * data)
 {
+    int retValue = ERROR;
+    if(!MoreTokensExist(scanner))
+    {
+      if(SendConectionSignal(getppid())==OK)
+      {
+        retValue=OK;
+      }
+    }
 
-
-    return OK;
+    return retValue;
 }
 
 static int Help(scannerADT scanner, void * data)

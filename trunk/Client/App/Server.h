@@ -57,7 +57,7 @@ Start(void);
 int
 StartListening(void);
 
-byte ** ReadRequest(void);
+byte * ReadRequest(void);
 
 int SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
 
@@ -65,7 +65,7 @@ int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
 
 int StartDirSubServer(pid_t pid, char msg[MAX_MSG]);
 
-byte ** ReadDirSubServerRequests(void);
+byte * ReadDirSubServerRequests(void);
 
 int StartDemandSubServer(pid_t pid, char msg[MAX_MSG]);
 

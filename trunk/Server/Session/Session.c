@@ -11,7 +11,7 @@
 
 
 static int GetDataSize( session_t data );
-static int ProcessCall( session_t *data );
+static process_t ProcessCall( session_t *data );
 static size_t MakeSessionData( session_t data, byte **pack );
 static session_t GetSessionData( byte *data );
 
@@ -30,20 +30,34 @@ byte * GetRequest(void)
     return ReadIPC();
 }
 
-int
-ProcessRequest(byte ** data, pid_t requestPid)
+/*
+* ProcessRequest: Procesa los pedidos entrantes
+*/
+process_t
+ProcessRequest(byte ** data, size_t * size)
 {
 	session_t pack;
-	size_t size;
+        process_t process;
 	int ret;
 	
 	pack  = GetSessionData(*data);
-        ret   = ProcessCall( &pack );
-	printf("llego un mensaje, opcode:%d", pack.opCode);
+        process = ProcessCall( &pack );
+
 	free(*data);
-	size = MakeSessionData(pack, data);
+	*size = MakeSessionData(pack, data);
 	//ret = WriteIPC(*data, size);
-	return ret;
+	return process;
+}
+
+/*
+* ProcessSendPack: Procesa los mensajes salientes
+*/
+
+int
+ProcessSendPack(byte ** data, size_t size)
+{
+    return WriteIPC(*data, size);
+    
 }
 
 void
@@ -66,55 +80,71 @@ GetDataSize( session_t data )
 			+ sizeof(size_t) + data.dataSize );
 }
 
-static int
+static process_t
 ProcessCall( session_t *data )
 {
+        process_t p;
 	
 	switch( (*data).opCode ) {
 			
 		case CL_NEW_CON:
-			return CallNewConection(data);
+			p.status = CallNewConection(data);
+                        p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_NEW_USR:
-			return CallNewClient(data);
+			p.status = CallNewClient(data);
+                        p.opCode = __NOT_SPAWN__;
 			break;
 
 		case CL_DIR_REM:			
-			return CallDirRem(*data);
+			p.status = CallDirRem(*data);
+                        p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_ADD:			
-			return CallFileAdd(*data);
+			p.status = CallFileAdd(*data);
+                        p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_REM:			
-			return CallFileRem(*data);
+			p.status = CallFileRem(*data);
+                        p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_MOD:			
-			return CallFileMod(*data);
+			p.status = CallFileMod(*data);
+                        p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_EXT:			
-			return CallClientExit(*data);
+			p.status = CallClientExit(*data);
+                        p.opCode = __NOT_SPAWN__;
 			break;	
 		
 		case PR_EXT:
-			return __SHUT_DOWN__;
+			p.status = __SHUT_DOWN__;
+                        p.opCode = __NOT_SPAWN__;
 			break;	
 		
 		case CL_DIR_REQ:			
-			return CallDirReq(data);
+			p.status = CallDirReq(data);
+                        if(p.status != ERROR)
+                        {
+                            p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
+                            p.status = OK;
+                        }
 			break;	
 										
 		case CL_DIR_LST:			
-			return CallDirList(data);
+			p.status = CallDirList(data);
+                        p.opCode = __NOT_SPAWN__;
 			break;
 			
 		default:
-			return ERROR;
+			p.status = ERROR;
 	}	
+        return p;
 }
 
 static size_t
@@ -183,7 +213,7 @@ GetSessionData( byte *data )
 
 /* DEBUGUEO */
 
-
+/*
 int 
 SendConectionSignal(  pid_t pid )
 {
@@ -234,5 +264,5 @@ SendFileAddPack( string userName, fileT file, byte *dataBuffer )
 	
 	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
 	
-}
+}*/
 

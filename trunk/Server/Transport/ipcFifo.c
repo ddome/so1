@@ -88,10 +88,11 @@ WriteIPC(void * data, size_t size)
     header.nPacket = 1;
     header.size = size;
     status = write(writeFifo_FD, &header, sizeof(headerIPC_t));
+
     if(status != ERROR)
     {
         status = write(writeFifo_FD,data,size);
-    }      
+    }
     return status;
 }
 
