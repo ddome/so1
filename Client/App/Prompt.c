@@ -150,13 +150,12 @@ Prompt(void)
     {
         printf("user@server:~ $ ");
         strAux = ReadLine( stdin );
-        if ( strcmp(strAux, "Salir\n") == 0 )
-            terminar = TRUE;
-        else if(strcmp(strAux, "\n") != 0)
+
+        if(strcmp(strAux, "\n") != 0)
             status = ReadExpression( tree, strAux, NULL );
         else
             status = 0;
-        if(status < 0)
+         if(status == __INVALID_COMMAND__)
             fprintf(stderr, "Comando invalido.\n");
 
         free(strAux);

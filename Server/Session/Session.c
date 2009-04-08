@@ -39,8 +39,8 @@ ProcessRequest(byte ** data, size_t * size)
 	session_t pack;
         process_t process;
 	int ret;
-	
 	pack  = GetSessionData(*data);
+
         process = ProcessCall( &pack );
 
 	free(*data);
@@ -57,7 +57,6 @@ int
 ProcessSendPack(byte ** data, size_t size)
 {
     return WriteIPC(*data, size);
-    
 }
 
 void
@@ -117,9 +116,9 @@ ProcessCall( session_t *data )
                         p.opCode = __NOT_SPAWN__;
 			break;
 			
-		case CL_EXT:			
+		case CL_EXT:	
 			p.status = CallClientExit(*data);
-                        p.opCode = __NOT_SPAWN__;
+                        p.opCode = __NO_RESPONSE__;
 			break;	
 		
 		case PR_EXT:

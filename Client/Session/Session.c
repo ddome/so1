@@ -135,7 +135,7 @@ SendDirReq( string userName, string dirPath )
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;
-	pack.data = NULL;
+	//pack.data = NULL;
 	
 	MakeSessionData(pack, &data);
 	
@@ -164,11 +164,10 @@ SendExitSignal( string userName )
 	session_t pack;
         size_t size;
 	byte *data;
-	
+	pack.pid = 0;
 	pack.opCode = CL_EXT;
 	strcpy(pack.msg,userName);
-	pack.dataSize = 0;
-	pack.data = NULL;	
+	pack.dataSize = 0;	
 	
         size = MakeSessionData(pack, &data);
 	
@@ -180,7 +179,7 @@ SendExitSignal( string userName )
 
 static int
 GetDataSize( session_t data )
-{  
+{
 	return ( MAXSENDER + MAXMSG + sizeof(uInt) + sizeof(pid_t) 
 			+ sizeof(size_t) + data.dataSize );
 }
