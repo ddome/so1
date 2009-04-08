@@ -43,7 +43,8 @@ RegisterDirToUser("caca1","Puto5");
 
     printf("%d\n",CantUsersLinkToDir("caca1"));
     printf("%d\n",CantUsersLinkToDir("aerga"));
-
+    DisconnectUser("Puto");
+    DisconnectUser("Puto2");
     prueba();
 /*	InitApplication();
 	printf("%d\n",NewClient(1));
@@ -66,7 +67,7 @@ RegisterDirToUser("caca1","Puto5");
 	
 	SendConectionSignal(41);
 	SendFileAddPack("damian", file, ReqFile(file) );*/
-    CloseApplication();
+    /*CloseApplication();*/
 
     return 0;
 }	
