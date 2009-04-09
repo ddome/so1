@@ -81,8 +81,8 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
                 status = OK;
                 break;
             case __NO_RESPONSE__:
-                free(data);
-                data = NULL;
+               // free(data);
+                //data = NULL;
                 status = OK;
                 break;
             default:

@@ -14,7 +14,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#define COMM_DIR "/tmp/"
+#define COMM_DIR "/tmp/comm/"
 #define LOCAL_DIR "./comm/"
 
 int InitTransport(void);
