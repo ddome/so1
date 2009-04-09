@@ -22,12 +22,10 @@ InitIPC(key_t key)
     if(key==0)
 	key=ftok("/",key);
     queue_id=msgget(key,IPC_CREAT | __DEFAULT_FIFO_MODE__);
-    printf("key: %d\n",key);
     if( queue_id<0 )
     {
 	return ERROR;
     }
-    printf("queue id:%d\n",queue_id);
     /* IPCStarted = isChildProcess = TRUE pues es para un proceso hijo
     */
     IPCStarted = TRUE;
@@ -86,47 +84,11 @@ ReadIPC(void)
 	}
 	else
 	{
-	    if(errno==E2BIG)
-		printf("The  message text length is greater than msgsz and MSG_NOER-ROR isn’t specified in msgflg.\n");
-	    else if(errno==EACCES)
-		printf("The calling process does not have  read  permission  on  the message  queue, and does not have the CAP_IPC_OWNER capabil‐ity.\n");
-	    else if(errno==EAGAIN)
-		printf("No message was available in the  queue  and  IPC_NOWAIT  was specified in msgflg.\n");
-	    else if(errno==EFAULT)
-		printf("The address pointed to by msgp isn’t accessible.\n");
-	    else if(errno==EIDRM)
-		printf("While  the  process  was  sleeping to receive a message, the message queue was removed.\n");
-	    else if(errno==EINTR)
-		printf("While the process was sleeping to  receive  a  message,  the process caught a signal.\n");
-	    else if(errno==EINVAL)
-		printf("msgqid was invalid, or msgsz was less than 0.\n");
-	    else if(errno==ENOMSG)
-		/*printf("IPC_NOWAIT  was  specified  in  msgflg and no message of the requested type existed on the message queue.\n")*/;
-	    else
-		printf("Otro error.\n");
 	    status = ERROR;
 	}
     }
     else
     {
-	if(errno==E2BIG)
-	    printf("The  message text length is greater than msgsz and MSG_NOER-ROR isn’t specified in msgflg.\n");
-	else if(errno==EACCES)
-	    printf("The calling process does not have  read  permission  on  the message  queue, and does not have the CAP_IPC_OWNER capabil‐ity.\n");
-	else if(errno==EAGAIN)
-	    printf("No message was available in the  queue  and  IPC_NOWAIT  was specified in msgflg.\n");
-	else if(errno==EFAULT)
-	    printf("The address pointed to by msgp isn’t accessible.\n");
-	else if(errno==EIDRM)
-	    printf("While  the  process  was  sleeping to receive a message, the message queue was removed.\n");
-	else if(errno==EINTR)
-	    printf("While the process was sleeping to  receive  a  message,  the process caught a signal.\n");
-	else if(errno==EINVAL)
-	    printf("msgqid was invalid, or msgsz was less than 0.\n");
-	else if(errno==ENOMSG)
-	    /*printf("IPC_NOWAIT  was  specified  in  msgflg and no message of the requested type existed on the message queue.\n")*/;
-	else
-	    printf("Otro error.\n");
 	status = ERROR;
     }
 

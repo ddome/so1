@@ -22,12 +22,10 @@ InitIPC(key_t key)
     if(key==0)
 	key=ftok("/",key);
     queue_id=msgget(key,IPC_CREAT | __DEFAULT_FIFO_MODE__);
-    printf("key: %d\n",key);
     if( queue_id<0 )
     {
 	    return ERROR;
     }
-    printf("queue id:%d\n",queue_id);
     /* IPCStarted = isChildProcess = TRUE pues es para un proceso hijo
     */
     IPCStarted = TRUE;
