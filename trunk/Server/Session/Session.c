@@ -37,11 +37,10 @@ process_t
 ProcessRequest(byte ** data, size_t * size)
 {
 	session_t pack;
-        process_t process;
-	int ret;
+	process_t process;           
 	pack  = GetSessionData(*data);
 
-        process = ProcessCall( &pack );
+	process = ProcessCall( &pack );
 	
 	free(*data);
 	*size = MakeSessionData(pack, data);
@@ -53,7 +52,7 @@ ProcessRequest(byte ** data, size_t * size)
 * ProcessSendPack: Procesa los mensajes salientes
 */
 
-int
+int   
 ProcessSendPack(byte ** data, size_t size)
 {
     return WriteIPC(*data, size);
@@ -88,56 +87,59 @@ ProcessCall( session_t *data )
 			
 		case CL_NEW_CON:
 			p.status = CallNewConection(data);
-                        p.opCode = __NOT_SPAWN__;
+			p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_NEW_USR:
 			p.status = CallNewClient(data);
-                        p.opCode = __NOT_SPAWN__;
+            p.opCode = __NOT_SPAWN__;
 			break;
 
 		case CL_DIR_REM:			
 			p.status = CallDirRem(*data);
-                        p.opCode = __NOT_SPAWN__;
+            p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_ADD:			
 			p.status = CallFileAdd(*data);
-                        p.opCode = __NOT_SPAWN__;
+            p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_REM:			
 			p.status = CallFileRem(*data);
-                        p.opCode = __NOT_SPAWN__;
+            p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_MOD:			
 			p.status = CallFileMod(*data);
-                        p.opCode = __NOT_SPAWN__;
+            p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_EXT:	
 			p.status = CallClientExit(*data);
-                        p.opCode = __NO_RESPONSE__;
+			p.opCode = __NOT_SPAWN__;
 			break;	
 		
 		case PR_EXT:
 			p.status = __SHUT_DOWN__;
-                        p.opCode = __NOT_SPAWN__;
+			p.opCode = __NOT_SPAWN__;
 			break;	
 		
 		case CL_DIR_REQ:			
 			p.status = CallDirReq(data);
-                        if(p.status != ERROR)
-                        {
-                            p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
-                            p.status = OK;
-                        }
+			if(p.status != -1)
+			{
+				p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
+				p.status = OK;
+			}
+			else {
+				p.status = ERROR;
+			}
 			break;	
 										
 		case CL_DIR_LST:			
 			p.status = CallDirList(data);
-                        p.opCode = __NOT_SPAWN__;
+			p.opCode = __NOT_SPAWN__;
 			break;
 			
 		default:
@@ -160,14 +162,19 @@ MakeSessionData( session_t data, byte **dataBuffer )
 	pos = 0;
 	memmove(aux+pos, data.senderID, MAXSENDER);
 	pos += MAXSENDER;
+	
 	memmove(aux+pos, data.msg, MAXMSG);
 	pos += MAXMSG;
-	memmove(aux+pos, &(data.opCode), sizeof(uInt) );
+	
+	memmove(aux+pos, &(data.opCode), sizeof(uInt) );	
 	pos += sizeof(uInt);
+	
 	memmove(aux+pos, &(data.pid), sizeof(pid_t) );
 	pos += sizeof(pid_t);
+	
 	memmove(aux+pos, &(data.dataSize), sizeof(size_t) );
 	pos += sizeof(size_t);
+	
 	memmove(aux+pos, data.data, data.dataSize );
     pos += data.dataSize;
     

@@ -33,11 +33,12 @@ ConnectUser(int pid,char * userName)
     int ret;
     ret=SetName(pid,userName);
     if(ret==OK)
-	return NEW_USRNAME_OK;
+		return NEW_USRNAME_OK;
     else if(ret==ERROR)
-	return NEW_USRNAME_EXIST;
+		return NEW_USRNAME_EXIST;
     else
-	return NEW_USRNAME_ERROR;
+		return NEW_USRNAME_ERROR;
+	
     return OK;
 }
 
@@ -148,7 +149,7 @@ int
 FileAdd( fileT file, byte *data )
 {
     FILE *fptr;
-    
+		
     if( FileExists(file) )
     {
 	//CONFLICTO
@@ -168,7 +169,7 @@ FileAdd( fileT file, byte *data )
 }
 
 int
-FileRem( fileT file )
+FileRem(  fileT file )
 {
     if( !FileExists(file) )
     {
@@ -184,10 +185,10 @@ FileRem( fileT file )
 
 
 int
-DirAdd( string dirName  )
+DirAdd( string dirPath  )
 {
-    NewDir(dirName);
-    return CopyDir(dirName, SERVER_PATH);		
+    NewDir(GetDirName(dirPath));
+    return CopyDir(dirPath, SERVER_PATH);		
 }
 	
 byte *

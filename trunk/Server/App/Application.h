@@ -8,7 +8,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define SERVER_PATH "/bomsyinc/backup"
+#define SERVER_PATH "backup"
+
 #include "../sqliteADT/sqliteADT.h"
 #include "../Lib/pqADT.h"
 #include "DBexec.h"
