@@ -19,7 +19,9 @@ int
 InitIPC(key_t key)
 {
     /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
-    queue_id=msgget(11223444,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    if(key==0)
+	key=ftok("/",key);
+    queue_id=msgget(key,IPC_CREAT | __DEFAULT_FIFO_MODE__);
     printf("key: %d\n",key);
     if( queue_id<0 )
     {
