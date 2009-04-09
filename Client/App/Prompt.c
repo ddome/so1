@@ -148,14 +148,14 @@ Prompt(void)
 
     while ( !terminar )
     {
-        printf("user@server:~ $ ");
+        printf("user@client:~ $ ");
         strAux = ReadLine( stdin );
 
         if(strcmp(strAux, "\n") != 0)
             status = ReadExpression( tree, strAux, NULL );
         else
             status = 0;
-         if(status == __INVALID_COMMAND__)
+         if(status < 0)
             fprintf(stderr, "Comando invalido.\n");
 
         free(strAux);
