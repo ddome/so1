@@ -19,7 +19,7 @@ int
 main(void)
 {
    
-/*	int status;
+	int status;
     status = InitApplication();
     status = InitTransport();
     if(status != ERROR)
@@ -35,9 +35,9 @@ main(void)
 		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
     }
  
- */
+ 
 	
-	printf("dirName: %s \n", DirName("/user/damian"));
+//	printf("dirName: %s \n", DirName("/user/damian"));
 	
 	
   /*  printf("%d\n",RegisterDirToUser("caca1","Puto"));

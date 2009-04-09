@@ -117,12 +117,12 @@ ReadIPC(void)
 	    status=read(readFifo_FD, data, header.size);
 	    if(status > 0)
 	    {
-		status = OK;
-		recibidos++;
+		    status = OK;
+		    recibidos++;
 	    }
 	    else
 	    {
-		status = ERROR;
+		    status = ERROR;
 	    }
     }
     else
