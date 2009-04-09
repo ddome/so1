@@ -452,7 +452,7 @@ CreateDir( string dir )
 	return OK;
 }
 	
-	
+GetDirName(dirPath)	
 	
 	
 	

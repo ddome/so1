@@ -53,13 +53,11 @@ static int RegisterDirectory(scannerADT scanner, void * data)
 {
     int retValue = OK;
     char * aux;
-    if(MoreTokensExist(scanner))
-    {
+    if(MoreTokensExist(scanner)) {
 		aux=ReadToken(scanner);
-		if(DirAdd(aux)!=OK)
-	{
-	    retValue=ERROR;
-	}
+		if(DirAdd(aux)!=OK) {
+			retValue=ERROR;
+		}
 		free(aux);
     }
     else

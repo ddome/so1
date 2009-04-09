@@ -56,9 +56,9 @@ SendConectionSignal(  pid_t pid )
     
 	aux.pid = pid;
 	aux.opCode = CL_NEW_CON;
-        aux.dataSize = 0;
+	aux.dataSize = 0;
 	
-        size = MakeSessionData(aux, &data);
+	size = MakeSessionData(aux, &data);
 	
 	return WriteIPC(data, size);
 }	
@@ -169,7 +169,8 @@ SendExitSignal( string userName )
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;	
 	
-        size = MakeSessionData(pack, &data);
+	size = MakeSessionData(pack, &data);
+	pack = GetSessionData(data);
 	
 	return WriteIPC(data, size);
 }

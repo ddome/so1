@@ -246,22 +246,26 @@ CallDirReq(session_t *dataPtr)
 	string dirPath;
 	string userName;
 	int nfiles;
-
+	int usersxdir;
+	
 	dirPath  = (*dataPtr).data;
 	userName = (*dataPtr).msg;
+	
+	usersxdir = GetCantUsersLinkToDir(dirPath); 
+	
 	
 	free((*dataPtr).data);
 	strcpy((*dataPtr).msg,dirPath);
 	
 	if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
-		return ERROR;
+		return -1;
 	}
 	else {
 		if( ((*dataPtr).dataSize = MakeDirPack(nfiles, fileList,dataBuffer,&((*dataPtr).data))) != ERROR ) {
-			return OK;
+			return usersxdir;
 		}
 		else {
-			return ERROR;
+			return -1;
 		}
 	}
 }	

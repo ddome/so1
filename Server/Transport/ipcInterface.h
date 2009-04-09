@@ -14,6 +14,7 @@
 typedef struct {
 	size_t size;
 	int nPacket;
+	int totalPackets;
 }headerIPC_t;
 
 
