@@ -453,8 +453,12 @@ CreateDir( string dir )
 }
 	
 string
-GetDirName(dirPath)	
+DirName(string dirPath)	
 {
+	string dirName;
+	
+	dirName = strrchr(dirPath, '/');
+	return dirName+1;	
 }	
 	
 	

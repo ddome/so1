@@ -77,6 +77,8 @@ boolean DirExists( string dirPath );
 
 int CreateDir( string dir );
 
+string DirName(string dirPath);	
+
 #endif
 
 

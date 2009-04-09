@@ -187,7 +187,7 @@ FileRem(  fileT file )
 int
 DirAdd( string dirPath  )
 {
-    NewDir(GetDirName(dirPath));
+    NewDir(DirName(dirPath));
     return CopyDir(dirPath, SERVER_PATH);		
 }
 	
