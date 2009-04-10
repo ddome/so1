@@ -147,12 +147,16 @@ GetDirList(session_t data, int *ndirs, string **dirList)
 	int pos;
 	int i;
 	
+	if( (*dirList=malloc(*ndirs*MAX_DIR_NAME)) == NULL ) {
+		return ERROR;
+	}
+	
 	pos = 0;
 	memmove(ndirs, data.data + pos, sizeof(int));
 	pos += sizeof(int);
 	
 	for(i=0; i<*ndirs; i++) {
-		memmove(dirList[i],data.data, MAX_DIR_NAME);
+		memmove(&(*dirList[i]),data.data, MAX_DIR_NAME);
 		pos += MAX_DIR_NAME;
 	}
 	
@@ -171,6 +175,7 @@ CallDirList(session_t data)
 	for(i=0; i<ndirs; i++) {
 		printf("%s\n", dirList[i]);
 	}
+	getchar();
 	
 	return OK;
 }
