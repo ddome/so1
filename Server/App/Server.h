@@ -52,17 +52,17 @@ int StartListening(void);
 
 byte * ReadRequest(void);
 
-int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
+int StartSubProcess(process_t process);
 
 int AnalyzeOperation(process_t process, byte * data, size_t size);
 
 byte * ReadDirSubServerRequests(void);
 
-int StartDirSubServer(pid_t pid, char msg[MAX_MSG]);
+int StartDirSubServer(process_t process);
 
-int StartDemandSubServer(pid_t pid, char msg[MAX_MSG]);
+int StartDemandSubServer(process_t process);
 
-int SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
+int SpawnSubProcess(process_t process);
 
 #endif
 
