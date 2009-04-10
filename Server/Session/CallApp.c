@@ -279,7 +279,7 @@ MakeDirListPack( int ndirs, string *dirList, byte **dataBuffer )
 	int size;
 	int i;
 	
-	*dataBuffer = malloc(size=ndirs*MAX_DIR_NAME*sizeof(char)+sizeof(int));
+	*dataBuffer = malloc(size=ndirs*MAX_DIR_NAME+sizeof(int));
 	
 	pos = 0;
 	memmove(*dataBuffer, &ndirs, sizeof(int));
