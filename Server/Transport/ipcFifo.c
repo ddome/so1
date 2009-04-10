@@ -68,7 +68,7 @@ int InitIPC(key_t key)
     if(readFifo_FD == -1 || writeFifo_FD == -1 )
     {
     	status = ERROR;
-	printf("no se puede abrir el fifo");
+		printf("no se puede abrir el fifo");
     }
 	
     /* IPCStarted = isChildProcess = TRUE pues es para un proceso hijo

@@ -15,3 +15,5 @@ int CallFileRem(session_t data);
 
 int CallDirAdd(session_t data);
 
+int CallDirList(session_t data);
+
