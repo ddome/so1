@@ -282,13 +282,6 @@ ListAllSyncDirs( string **out)
     int i=0;
     char * aux;
     GetListDirsAll(out);
-    while((*out)[i]!=NULL)
-    {
-	aux=(*out)[i];
-	free(aux);
-	i++;
-    }
-    free(*out);
     return i;
 }
 
