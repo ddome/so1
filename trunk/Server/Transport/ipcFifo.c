@@ -112,7 +112,7 @@ ReadIPC(void)
 			return NULL;
 	    }
 
-	    printf("size :%d",header.size);
+	    printf("size :%d",(int)header.size);
 		
 	    status=read(readFifo_FD, data, header.size);
 	    if(status > 0)

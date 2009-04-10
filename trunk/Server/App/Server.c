@@ -14,15 +14,17 @@ StartListening(void)
 {
     int status;
     byte * data;
-    process_t process;
+    process_t process, consoleProcess;
     size_t size;
     status = InitCommunication(__DEFAULT_PID__);
+    consoleProcess.opCode = __SPAWN_PROMPT__;
+
     if(status == ERROR)
     {
 	    return ERROR;
     }
 
-    status = SpawnSubProcess(__SPAWN_PROMPT__, __DEFAULT_PID__, NULL);
+    status = SpawnSubProcess(consoleProcess);
     while(status != ERROR && status != __SHUT_DOWN__)
     {
         data = ReadRequest();
@@ -75,7 +77,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
                 status = ProcessSendPack(&data, size);
                 break;
             case __SPAWN_DIR__:
-                status = SpawnSubProcess(process.opCode, process.pid, process.dir);
+                status = SpawnSubProcess(process);
                 break;
             case __SPAWN_DEMAND__:
                 status = OK;
@@ -94,7 +96,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
 }
 
 int
-SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
+SpawnSubProcess(process_t process)
 {
     pid_t childPid;
     int returnValue = OK;
@@ -105,7 +107,7 @@ SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
             returnValue = ERROR;
             break;
         case __ISCHILD__:
-            returnValue = StartSubProcess(opCode, pid, msg);
+            returnValue = StartSubProcess(process);
             break;
         /*  Si es el padre no se hace nada
         */
@@ -117,19 +119,19 @@ SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
 }
 
 
-int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
+int StartSubProcess(process_t process)
 {
     int returnValue = OK;
-    switch(opCode)
+    switch(process.opCode)
     {
 	    case __SPAWN_PROMPT__:
 	        Prompt();
 	        break;
 	    case __SPAWN_DIR__:
-	        returnValue = StartDirSubServer(pid, msg);
+	        returnValue = StartDirSubServer(process);
 	        break;
 	    case __SPAWN_DEMAND__:
-            returnValue = StartDemandSubServer(pid, msg);
+            returnValue = StartDemandSubServer(process);
 	        break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
@@ -141,31 +143,33 @@ int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG])
     return returnValue;
 }
 
-int StartDirSubServer(pid_t pid, char msg[MAX_MSG])
+int StartDirSubServer(process_t reqProcess)
 {
         process_t process;
 	int status;
 	key_t key;
 	byte * data;
-	key = ftok(msg, pid);
+	key = ftok(reqProcess.dir, reqProcess.pid);
 	if(InitCommunication(key) == ERROR)
 	{
 		status = ERROR;
 	}
 	
-	while(status != ERROR && status != __SHUT_DOWN__)
-        {
-            data = ReadDirSubServerRequests();
-            if(data != NULL)
-            {
-                /* se manda a que sea procesado en la capa de sesion 
-                */
-                process = ProcessRequest(&data, 0);
-        }
-        else
-        {
-            status = ERROR;
-        }
+    while(status != ERROR && status != __SHUT_DOWN__)
+    {
+	data = ReadRequest();
+
+	if(data != NULL)
+	{
+	    /* se manda a que sea procesado en la capa de sesion 
+	    */
+	    //process = ProcessRequest(&data, &size);
+	    //status = AnalyzeOperation(process, data, size);
+	}
+	else
+	{
+	    status = ERROR;
+	}
     }
 	
 	return status;
@@ -187,7 +191,7 @@ byte * ReadDirSubServerRequests(void)
     return data;
 }
 
-int StartDemandSubServer(pid_t pid, char msg[MAX_MSG])
+int StartDemandSubServer(process_t process)
 {
     return 1;
 }
