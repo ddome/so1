@@ -127,16 +127,17 @@ SendFileRemPack( string userName, fileT file )
 }
 
 int 
-SendDirReq( string userName, string dirPath )
+SendDirReq( string userName, pid_t pid, string dirPath )
 {
 	session_t pack;
 	byte *data;
 	
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
-	pack.dataSize = 0;
-	//pack.data = NULL;
-	
+	pack.dataSize = strlen(dirPath);	
+	pack.data = dirPath;
+	pack.pid = pid;
+
 	MakeSessionData(pack, &data);
 	
 	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
@@ -218,7 +219,7 @@ ProcessCall( session_t *data )
 			return __SHUT_DOWN__;
 			break;
 		case CL_DIR_LST:
-		//Listar
+			CallDirList(*data);
 			return OK;
 			break;
 		default:

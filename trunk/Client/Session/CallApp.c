@@ -139,7 +139,24 @@ CallDirAdd(session_t data)
 	return DirAdd(data.msg, fileList, dataBuffer, 0);	
 }	
 
-
+/* Server -> Client: Listar directorios */
+int
+CallDirList(session_t data)
+{
+	int ndirs;
+	string *dirList;
+	
+	//GetDirList(data,&ndirs,&dirList);
+	
+	return OK;
+}
+		
+		
+		
+		
+	
+	
+	
 
 
 

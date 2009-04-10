@@ -79,7 +79,7 @@ int SendNewClientSignal( string userName, pid_t pid );
 int SendFileAddPack(  string userName, fileT file, byte *data );
 int SendFileModPack(  string userName, fileT file, byte *data );
 int SendFileRemPack( string userName, fileT file );
-int SendDirReq( string userName, string dirPath );
+int SendDirReq( string userName, pid_t pid, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );
 
