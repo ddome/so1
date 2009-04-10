@@ -187,8 +187,16 @@ FileRem(  fileT file )
 int
 DirAdd( string dirPath  )
 {
+    string destPath;
+    int ret;
+    
+    
     NewDir(DirName(dirPath));
-    return CopyDir(dirPath, SERVER_PATH);		
+    CreateDir(destPath=Concat(SERVER_PATH,DirName(dirPath)));
+
+    ret = CopyDir(dirPath,destPath);		
+    free(destPath);
+    return ret;
 }
 	
 byte *

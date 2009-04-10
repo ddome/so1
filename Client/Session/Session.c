@@ -73,9 +73,9 @@ SendNewClientSignal( string userName, pid_t pid )
 	aux.pid = pid;
 	strcpy(aux.msg,userName);
 	aux.opCode = CL_NEW_USR;
-        aux.dataSize = 0;
+	aux.dataSize = 0;
 	
-        size = MakeSessionData(aux, &data);
+	size = MakeSessionData(aux, &data);
 	
 	return WriteIPC(data, size);
 }
@@ -147,15 +147,16 @@ SendDirListReq( string userName )
 {
 	session_t pack;
 	byte *data;
+	size_t size;
 	
 	pack.opCode = CL_DIR_LST;
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;
 	pack.data = NULL;
 	
-	MakeSessionData(pack, &data);
-	
-	return OK; // Llamar transporte	
+	size = MakeSessionData(pack, &data);
+
+	return WriteIPC(data, size);
 }
 
 int 
@@ -216,7 +217,10 @@ ProcessCall( session_t *data )
 		case SR_EXT:
 			return __SHUT_DOWN__;
 			break;
-	
+		case CL_DIR_LST:
+		//Listar
+			return OK;
+			break;
 		default:
 			return ERROR;
 			break;
