@@ -136,7 +136,7 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
 
-	pack.dataSize = strlen(dirPath);	
+	pack.dataSize = strlen(dirPath)+1;;	
 	pack.data = dirPath;
 	pack.pid = pid;
 
