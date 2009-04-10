@@ -21,6 +21,12 @@
 
 #define MAX_LINE 120
 
+/*
+*  Variables globales
+*/
+
+char name[MAX_LINE];
+
 /* Funciones de utilidad
 */
 
@@ -70,23 +76,39 @@ static int Name(scannerADT scanner, void * data)
         aux = ReadToken(scanner);
         if(!MoreTokensExist(scanner) && SendNewClientSignal( aux, getppid()) == OK)
         {
+			strcpy(name, aux);
             retValue = OK;
         }
+		free(aux);
     }
     return retValue;
 }
 
 static int ListSincDirs(scannerADT scanner, void * data)
 {
-    int retValue = OK;
-
+    int retValue = ERROR;
+	
+	if(!MoreTokensExist(scanner))
+	{
+		SendDirListReq(name);
+		retValue = OK;
+	}
     return retValue;
 }
 
 static int AddDir(scannerADT scanner, void * data)
 {
-    int retValue = OK;
-
+    int retValue = ERROR;
+	char * aux;
+	if(MoreTokensExist(scanner))
+	{
+		aux = ReadToken(scanner);
+		if(!MoreTokensExist(scanner) && SendDirReq(name, getppid(), aux) == OK)
+		{
+			retValue = OK;
+		}
+		free(aux);
+	}
     return retValue;
 }
 
@@ -145,7 +167,7 @@ Prompt(void)
     treeADT tree;
     tree = NewTree();
     LoadTree(tree);
-
+	strcpy(name, "");
     while ( !terminar )
     {
         printf("user@client:~ $ ");

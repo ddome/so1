@@ -131,16 +131,17 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 {
 	session_t pack;
 	byte *data;
+	size_t size;
 	
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
+
 	pack.dataSize = strlen(dirPath);	
 	pack.data = dirPath;
 	pack.pid = pid;
 
-	MakeSessionData(pack, &data);
-	
-	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
+	size = MakeSessionData(pack, &data);
+	return WriteIPC(data, size);
 }	
 
 int
