@@ -141,24 +141,30 @@ CallDirAdd(session_t data)
 
 /* Server -> Client: Listar directorios */
 
+
+
+
+
 int
 GetDirList(session_t data, int *ndirs, string **dirList)
 {
 	int pos;
 	int i;
-	
-	if( (*dirList=malloc(*ndirs*MAX_DIR_NAME)) == NULL ) {
-		return ERROR;
-	}
-	
+		
 	pos = 0;
 	memmove(ndirs, data.data + pos, sizeof(int));
 	pos += sizeof(int);
 	
-	for(i=0; i<*ndirs; i++) {
-		memmove(&(*dirList[i]),data.data, MAX_DIR_NAME);
-		pos += MAX_DIR_NAME;
+	if( (*dirList=malloc((*ndirs)*MAX_DIR_NAME)) == NULL ) {
+		return ERROR;
 	}
+	
+	for(i=0; i<(*ndirs); i++) {
+		(*dirList)[i] = malloc(MAX_DIR_NAME);
+		memmove(&((*dirList)[i]), data.data+pos, MAX_DIR_NAME);		
+		pos += MAX_DIR_NAME; 
+	}
+	
 	
 	return OK;
 }
