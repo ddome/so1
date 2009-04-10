@@ -301,7 +301,6 @@ CallDirList(session_t *dataPtr)
 	int ndirs;
 	int i;
 	
-	
 	ndirs = ListAllSyncDirs( &out );
 	
 	(*dataPtr).dataSize = MakeDirListPack( ndirs, out, &((*dataPtr).data) );
