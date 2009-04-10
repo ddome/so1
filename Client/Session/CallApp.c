@@ -140,13 +140,37 @@ CallDirAdd(session_t data)
 }	
 
 /* Server -> Client: Listar directorios */
+
+int
+GetDirList(session_t data, int *ndirs, string **dirList)
+{
+	int pos;
+	int i;
+	
+	pos = 0;
+	memmove(ndirs, data.data + pos, sizeof(int));
+	pos += sizeof(int);
+	
+	for(i=0; i<*ndirs; i++) {
+		memmove(dirList[i],data.data, MAX_DIR_NAME);
+		pos += MAX_DIR_NAME;
+	}
+	
+	return OK;
+}
+
 int
 CallDirList(session_t data)
 {
 	int ndirs;
 	string *dirList;
+	int i;
 	
-	//GetDirList(data,&ndirs,&dirList);
+	GetDirList(data,&ndirs,&dirList);
+	
+	for(i=0; i<ndirs; i++) {
+		printf("%s\n", dirList[i]);
+	}
 	
 	return OK;
 }
