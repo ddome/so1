@@ -39,7 +39,11 @@ ProcessRequest(byte ** data, size_t * size)
 	session_t pack;
 	process_t process;           
 	pack  = GetSessionData(*data);
-
+    if(pack.opCode ==CL_DIR_REQ)
+    {
+        printf("llego dir request!");
+        getchar();
+    }
 	process = ProcessCall( &pack );
 	
 	free(*data);
@@ -132,7 +136,8 @@ ProcessCall( session_t *data )
 				p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
 				p.status = OK;
 			}
-			else {
+			else 
+            {
 				p.status = ERROR;
 			}
 			break;	

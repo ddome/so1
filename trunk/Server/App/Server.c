@@ -145,8 +145,9 @@ int StartSubProcess(process_t process)
 
 int StartDirSubServer(process_t reqProcess)
 {
-        process_t process;
+    process_t process;
 	int status;
+    size_t size;
 	key_t key;
 	byte * data;
 	key = ftok(reqProcess.dir, reqProcess.pid);
@@ -157,19 +158,19 @@ int StartDirSubServer(process_t reqProcess)
 	
     while(status != ERROR && status != __SHUT_DOWN__)
     {
-	data = ReadRequest();
-
-	if(data != NULL)
-	{
-	    /* se manda a que sea procesado en la capa de sesion 
-	    */
-	    //process = ProcessRequest(&data, &size);
-	    //status = AnalyzeOperation(process, data, size);
-	}
-	else
-	{
-	    status = ERROR;
-	}
+	    data = ReadRequest();
+    
+	    if(data != NULL)
+	    {
+	        /* se manda a que sea procesado en la capa de sesion 
+	        */
+	        process = ProcessRequest(&data, &size);
+	        status = AnalyzeOperation(process, data, size);
+	    }
+	    else
+	    {
+	        status = ERROR;
+	    }
     }
 	
 	return status;
