@@ -279,10 +279,11 @@ DisconnectUser(string userName)
 int
 ListAllSyncDirs( string **out)
 {
-    int i=0;
-    char * aux;
-    GetListDirsAll(out);
-    return i;
+    int cant=0;
+    cant=GetListDirsAll(out);
+    if(cant==ERROR)
+	return ERROR;
+    return cant;
 }
 
 int
