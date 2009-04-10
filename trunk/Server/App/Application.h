@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define SERVER_PATH "backup"
+#define SERVER_PATH "backup/"
 
 #include "../sqliteADT/sqliteADT.h"
 #include "../Lib/pqADT.h"
