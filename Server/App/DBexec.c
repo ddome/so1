@@ -273,7 +273,7 @@ int
 GetListDirsAll(char *** out)
 {
     pqADT queue;
-    int i=0;
+    int i=0,cant;
     char * aux;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
@@ -283,8 +283,8 @@ GetListDirsAll(char *** out)
     }
 
     ListAllDirs(db,queue);
-
-    if( (*out=calloc(QueueDepth(queue)+1,sizeof(char*)))==NULL )
+    cant=QueueDepth(queue);
+    if( (*out=calloc(cant+1,sizeof(char*)))==NULL )
     {
 	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
 	return ERROR;
@@ -297,7 +297,7 @@ GetListDirsAll(char *** out)
 	i++;
     }
     FreePQ(&queue);
-    return OK;
+    return cant;
 }
 
 int
@@ -349,37 +349,6 @@ GetListPIDsLinkToDir(char * pathName,int ** pids)
     return OK;
 }
 
-
-int
-prueba(void)
-{
-    pqADT queue;
-    int i=0,cant;
-    int * pids;
-    int * aux;
-    queue=NewPQ(NULL,(void*(*)(void*))FreeString);
-    if(queue==NULL)
-    {
-        fprintf(stderr,"Error al crear la cola en TopList.\n");
-        return ERROR;
-    }
-
-    ShowOnlineByPID(db,queue);
-    cant=QueueDepth(queue);
-    if( (pids=calloc(cant+1,sizeof(int)))==NULL )
-    {
-        fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
-        return ERROR;
-    }
-    while(!PQIsEmpty(queue))
-    {
-        aux=Dequeue(queue);
-        printf("%d\n",(int)aux);
-        i++;
-    }
-    FreePQ(&queue);
-    return OK;
-}
 
 
 
