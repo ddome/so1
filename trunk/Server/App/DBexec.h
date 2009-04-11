@@ -45,6 +45,5 @@ int GetCantUsersLinkToDir(char * pathName); //
 
 int GetListPIDsLinkToDir(char * pathName,int ** pids);
 
-int prueba(void);
 
 #endif
