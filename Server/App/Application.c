@@ -53,10 +53,10 @@ ListDirs( string userName)
     printf("==============================================\n");
     while( out[i] != NULL )
     {
-	aux=out[i];
-	printf("%s\n",aux);
-	free(aux);
-	i++;
+		aux=out[i];
+		printf("%s\n",aux);
+		free(aux);
+		i++;
     }
     free(out);
     
@@ -110,10 +110,10 @@ TopListUser(string userName)
     printf("============================================\n");
     while( out[i] != NULL )
     {
-	aux=out[i];
-	printf("%s\n",aux);
-	free(aux);
-	i++;
+		aux=out[i];
+		printf("%s\n",aux);
+		free(aux);
+		i++;
     }
     free(out);
     

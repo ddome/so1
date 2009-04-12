@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "../Transport/OutputPipe.h"
 
 string *
 DirList(void)
@@ -17,7 +18,8 @@ FileAdd( fileT file, byte *data )
 	}
 
 	if( (fptr = CreateFile(file)) == NULL ) {
-			return ERROR;
+		WritePrompt("No se pudo crear el archivo");
+		return ERROR;
 	}
 	//Armo el archivo con la informacion que llego
 	fwrite(data,sizeof(byte),GetSize(file),fptr);
@@ -29,6 +31,7 @@ int
 FileRem( fileT file )
 {
 	if( !FileExists(file) ) {
+		WritePrompt("El archivo no existe");
 		return ERROR;
 	}
 	else {
@@ -49,6 +52,7 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 		
 		if( !DirExists(files[i].path) ) {
 			if( CreateDir(files[i].path) == ERROR ){
+				WritePrompt("Error al crear el directorio");
 				return ERROR;
 			}
 		}
@@ -66,10 +70,12 @@ ReqFile( fileT file )
 	int a;
 	
 	if( (fptr = OpenReadFile(file)) == NULL ) {
+		WritePrompt("El archivo es inexistente");
 		return NULL;
 	}
 	
 	if( (data=malloc(a=GetSize(file))) == NULL ) {
+		WritePrompt("Error de memoria");
 		return NULL;
 	}
 		

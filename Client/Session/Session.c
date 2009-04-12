@@ -4,6 +4,7 @@
 
 #include "Session.h"
 #include "CallApp.h"
+#include "../Transport/OutputPipe.h"
 
 
  
@@ -154,7 +155,6 @@ SendDirListReq( string userName )
 	pack.opCode = CL_DIR_LST;
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;
-	pack.data = NULL;
 	
 	size = MakeSessionData(pack, &data);
 
@@ -193,15 +193,15 @@ ProcessCall( session_t *data )
 {	
 	switch ((*data).opCode) {
 		case SR_CONECT_OK:
-			//funcion que imprime ok en prompt
+			WritePrompt("Se ha conectado exitosamente\n");
 			return OK;
 			break;
 		case SR_NEW_USR_OK:
-			//funcion que imprime ok en prompt
+			WritePrompt("Ha registrado el nombre de usuario exitosamente\n");
 			return OK;
 			break;
 		case SR_NEW_USR_ERR:
-			//funcion que avisa que el nombre ya existe
+			WritePrompt("El nombre usuario no se encuentra disponible\n");
 			return OK;
 			break;
 		case SR_DIR_ADD:
@@ -311,26 +311,4 @@ MakeFilePack( fileT file, byte *data, byte **dataBuffer )
 }
 
 
-static int 
-GetDirList( session_t pack, string **out )
-{
-	int i;
-    int ndirs;
-	int pos;
-	
-	
-	if( (*out=malloc(sizeof(char)*MAX_DIR_NAME)) == NULL ) {
-		return ERROR;
-	}
-	
-	pos = 0;
-	memmove(&ndirs, pack.data, sizeof(int));
-	pos += sizeof(int);
-	
-	for( i=0; i<ndirs; i++ ) {
-		memmove(&((*out)[i]), pack.data, MAX_DIR_NAME );
-		pos += MAX_DIR_NAME;
-	}
-	
-	return ndirs;	
-}	
+

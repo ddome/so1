@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define SERVER_PATH "/client/backup"
+#define SERVER_PATH "backup/"
 #include "../Lib/pqADT.h"
 
 
