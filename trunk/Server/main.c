@@ -14,15 +14,16 @@
 #include "./Session/Session.h"
 #include "./Transport/Transport.h"
 #include "./sqliteADT/sqliteADT.h"
+#include "./Transport/OutputPipe.h"
 
 int
 main(void)
 {
-    char ** out;
-    int i=0;
     int status;
     status = InitApplication();
+	status = InitPromptCommunication();
     status = InitTransport();
+	
     if(status != ERROR)
     {
 		status = StartListening();

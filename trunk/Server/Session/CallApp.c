@@ -309,6 +309,7 @@ CallDirList(session_t *dataPtr)
 		free(out[i]);
 	}
 	free(out);	
+
 	return OK;
 }	
 	
