@@ -30,6 +30,10 @@
 int
 InitPromptCommunication(void)
 {
+	if( open(_DEFAULT_PATH_, O_RDWR) >= 0 ) {
+		remove(_DEFAULT_PATH_);
+	}	
+	
 	return mkfifo(_DEFAULT_PATH_,_FIFO_MODE_);	
 }
 

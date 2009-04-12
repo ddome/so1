@@ -10,6 +10,7 @@
 #include "fileHandler.h"
 
 #define FILE_T 0x8
+#define DIR_T 0x4
 
 string
 GetPath( fileT file )
@@ -461,9 +462,38 @@ DirName(string dirPath)
 	return dirName+1;	
 }	
 	
+int
+RemoveDir( string dir )
+{
+	DIR *dptr;
+	struct dirent *d;
+	string aux1;
+	string aux2;
+	int ret;
+	ret = OK;
+	if ( (dptr = opendir(dir)) == NULL ) {
+		return ERROR;
+	}
+
+	while( (d=readdir(dptr)) ) {
+		if( d->d_ino != 0 && strcmp(d->d_name,"..") != 0 && strcmp(d->d_name, ".") != 0)  {
+			if( d->d_type == DIR_T ) {
+				aux1 = Concat( dir, aux2 = Concat(d->d_name,"/"));
+				ret = RemoveDir( aux1 );
+				free(aux1);
+				free(aux2);
+			}
+			else {
+				aux1 = Concat(dir,d->d_name);
+				remove(aux1);
+				free(aux1);
+			}
+		}	
+	}
 	
-	
-	
+	rmdir(dir);
+	return ret;
+}	
 	
 	
 
