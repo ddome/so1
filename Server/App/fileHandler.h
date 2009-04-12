@@ -79,6 +79,8 @@ int CreateDir( string dir );
 
 string DirName(string dirPath);	
 
+int RemoveDir( string dir );
+
 #endif
 
 

@@ -251,11 +251,11 @@ DelDir( string userName, string dir )
 
 int
 InitApplication(void)
-{
+{	
     if(InitBD()==ERROR)
     {
-	fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
-	return ERROR;
+		fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
+		return ERROR;
     }
 
     return OK;
