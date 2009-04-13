@@ -21,7 +21,7 @@ main(void)
 {
     int status;
     status = InitApplication();
-	status = InitPromptCommunication();
+    status = InitPromptCommunication();
     status = InitTransport();
 	
     if(status != ERROR)
