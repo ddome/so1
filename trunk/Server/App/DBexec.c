@@ -353,7 +353,7 @@ char *
 GetPIDToUserName(int pid)
 {
     pqADT queue;
-    char * userName;
+    char * userName=NULL;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
@@ -362,7 +362,9 @@ GetPIDToUserName(int pid)
     }
 
     PIDToUserName(db,pid,queue);
-    userName=Dequeue(queue);
+    if(!PQIsEmpty(queue))
+	userName=Dequeue(queue);
+    
     FreePQ(&queue);
     return userName;
 }
