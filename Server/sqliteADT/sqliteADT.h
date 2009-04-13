@@ -77,6 +77,8 @@ DB_STAT ShowOnlineByPID(sqliteADT db,pqADT queue);
 
 DB_STAT ShowOnline(sqliteADT db,pqADT queue);
 
+DB_STAT PIDToUserName(sqliteADT db,int pid,pqADT queue);
+
 
 
 DB_STAT UnlinkAllDirsToUser(sqliteADT db,const char * userName);

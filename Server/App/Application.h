@@ -150,6 +150,9 @@ int CantUsersLinkToDir(char * pathName);
 ----------------------------------------------------------------*/
 int * PIDsLinkToDir(char * pathName);
 
+
+char * ConvertPIDToUserName(int pid);
+
 #endif
 
 

@@ -670,6 +670,57 @@ ShowOnlineByPID(sqliteADT db,pqADT queue)
     return DB_SUCCESS;
 }
 
+DB_STAT
+PIDToUserName(sqliteADT db,int pid,pqADT queue)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char * idAux;
+    char * pidI;
+    char auxName[MAX_USR_NAME]={0};
+    char *sqlSelect = "SELECT user FROM users WHERE pid='%s'";
+   
+
+    if ( db == NULL || queue == NULL )
+        return DB_INVALID_ARG;
+    
+    if( (idAux=calloc(50,sizeof(char)))==NULL )
+    {
+	logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
+	return DB_NO_MEMORY;
+    }
+    sprintf(idAux,"%d",pid);
+
+    if ( ( pidI = EscapeString( db, idAux ) ) == NULL )
+        return DB_NO_MEMORY;
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1,pidI);
+
+    free(pidI);
+    free(idAux);
+    while ( ret == SQLITE_ROW )
+    {
+        strncpy(auxName, (char *) sqlite3_column_text(statement, 0), MAX_USR_NAME);
+        auxName[MAX_USR_NAME-1] = 0;
+
+        if ((Enqueue(queue, &auxName,1)) == 1)
+            ret = sqlite3_step( statement );
+        else
+        {
+            sqlite3_finalize( statement );
+            return DB_INTERNAL_ERROR;
+        }
+    }
+
+    sqlite3_finalize( statement );
+
+    if ( ret != SQLITE_DONE )
+    {
+        return DB_INTERNAL_ERROR;
+    }
+
+    return DB_SUCCESS;
+}
 
 
 DB_STAT
