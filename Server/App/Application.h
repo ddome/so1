@@ -13,6 +13,7 @@
 #include "../sqliteADT/sqliteADT.h"
 #include "../Lib/pqADT.h"
 #include "DBexec.h"
+#include "../Lib/Error.h"
 
 #define NEW_USR_EXIST 0
 #define NEW_USR_OK    1

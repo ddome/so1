@@ -7,6 +7,9 @@
  *
  */
 
+#ifndef __CALLAPP_H__
+#define __CALLAPP_H__
+
 int CallFileAdd(session_t data);
 
 int CallFileMod(session_t data);
@@ -17,3 +20,4 @@ int CallDirAdd(session_t data);
 
 int CallDirList(session_t data);
 
+#endif

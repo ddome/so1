@@ -241,34 +241,46 @@ MakeDirPack(int nfiles, fileT * fileList,byte **dataBuffer,byte **pack)
 int 
 CallDirReq(session_t *dataPtr)
 {
-	byte **dataBuffer;
-	fileT *fileList;
-	string dirPath;
-	string userName;
-	int nfiles;
 	int usersxdir;
-	
-	dirPath  = (*dataPtr).data;
-	userName = (*dataPtr).msg;
-	
+    string dirPath;
+    string userName;
+    
+    dirPath  = (*dataPtr).data;
+    userName = (*dataPtr).msg;
+
+    (*dataPtr).opCode = SR_DIR_REQ_OK;
 	usersxdir = GetCantUsersLinkToDir(dirPath); 
 	
-	
-	free((*dataPtr).data);
-	strcpy((*dataPtr).msg,dirPath);
-	
-	if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
-		return -1;
-	}
-	else {
-		if( ((*dataPtr).dataSize = MakeDirPack(nfiles, fileList,dataBuffer,&((*dataPtr).data))) != ERROR ) {
-			return usersxdir;
-		}
-		else {
-			return -1;
-		}
-	}
+    return usersxdir;
 }	
+
+int
+CallTransferDir(session_t * dataPtr)
+{
+  byte **dataBuffer;
+  fileT *fileList;
+  string dirPath;
+  string userName;
+  int nfiles;
+    
+  dirPath  = (*dataPtr).data;
+  userName = (*dataPtr).msg;
+    
+  free((*dataPtr).data);
+  strcpy((*dataPtr).msg,dirPath);
+    
+  if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
+    return ERROR;
+  }
+  else {
+    if( ((*dataPtr).dataSize = MakeDirPack(nfiles, fileList,dataBuffer,&((*dataPtr).data))) != ERROR ) {
+      return OK;
+    }
+    else {
+      return ERROR;
+    }
+  }
+}
 
 /* Client -> Server: Pedido de lista de directorios */
 

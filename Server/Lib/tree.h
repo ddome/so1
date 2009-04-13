@@ -3,6 +3,7 @@
 
 #include "scannerADT.h"
 
+#define __INVALID_COMMAND__ -3
 
 typedef struct treeCDT * treeADT;
 

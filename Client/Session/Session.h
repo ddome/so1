@@ -33,7 +33,7 @@
 #define PR_EXT     1
 
 /* Server -> Client operations 
- */
+*/
 #define SR_CONECT_OK   16
 #define SR_NEW_USR_ERR 2
 #define SR_NEW_USR_OK  3
@@ -42,9 +42,12 @@
 #define SR_FIL_REM     6
 #define SR_EXT         7
 #define SR_DIR_ADD     18
+#define SR_DIR_REQ_OK  19
+#define SR_DIR_CON_OK 20
+
 
 /* Client -> Server operations 
- */
+*/
 #define CL_NEW_CON 17
 #define CL_NEW_USR 8
 #define CL_DIR_REQ 9
@@ -54,6 +57,8 @@
 #define CL_FIL_MOD 13
 #define CL_DIR_LST 14
 #define CL_EXT     15
+#define CL_DIR_CON 21
+
 
 /* Paquete de session */
 
@@ -66,13 +71,17 @@ typedef struct {
 	byte *data;
 } session_t;
 
+
+
+
 /*  Functions */
 
 int InitCommunication(key_t key);
 
 byte * GetRequest(void);
 
-int ProcessRequest(byte ** data, pid_t requestPid);
+process_t ProcessRequest(byte ** data, size_t * size);
+int ProcessSendPack(byte ** data, size_t size);
 
 int SendConectionSignal(  pid_t pid );
 int SendNewClientSignal( string userName, pid_t pid );

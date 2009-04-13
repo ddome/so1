@@ -26,5 +26,12 @@ typedef unsigned int uInt;
 
 typedef char byte;
 
+typedef struct 
+{
+    int opCode;
+    char dir[MAX_MSG];
+    pid_t pid;
+    int status;
+}process_t;
 #endif
 

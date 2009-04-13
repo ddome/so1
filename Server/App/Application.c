@@ -79,7 +79,7 @@ TopList(void)
     char * aux;
     ret=GetTopList(NULL,&out);
     if(ret==ERROR)
-	return ERROR;
+	return __ERROR_APPLICATION__;
     
     printf("Las ultimas diez acciones realizadas fueron:\n");
     printf("============================================\n");
@@ -104,7 +104,7 @@ TopListUser(string userName)
     char * aux;
     ret=GetTopList(userName,&out);
     if(ret==ERROR)
-	return ERROR;
+      return __ERROR_APPLICATION__;
     
     printf("Las ultimas diez acciones realizadas por %s fueron:\n",userName);
     printf("============================================\n");
@@ -158,7 +158,7 @@ FileAdd( fileT file, byte *data )
 
     if( (fptr = CreateFile(file)) == NULL )
     {
-	return ERROR;
+      return __ERROR_APPLICATION__;
     }
     //Armo el archivo con la informacion que llego
     fwrite(data,sizeof(byte),GetSize(file),fptr);
@@ -173,7 +173,7 @@ FileRem(  fileT file )
 {
     if( !FileExists(file) )
     {
-	return ERROR;
+      return __ERROR_APPLICATION__;
     }
     else
     {
@@ -236,7 +236,7 @@ ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
     for(i=0; i<nfiles; i++)
     {
 	if( ((*databuffer)[i] = ReqFile((*files)[i])) == NULL )
-	    return ERROR;
+      return __ERROR_APPLICATION__;
     }
     
     return nfiles;
@@ -254,8 +254,8 @@ InitApplication(void)
 {	
     if(InitBD()==ERROR)
     {
-		fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
-		return ERROR;
+	fprintf(stderr,"Error fatal al intentar abrir la base de datos. No se puede continuar.\n");
+	return __ERROR_DATABASE__;
     }
 
     return OK;
@@ -282,7 +282,7 @@ ListAllSyncDirs( string **out)
     int cant=0;
     cant=GetListDirsAll(out);
     if(cant==ERROR)
-	return ERROR;
+      return __ERROR_APPLICATION__;
     return cant;
 }
 
@@ -290,7 +290,7 @@ int
 CantUsersLinkToDir(char * pathName)
 {
     if(pathName==NULL)
-        return -1;
+      return __ERROR_APPLICATION__;
     return GetCantUsersLinkToDir(pathName);
 }
 

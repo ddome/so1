@@ -147,12 +147,12 @@ static int ShowCommands(scannerADT scanner, void * data)
 
 static void LoadTree(treeADT tree)
 {
-    InsertExpression(tree, "Registrar",    RegisterDirectory);
+    InsertExpression(tree, "Registrar",  RegisterDirectory);
     InsertExpression(tree, "Usuarios",   ListUsers);
     InsertExpression(tree, "Dir",        ListUserDirectory);
     InsertExpression(tree, "Last10",     ListLast10);
     InsertExpression(tree, "Salir",      ExitPrompt);
-    InsertExpression(tree, "Help",   ShowCommands);
+    InsertExpression(tree, "Help",       ShowCommands);
 }
 
 /* Prompt
@@ -172,9 +172,7 @@ Prompt(void)
     {
         printf("user@server:~ $ ");
         strAux = ReadLine( stdin );
-        if ( strcmp(strAux, "Salir\n") == 0 )
-            terminar = TRUE;
-        else if(strcmp(strAux, "\n") != 0)
+        if(strcmp(strAux, "\n") != 0)
             status = ReadExpression( tree, strAux, NULL );
         else
             status = 0;

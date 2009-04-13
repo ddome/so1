@@ -16,7 +16,7 @@
 #include "../App/Application.h"
 #include "../Transport/Transport.h"
 #include "../Transport/ipcInterface.h"
-
+#include "../Lib/Error.h"
 
 /*
 *  Defines
@@ -42,6 +42,9 @@
 #define SR_FIL_REM     6
 #define SR_EXT         7
 #define SR_DIR_ADD     18
+#define SR_DIR_REQ_OK  19
+#define SR_DIR_CON_OK 20
+//Agregar Sr_DIr-CON-ERROR!!!!!!!!!!1111
 
 /* Client -> Server operations 
 */
@@ -54,6 +57,7 @@
 #define CL_FIL_MOD 13
 #define CL_DIR_LST 14
 #define CL_EXT     15
+#define CL_DIR_CON 21
 
 /* Paquete de session */
 

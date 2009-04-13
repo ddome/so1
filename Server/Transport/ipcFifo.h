@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include "../Lib/defines.h"
 #include "Transport.h"
-
+#include "../Lib/Error.h"
 
 /* Defines de los Fifo's en particular
 */

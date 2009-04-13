@@ -13,7 +13,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
-
+#include "../Lib/Error.h"
 #define COMM_DIR "/tmp/comm/"
 
 int InitTransport(void);

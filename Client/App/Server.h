@@ -34,14 +34,17 @@
 
 #define __DEFAULT_PID__	  0
 
+#define BK_PATH "/home/damian/Desktop/so1/Server/backup/"
+
 /* Tipos de procesos disponibles para crearse
 */
-
+#define __NOT_SPAWN__     0
 #define __SPAWN_PROMPT__  1
 #define __SPAWN_DIR__     2
 #define __SPAWN_DEMAND__  3
 #define __SPAWN_INOTIFY__ 4
 #define __SPAWN_PING__    5
+#define __NO_RESPONSE__   6
 
 /* Definiciones para creacion de procesos con fork()
 */
@@ -51,23 +54,22 @@
 #define CHILD_RETURN      2
 
 
-int
-Start(void);
 
-int
-StartListening(void);
+int StartListening(void);
 
 byte * ReadRequest(void);
 
-int SpawnSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
+int StartSubProcess(process_t process);
 
-int StartSubProcess(int opCode, pid_t pid, char msg[MAX_MSG]);
-
-int StartDirSubServer(pid_t pid, char msg[MAX_MSG]);
+int AnalyzeOperation(process_t process, byte * data, size_t size);
 
 byte * ReadDirSubServerRequests(void);
 
-int StartDemandSubServer(pid_t pid, char msg[MAX_MSG]);
+int StartDirSubServer(process_t process);
+
+int StartDemandSubServer(process_t process);
+
+int SpawnSubProcess(process_t process, size_t size, byte * data);
 
 int StartPingServer(pid_t pid, char msg[MAX_MSG]);
 

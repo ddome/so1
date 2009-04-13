@@ -4,7 +4,7 @@
 
 #include "tree.h"
 
-#define COMANDO_INVALIDO -1
+
 #define OK 		  1
 
 typedef struct nodeCDT * nodeADT;
@@ -110,7 +110,7 @@ Read( nodeADT * nodes, scannerADT scanner,void * data)
     if ( *token == 0 )
     {
         if ( (*nodes)->func == NULL )
-            return COMANDO_INVALIDO;
+          return __INVALID_COMMAND__;
         else
 	    return (*nodes)->func(scanner, data);
     }
@@ -118,14 +118,14 @@ Read( nodeADT * nodes, scannerADT scanner,void * data)
     if ( *nodes == NULL || (*nodes)->nombre == NULL )
     {
         free(token);/*ACA*/
-        return COMANDO_INVALIDO;
+        return __INVALID_COMMAND__;
     }
     else if ( strcmp((*nodes)->nombre, token) == 0 )	
     {
         if ( (*nodes)->hijo == NULL )
         {
             free(token);/*ACA*/	
-	    return COMANDO_INVALIDO;
+            return __INVALID_COMMAND__;
         }
 
         return Read (&(*nodes)->hijo, scanner, data);
@@ -135,13 +135,13 @@ Read( nodeADT * nodes, scannerADT scanner,void * data)
         if ( (*nodes)->next == NULL )		
 	{
             free(token);/*ACA*/
-	    return COMANDO_INVALIDO;
+            return __INVALID_COMMAND__;
         }
         SaveToken(scanner, token);
         return Read (&(*nodes)->next, scanner, data);
 
     }
-    return -1;
+    return __INVALID_COMMAND__;
 }
 
 int
