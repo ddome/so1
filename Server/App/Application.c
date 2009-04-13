@@ -192,10 +192,10 @@ DirAdd( string dirPath  )
     
     
     NewDir(DirName(dirPath));
-    /*CreateDir(destPath=Concat(SERVER_PATH,DirName(dirPath)));*/
+    CreateDir(destPath=Concat(SERVER_PATH,DirName(dirPath)));
 
-    /*ret = CopyDir(dirPath,destPath);		
-    free(destPath);*/
+    ret = CopyDir(dirPath,destPath);		
+    free(destPath);
     return ret;
 }
 	
@@ -223,12 +223,15 @@ ReqFile( fileT file )
 }
 
 int
-ReqDir( string userName, string dir, fileT **files, byte ***databuffer )
+ReqDir( string userName, string dirName, fileT **files, byte ***databuffer )
 {
     int nfiles;
     int i;
+    string dir;
     
-    RegisterDirToUser(dir,userName);
+    dir = Concat(SERVER_PATH,dirName);
+    
+    RegisterDirToUser(dirName,userName);
     nfiles = DirFilesList(dir,files);
 	    
     (*databuffer) = malloc(sizeof(byte**)*nfiles);

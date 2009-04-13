@@ -147,22 +147,23 @@ int StartSubProcess(process_t process)
 
 int StartDirSubServer(process_t reqProcess)
 {
-	
-	
-	
-	
-    process_t process;
+	process_t process;
 	int status;
     size_t size;
-	key_t key;
+	key_t keyDefault, keyClient;
 	byte * data;
-	key = ftok(Concat(BK_PATH,reqProcess.dir), reqProcess.pid);
-	status = InitCommunication(key);
-
+	char * aux;
+	keyDefault = ftok(aux = Concat(BK_PATH,reqProcess.dir), __DEFAULT_PID__);
+	free(aux);
+	keyClient = ftok(aux = Concat(BK_PATH,reqProcess.dir), reqProcess.pid);
+	free(aux);
+	status = InitCommunication(keyDefault);
+	
 	if(status > ERROR)
 	{
 		status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
 	}
+	status = InitCommunication(keyClient);
 	
     while(status > ERROR && status != __SHUT_DOWN__)
     {
@@ -173,7 +174,11 @@ int StartDirSubServer(process_t reqProcess)
 	        /* se manda a que sea procesado en la capa de sesion 
 	        */
 	        process = ProcessRequest(&data, &size);
-	        status = AnalyzeOperation(process, data, size);
+			status = InitCommunication(keyDefault);
+			if(status > ERROR)
+				status = AnalyzeOperation(process, data, size);
+			if(status > ERROR )
+				status = InitCommunication(keyClient);
 	    }
 	    else
 	    {
@@ -202,8 +207,28 @@ byte * ReadDirSubServerRequests(void)
 
 int StartDemandSubServer(process_t process)
 {
-	fopen("damian","w+");
-    return 1;
+    int status;
+	int requestExists = FALSE;
+	byte * data;
+	process_t p;
+	size_t size;
+    char * aux;
+    key_t key = ftok(aux = Concat(BK_PATH, process.dir), getppid());
+    free(aux);
+    
+    status = InitCommunication(key);
+    if(status > ERROR)
+    {
+		while(!requestExists)
+		{
+			if( (data = GetRequest()) != NULL)
+			{
+				p = ProcessRequest(&data, &size);
+			}
+		}
+    }
+    
+    return status;
 }
 
 

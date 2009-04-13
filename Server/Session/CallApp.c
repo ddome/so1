@@ -265,10 +265,7 @@ CallTransferDir(session_t * dataPtr)
     
   dirPath  = (*dataPtr).data;
   userName = (*dataPtr).msg;
-    
-  free((*dataPtr).data);
-  strcpy((*dataPtr).msg,dirPath);
-    
+        
   if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
     return ERROR;
   }

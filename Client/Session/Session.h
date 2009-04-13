@@ -44,7 +44,7 @@
 #define SR_DIR_ADD     18
 #define SR_DIR_REQ_OK  19
 #define SR_DIR_CON_OK 20
-
+#define SR_DIR_TRANS   22
 
 /* Client -> Server operations 
 */
@@ -84,6 +84,7 @@ process_t ProcessRequest(byte ** data, size_t * size);
 int ProcessSendPack(byte ** data, size_t size);
 
 int SendConectionSignal(  pid_t pid );
+int SendDirConectionSignal(  pid_t pid, string dir );
 int SendNewClientSignal( string userName, pid_t pid );
 int SendFileAddPack(  string userName, fileT file, byte *data );
 int SendFileModPack(  string userName, fileT file, byte *data );

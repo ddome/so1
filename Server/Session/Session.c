@@ -58,6 +58,30 @@ ProcessSendPack(byte ** data, size_t size)
     return WriteIPC(*data, size);
 }
 
+int
+SendDirPack(process_t process)
+{
+    session_t session;
+    size_t size;
+    byte ** data;
+    char * userName = ConvertPIDToUserName(process.pid);
+    
+    if(userName != NULL)
+    {
+      strcpy(session.msg, userName);
+      free(userName);
+    }
+    session.opCode = SR_DIR_TRANS;
+    strcpy(session.data, process.dir);
+    session.dataSize = strlen(process.dir ) + 1;
+        
+    CallTransferDir(&session);
+    
+    size = MakeSessionData(session, data);
+    
+    return ProcessSendPack(data, size);
+}
+
 void
 GoodBye(void)
 {
@@ -137,8 +161,9 @@ ProcessCall( session_t *data )
 			break;
         case CL_DIR_CON:
             (*data).opCode = SR_DIR_CON_OK;
-            p.status = OK;
-            p.opCode = __SPAWN_DEMAND__;           
+            p.opCode = __SPAWN_DEMAND__;   
+            sscanf((*data).senderID, "%d", &(p.status));        
+            strcpy(p.dir, (*data).data);
             break;
             
 		default:

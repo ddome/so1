@@ -16,7 +16,6 @@ static process_t ProcessCall( session_t *data );
 static size_t MakeSessionData( session_t data, byte ** pack );
 static session_t GetSessionData( byte *data );
 static int MakeFilePack( fileT file, byte *data, byte **dataBuffer );
-static int GetDirList( session_t pack, string **out );
 
 /* Functions */
 
@@ -85,6 +84,8 @@ SendDirConectionSignal(  pid_t pid, string dir )
         byte * data;
         size_t size;
     
+	pid_t DirPid = getpid();
+	sprintf(aux.senderID, "%d", (int)DirPid);
 	aux.pid = pid;
 	aux.opCode = CL_DIR_CON;
 	aux.dataSize = strlen(dir)+1;
@@ -239,10 +240,10 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			break;
-		case SR_DIR_ADD:
+	/*	case SR_DIR_ADD:
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
-			break;			
+			break;			*/
 		case SR_FIL_ADD:
 			p.status = CallFileAdd(*data);
 			p.opCode = __NO_RESPONSE__;
@@ -271,8 +272,12 @@ ProcessCall( session_t *data )
 			break;
 		case SR_DIR_CON_OK:
 			p.status = OK;
+			strcpy(p.dir, (*data).data);
 			p.opCode = __SPAWN_DEMAND__;
 			break;
+		case SR_DIR_TRANS:
+			p.status = CallDirAdd(*data);
+			p.opCode = __NO_RESPONSE__;
 		default:
 			p.status = ERROR;
 			break;
