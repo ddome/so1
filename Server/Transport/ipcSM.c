@@ -8,10 +8,12 @@
 int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 static int recibidos;
-static int shmid=-1;
+static int shmid1=-1;
+static int shmid2=-1;
 static int semid=-1;
-headerIPC_t * headerAux;
-void * dataAux;
+void * dataAux1;
+void * dataAux2;
+
 
 typedef union _semun{
     int val;
@@ -19,15 +21,15 @@ typedef union _semun{
     ushort * array;
 } semun;
 
-struct sembuf p1={0,-1,0}, p2={1,-1,0};
-struct sembuf v1={0,1,0}, v2={1,1,0};
+struct sembuf p1={0,-1,0}, p2={1,-1,0},p3={2,-1,0}, p4={3,-1,0};
+struct sembuf v1={0,1,0}, v2={1,1,0},v3={2,1,0}, v4={3,1,0};
 
 static int
 GetSem(key_t key)
 {
     semun x;
     x.val=0;
-    if( (semid=semget(key,2,IPC_CREAT | __DEFAULT_FIFO_MODE__))==-1 )
+    if( (semid=semget(key,4,IPC_CREAT | __DEFAULT_FIFO_MODE__))==-1 )
     {
 	printf("Aca 1\n");
 	return ERROR;
@@ -37,8 +39,17 @@ GetSem(key_t key)
 	printf("Aca 2\n");
 	return ERROR;
     }
-        x.val=1;
     if(semctl(semid,1,SETVAL,x)==-1)
+    {
+	printf("Aca 3\n");
+	return ERROR;
+    }
+    if(semctl(semid,2,SETVAL,x)==-1)
+    {
+	printf("Aca 2\n");
+	return ERROR;
+    }
+    if(semctl(semid,3,SETVAL,x)==-1)
     {
 	printf("Aca 3\n");
 	return ERROR;
@@ -51,18 +62,20 @@ GetSem(key_t key)
 int
 InitIPC(key_t key)
 {
-    int keyAux;
+    int keyAux1,keyAux2;
     /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
-    if(key==0)
-	keyAux=ftok("/",key);
-    shmid=shmget(keyAux,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
-    if( shmid==-1 )
+    keyAux1=ftok("/",key);
+    keyAux2=ftok("/home",key);
+    shmid1=shmget(keyAux1,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    shmid2=shmget(keyAux2,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    if( shmid==-1 || shmid2==-1 )
     {
 	printf("Hola 1\n");
 	return ERROR;
     }
-    dataAux=shmat(shmid,NULL,0);
-    if(dataAux==ERR_HEADER )
+    dataAux1=shmat(shmid1,NULL,0);
+    dataAux2=shmat(shmid2,NULL,0);
+    if(dataAux1==ERR_HEADER || dataAux2==ERR_HEADER)
     {
 	printf("Hola 2\n");
 	return ERROR;
@@ -78,7 +91,7 @@ InitIPC(key_t key)
     */
     IPCStarted = TRUE;
     isChildProcess = TRUE;
-        printf("shmid=(%d) - semid=(%d)\n",shmid,semid);
+    printf("shmid=(%d) - semid=(%d)\n",shmid,semid);
     return OK;
 }
 
@@ -89,17 +102,17 @@ WriteIPC(void * data, size_t size)
     header.size=size;
     header.nPacket=1;
     
-    memcpy(dataAux,&header,sizeof(headerIPC_t));
-    semop(semid,&v1,1);
+    memcpy(dataAux2,&header,sizeof(headerIPC_t));
+    semop(semid,&v3,1);
     semop(semid,&p2,1);
     
-    memcpy(dataAux,data,size);
-    semop(semid,&v1,1);
-    semop(semid,&p2,1);
+    memcpy(dataAux2,data,size);
+    semop(semid,&v3,1);
+    semop(semid,&p4,1);
     return OK;
 }
 
-byte**
+byte*
 ReadIPC(void)
 {
     int status=OK;
@@ -107,7 +120,7 @@ ReadIPC(void)
     byte *data;
     semop(semid,&p1,1);
     semop(semid,&v2,1);
-    if( memcpy(&header,dataAux,sizeof(headerIPC_t)) != &header )
+    if( memcpy(&header,dataAux1,sizeof(headerIPC_t)) != &header )
 	return NULL;
 
 
@@ -120,7 +133,7 @@ ReadIPC(void)
 	}   
 	semop(semid,&p1,1);
 	semop(semid,&v2,1);
-	memcpy(data,dataAux,header.size * sizeof(byte));
+	memcpy(data,dataAux1,header.size * sizeof(byte));
 
 	if(status > 0)
 	{
@@ -137,7 +150,7 @@ ReadIPC(void)
     {
 	status = ERROR;
     }
-    return status == ERROR ? NULL: &data ;
+    return status == ERROR ? NULL: data ;
 }
 
 void

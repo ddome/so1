@@ -1,6 +1,6 @@
 #include "Transport.h"
 #include "ipcInterface.h"
-#include "fileHandler.h"
+#include "../App/fileHandler.h"
 
 int 
 InitTransport(void)
