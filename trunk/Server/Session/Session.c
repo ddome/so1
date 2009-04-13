@@ -39,11 +39,7 @@ ProcessRequest(byte ** data, size_t * size)
 	session_t pack;
 	process_t process;           
 	pack  = GetSessionData(*data);
-    if(pack.opCode ==CL_DIR_REQ)
-    {
-        printf("llego dir request!");
-        getchar();
-    }
+
 	process = ProcessCall( &pack );
 	
 	free(*data);
@@ -70,7 +66,6 @@ GoodBye(void)
 
 void ShutDown(void)
 {
-    
 }
 	
 /* Static Functions */
@@ -131,26 +126,25 @@ ProcessCall( session_t *data )
 		
 		case CL_DIR_REQ:			
 			p.status = CallDirReq(data);
-			if(p.status != -1)
-			{
-				p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
-				p.status = OK;
-			}
-			else 
-            {
-				p.status = ERROR;
-			}
+			p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
+			p.status = OK;
+            strcpy(p.dir, (*data).data);
 			break;	
 										
 		case CL_DIR_LST:			
 			p.status = CallDirList(data);
 			p.opCode = __NOT_SPAWN__;
 			break;
-			
+        case CL_DIR_CON:
+            (*data).opCode = SR_DIR_CON_OK;
+            p.status = OK;
+            p.opCode = __SPAWN_DEMAND__;           
+            break;
+            
 		default:
 			p.status = ERROR;
 	}	
-        return p;
+    return p;
 }
 
 static size_t

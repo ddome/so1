@@ -57,6 +57,8 @@ int InitIPC(key_t key)
   readFifo=MakeRDPath(key);
   writeFifo=MakeWRPath(key);
 
+
+	
   writeFifo_FD = open(writeFifo, O_RDWR );
   readFifo_FD = open(readFifo, O_RDWR  );
 

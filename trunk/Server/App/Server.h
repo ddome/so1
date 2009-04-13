@@ -20,12 +20,14 @@
 #include "Application.h"
 #include "../Lib/defines.h"
 #include "../Session/Session.h"
-
+#include "../Lib/Error.h"
 /*
 *  Defines
 */
 
 #define __DEFAULT_PID__	  0
+
+#define BK_PATH "/home/damian/Desktop/so1/Server/backup/"
 
 /* Tipos de procesos disponibles para crearse
 */
@@ -62,7 +64,7 @@ int StartDirSubServer(process_t process);
 
 int StartDemandSubServer(process_t process);
 
-int SpawnSubProcess(process_t process);
+int SpawnSubProcess(process_t process, size_t size, byte * data);
 
 #endif
 

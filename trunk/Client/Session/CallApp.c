@@ -177,8 +177,6 @@ CallDirList(session_t data)
 	int i;
 	
 	GetDirList(data,&ndirs,&dirList);
-	printf("%d", ndirs);
-	getchar();
 	for(i=0; i<ndirs; i++) {
 		printf("%s\n", dirList[i]);
 	}

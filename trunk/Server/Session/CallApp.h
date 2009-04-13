@@ -34,4 +34,6 @@ int CallDirReq(session_t *data);
 
 int CallDirList(session_t *data);
 
+int CallTransferDir(session_t * dataPtr);
+
 #endif

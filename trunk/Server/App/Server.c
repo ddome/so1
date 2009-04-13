@@ -15,7 +15,7 @@ StartListening(void)
     int status;
     byte * data;
     process_t process, consoleProcess;
-    size_t size;
+    size_t size = 0;
     status = InitCommunication(__DEFAULT_PID__);
     consoleProcess.opCode = __SPAWN_PROMPT__;
 
@@ -24,7 +24,7 @@ StartListening(void)
 	    return ERROR;
     }
 
-    status = SpawnSubProcess(consoleProcess);
+    status = SpawnSubProcess(consoleProcess, size,data);
     while(status != ERROR && status != __SHUT_DOWN__)
     {
         data = ReadRequest();
@@ -77,10 +77,10 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
                 status = ProcessSendPack(&data, size);
                 break;
             case __SPAWN_DIR__:
-                status = SpawnSubProcess(process);
+                status = SpawnSubProcess(process, size, data);
                 break;
             case __SPAWN_DEMAND__:
-                status = OK;
+              status = SpawnSubProcess(process, size, data);
                 break;
             case __NO_RESPONSE__:
                // free(data);
@@ -96,7 +96,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
 }
 
 int
-SpawnSubProcess(process_t process)
+SpawnSubProcess(process_t process, size_t size, byte * data)
 {
     pid_t childPid;
     int returnValue = OK;
@@ -104,14 +104,14 @@ SpawnSubProcess(process_t process)
     switch(childPid = fork())
     {
         case ERROR: 
-            returnValue = ERROR;
+            returnValue = __ERROR_SERVER__;
             break;
         case __ISCHILD__:
             returnValue = StartSubProcess(process);
             break;
-        /*  Si es el padre no se hace nada
-        */
         default:
+            if(size > 0)
+                returnValue = ProcessSendPack(&data, size);
             break;
     }
 
@@ -136,7 +136,7 @@ int StartSubProcess(process_t process)
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
 	    default:
-	        returnValue = ERROR;
+	        returnValue = __ERROR_SERVER__;
 	        break;
     }
     
@@ -150,13 +150,12 @@ int StartDirSubServer(process_t reqProcess)
     size_t size;
 	key_t key;
 	byte * data;
-	key = ftok(reqProcess.dir, reqProcess.pid);
-	if(InitCommunication(key) == ERROR)
-	{
-		status = ERROR;
-	}
-	
-    while(status != ERROR && status != __SHUT_DOWN__)
+
+    key = ftok(Concat(BK_PATH, reqProcess.dir), reqProcess.pid);
+	status = InitCommunication(key);
+
+    
+    while(status > ERROR && status != __SHUT_DOWN__)
     {
 	    data = ReadRequest();
     
@@ -194,6 +193,7 @@ byte * ReadDirSubServerRequests(void)
 
 int StartDemandSubServer(process_t process)
 {
+  fopen("damian","w+");
     return 1;
 }
 

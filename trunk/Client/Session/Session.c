@@ -12,7 +12,7 @@
 
 
 static int GetDataSize( session_t data );
-static int ProcessCall( session_t *data );
+static process_t ProcessCall( session_t *data );
 static size_t MakeSessionData( session_t data, byte ** pack );
 static session_t GetSessionData( byte *data );
 static int MakeFilePack( fileT file, byte *data, byte **dataBuffer );
@@ -31,20 +31,34 @@ byte * GetRequest(void)
 	return ReadIPC();
 }
 
-int
-ProcessRequest(byte ** data, pid_t requestPid)
+/*
+* ProcessRequest: Procesa los pedidos entrantes
+*/
+process_t
+ProcessRequest(byte ** data, size_t * size)
 {
 	session_t pack;
-	int ret;
+	process_t process;
 		
 	pack  = GetSessionData(*data);
-        ret = ProcessCall( &pack );
-	
+	process = ProcessCall( &pack );
 	free(*data);
-	MakeSessionData(pack,data);
+	*size = MakeSessionData(pack,data);
 
-	return ret;
+	return process;
 }
+
+
+/*
+* ProcessSendPack: Procesa los mensajes de protocolo salientes
+*/
+
+int   
+ProcessSendPack(byte ** data, size_t size)
+{
+    return WriteIPC(*data, size);
+}
+
 
 /* Send Functions  */
 
@@ -59,6 +73,23 @@ SendConectionSignal(  pid_t pid )
 	aux.opCode = CL_NEW_CON;
 	aux.dataSize = 0;
 	
+	size = MakeSessionData(aux, &data);
+	
+	return WriteIPC(data, size);
+}	
+
+int 
+SendDirConectionSignal(  pid_t pid, string dir )
+{
+	session_t aux;
+        byte * data;
+        size_t size;
+    
+	aux.pid = pid;
+	aux.opCode = CL_DIR_CON;
+	aux.dataSize = strlen(dir)+1;
+	aux.data = dir;
+		
 	size = MakeSessionData(aux, &data);
 	
 	return WriteIPC(data, size);
@@ -188,47 +219,66 @@ GetDataSize( session_t data )
 			+ sizeof(size_t) + data.dataSize );
 }
 
-static int
+static process_t
 ProcessCall( session_t *data )
 {	
+	process_t p;
 	switch ((*data).opCode) {
 		case SR_CONECT_OK:
 			WritePrompt("Se ha conectado exitosamente\n");
-			return OK;
+			p.opCode = __NO_RESPONSE__;
+			p.status = OK;
 			break;
 		case SR_NEW_USR_OK:
 			WritePrompt("Ha registrado el nombre de usuario exitosamente\n");
-			return OK;
+			p.opCode = __NO_RESPONSE__;
+			p.status = OK;
 			break;
 		case SR_NEW_USR_ERR:
 			WritePrompt("El nombre usuario no se encuentra disponible\n");
-			return OK;
+			p.opCode = __NO_RESPONSE__;
+			p.status = OK;
 			break;
 		case SR_DIR_ADD:
-			return CallDirAdd(*data);
+			p.status = CallDirAdd(*data);
+			p.opCode = __NO_RESPONSE__;
 			break;			
 		case SR_FIL_ADD:
-			return CallFileAdd(*data);
+			p.status = CallFileAdd(*data);
+			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_MOD:
-			return CallFileMod(*data);
+			p.status = CallFileMod(*data);
+			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_REM:
-			return CallFileRem(*data);
+			p.status = CallFileRem(*data);
+			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_EXT:
-			return __SHUT_DOWN__;
+			p.opCode = __SHUT_DOWN__;
+			p.status = OK;
 			break;
 		case CL_DIR_LST:
-			CallDirList(*data);
-			return OK;
+			p.status = CallDirList(*data);
+			p.opCode = __NO_RESPONSE__;
+			break;
+		case SR_DIR_REQ_OK:
+			p.status = OK;
+			p.opCode = __SPAWN_DIR__;
+			strcpy(p.dir, (*data).data);
+
+			break;
+		case SR_DIR_CON_OK:
+			p.status = OK;
+			p.opCode = __SPAWN_DEMAND__;
 			break;
 		default:
-			return ERROR;
+			p.status = ERROR;
 			break;
 	}
 		
-	return OK;
+	return p;
 }
 
 static size_t
