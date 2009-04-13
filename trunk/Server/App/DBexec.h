@@ -45,5 +45,7 @@ int GetCantUsersLinkToDir(char * pathName); //
 
 int GetListPIDsLinkToDir(char * pathName,int ** pids);
 
+char * GetPIDToUserName(int pid);
+
 
 #endif

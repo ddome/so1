@@ -192,10 +192,10 @@ DirAdd( string dirPath  )
     
     
     NewDir(DirName(dirPath));
-    CreateDir(destPath=Concat(SERVER_PATH,DirName(dirPath)));
+    /*CreateDir(destPath=Concat(SERVER_PATH,DirName(dirPath)));*/
 
-    ret = CopyDir(dirPath,destPath);		
-    free(destPath);
+    /*ret = CopyDir(dirPath,destPath);		
+    free(destPath);*/
     return ret;
 }
 	
@@ -306,7 +306,11 @@ PIDsLinkToDir(char * pathName)
     return pids;
 }
 
-
+char *
+ConvertPIDToUserName(int pid)
+{
+    return GetPIDToUserName(pid);
+}
 
 
 

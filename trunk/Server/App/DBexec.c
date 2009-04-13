@@ -349,6 +349,22 @@ GetListPIDsLinkToDir(char * pathName,int ** pids)
     return OK;
 }
 
+char *
+GetPIDToUserName(int pid)
+{
+    pqADT queue;
+    char * userName;
+    queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
+    if(queue==NULL)
+    {
+        fprintf(stderr,"Error al crear la cola en TopList.\n");
+        return NULL;
+    }
 
+    PIDToUserName(db,pid,queue);
+    userName=Dequeue(queue);
+    FreePQ(&queue);
+    return userName;
+}
 
 
