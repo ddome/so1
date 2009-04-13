@@ -294,4 +294,30 @@ CantUsersLinkToDir(char * pathName)
     return GetCantUsersLinkToDir(pathName);
 }
 
+int *
+PIDsLinkToDir(char * pathName)
+{
+    int * pids,cant=0;
+    cant=GetCantUsersLinkToDir(pathName);
+    if( (pids=calloc(cant+1,sizeof(int))) ==NULL )
+        return NULL;
+    
+    GetListPIDsLinkToDir(pathName,&pids);
+    return pids;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

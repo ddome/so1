@@ -142,6 +142,13 @@ int ListAllSyncDirs( string **out);
 ----------------------------------------------------------------*/
 int CantUsersLinkToDir(char * pathName);
 
+
+/*----------------------------------------------------------------
+ Retorna en un vector de enteros los pids de los usuarios
+ registrados a un directorio particular.
+----------------------------------------------------------------*/
+int * PIDsLinkToDir(char * pathName);
+
 #endif
 
 
