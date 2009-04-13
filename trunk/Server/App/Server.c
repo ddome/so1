@@ -148,12 +148,19 @@ int StartDirSubServer(process_t reqProcess)
     process_t process;
 	int status;
     size_t size;
-	key_t key;
+	key_t keyDefault, keyClient;
 	byte * data;
-
-    key = ftok(Concat(BK_PATH, reqProcess.dir), reqProcess.pid);
-	status = InitCommunication(key);
-
+    char * aux;
+    
+    keyClient = ftok(aux = Concat(BK_PATH, reqProcess.dir), reqProcess.pid);
+    free(aux);
+    status = InitCommunication(keyClient);
+    if(status > ERROR)
+    {
+        keyDefault = ftok(aux = Concat(BK_PATH, reqProcess.dir), __DEFAULT_PID__);
+        free(aux);
+        status = InitCommunication(keyDefault);
+    }
     
     while(status > ERROR && status != __SHUT_DOWN__)
     {
@@ -164,7 +171,17 @@ int StartDirSubServer(process_t reqProcess)
 	        /* se manda a que sea procesado en la capa de sesion 
 	        */
 	        process = ProcessRequest(&data, &size);
-	        status = AnalyzeOperation(process, data, size);
+            /*
+            *  Se switchea al key del cliente para escribir
+            */
+            keyClient = ftok(aux = Concat(BK_PATH, reqProcess.dir), process.pid);
+            free(aux);
+            if((status = InitCommunication(keyClient)) > ERROR)
+	            status = AnalyzeOperation(process, data, size);
+            /* Se retorna al IPC default
+            */
+            if(status > ERROR)
+                status = InitCommunication(keyDefault);
 	    }
 	    else
 	    {
@@ -193,8 +210,21 @@ byte * ReadDirSubServerRequests(void)
 
 int StartDemandSubServer(process_t process)
 {
-  fopen("damian","w+");
-    return 1;
+    int status;
+    char * aux;
+    char ble[MAXMSG];
+    sprintf(ble, "%d", process.status);
+    fopen(ble, "w+");
+    key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
+    free(aux);
+    
+    status = InitCommunication(key);
+    if(status > ERROR)
+    {
+        status = SendDirPack(process);
+    }
+    
+    return status;
 }
 
 

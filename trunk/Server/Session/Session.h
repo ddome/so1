@@ -43,7 +43,8 @@
 #define SR_EXT         7
 #define SR_DIR_ADD     18
 #define SR_DIR_REQ_OK  19
-#define SR_DIR_CON_OK 20
+#define SR_DIR_CON_OK  20
+#define SR_DIR_TRANS   22
 //Agregar Sr_DIr-CON-ERROR!!!!!!!!!!1111
 
 /* Client -> Server operations 
@@ -86,6 +87,8 @@ int InitCommunication(pid_t pid);
 byte * GetRequest(void);
 
 process_t ProcessRequest(byte ** data, size_t * size);
+
+int SendDirPack(process_t process);
 
 int ProcessSendPack(byte ** data, size_t size);
 
