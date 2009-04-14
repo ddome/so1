@@ -298,7 +298,7 @@ MakeDirListPack( int ndirs, string *dirList, byte **dataBuffer )
 	pos += sizeof(int);
 	
 	for( i=0; i<ndirs; i++ ) {
-		memmove(*dataBuffer+pos, &(dirList[i]), MAX_DIR_NAME);
+		memmove(*dataBuffer+pos, dirList[i], MAX_DIR_NAME);
 		pos += MAX_DIR_NAME;
 	}
 		

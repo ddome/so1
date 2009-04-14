@@ -162,7 +162,7 @@ GetDirList(session_t data, int *ndirs, string **dirList)
 	
 	for(i=0; i<(*ndirs); i++) {
 		(*dirList)[i] = malloc(MAX_DIR_NAME);
-		memmove(&((*dirList)[i]), data.data+pos, MAX_DIR_NAME);		
+		memmove(((*dirList)[i]), data.data+pos, MAX_DIR_NAME);		
 		pos += MAX_DIR_NAME; 
 	}
 	
