@@ -260,7 +260,7 @@ ProcessCall( session_t *data )
 			p.opCode = __SHUT_DOWN__;
 			p.status = OK;
 			break;
-		case CL_DIR_LST:
+		case SR_DIR_LST:
 			p.status = CallDirList(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
@@ -466,6 +466,8 @@ SendDirPack(process_t process)
 	
 	return OK;
 }
+
+
 
 
 

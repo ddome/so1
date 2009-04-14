@@ -45,6 +45,7 @@
 #define SR_DIR_REQ_OK  19
 #define SR_DIR_CON_OK 20
 #define SR_DIR_TRANS   22
+#define SR_DIR_LST 23
 
 /* Client -> Server operations 
 */
