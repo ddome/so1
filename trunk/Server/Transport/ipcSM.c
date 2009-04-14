@@ -66,8 +66,8 @@ InitIPC(key_t key)
     /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
     keyAux1=ftok("/tmp",key);
     keyAux2=ftok("/home",key);
-    shmid1=shmget(keyAux1,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
-    shmid2=shmget(keyAux2,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    shmid1=shmget(keyAux1,MAX_SIZE,IPC_CREAT |IPC_EXCL| __DEFAULT_FIFO_MODE__);
+    shmid2=shmget(keyAux2,MAX_SIZE,IPC_CREAT |IPC_EXCL| __DEFAULT_FIFO_MODE__);
     if( shmid1==-1 || shmid2==-1 )
     {
 	printf("Hola 1\n");
