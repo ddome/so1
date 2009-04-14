@@ -11,8 +11,6 @@
 #include "./Lib/defines.h"
 #include "./Transport/OutputPipe.h"
 
-int ReqDir( string userName, string dirName, fileT **files, byte ***databuffer );
-
 int
 main(void)
 {	
@@ -31,7 +29,7 @@ main(void)
     {
         fprintf(stderr, "No se ha podido inicializar la aplicacion.");
     }
-
+	
 	return 0;
 }	
 

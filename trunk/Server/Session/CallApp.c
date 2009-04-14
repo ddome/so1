@@ -265,7 +265,10 @@ CallTransferDir(session_t * dataPtr)
     
   dirPath  = (*dataPtr).data;
   userName = (*dataPtr).msg;
-        
+	
+  /* armo el paquete respuesta */	
+  (*dataPtr).opCode = SR_DIR_TRANS;
+	        
   if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
     return ERROR;
   }

@@ -269,7 +269,6 @@ ProcessCall( session_t *data )
 			p.opCode = __SPAWN_DIR__;
 			strcpy(p.dir, (*data).data);
 			p.pid = (*data).pid;
-
 			break;
 		case SR_DIR_CON_OK:
 			p.status = OK;
@@ -365,6 +364,107 @@ MakeFilePack( fileT file, byte *data, byte **dataBuffer )
 	}
 	
 	return (GetSize(file) + sizeof(fileT));
+}
+
+
+/* funciones de debugueo */
+
+static int
+GetFileListSize( int nfiles, fileT *fileList )
+{
+	int size;
+	int i;
+	
+	size = 0;
+	for( i=0; i<nfiles; i++ ) {
+		size += GetSize(fileList[i]);
+	}
+	
+	return size;
+}
+
+
+
+static int
+MakeDirPack(int nfiles, fileT * fileList,byte **dataBuffer,byte **pack)
+{
+	int size;
+	int i;
+	int pos;
+	
+	if( (*pack = malloc(size=sizeof(int)+sizeof(fileT)*nfiles+GetFileListSize(nfiles,fileList)) ) == NULL ) {
+		return ERROR;
+	}
+	
+	pos = 0;
+	memmove(*pack + pos, &nfiles, sizeof(int));
+	
+	pos += sizeof(int);
+	for( i=0; i<nfiles; i++ ) {		
+		memmove(*pack + pos, &(fileList[i]), sizeof(fileT));
+		pos += sizeof(fileT);
+		memmove(*pack + pos, &(dataBuffer[i]), GetSize(fileList[i]));
+		pos += GetSize(fileList[i]);
+	}
+	
+	return size;	
+}	
+
+int
+CallTransferDir(session_t * dataPtr)
+{
+	byte **dataBuffer;
+	fileT *fileList;
+	string dirPath;
+	string userName;
+	int nfiles;
+    
+	dirPath  = (*dataPtr).data;
+	userName = (*dataPtr).msg;
+	
+	/* armo el paquete respuesta */	
+	(*dataPtr).opCode = SR_DIR_TRANS;
+	
+	if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
+		return ERROR;
+	}
+	else {
+		if( ((*dataPtr).dataSize = MakeDirPack(nfiles, fileList,dataBuffer,&((*dataPtr).data))) != ERROR ) {
+			return OK;
+		}
+		else {
+			return ERROR;
+		}
+	}
+}
+
+
+
+int
+SendDirPack(process_t process)
+{
+    session_t session;
+    size_t size;
+    byte * data;
+	
+    char * userName = CreateString("damian");
+	
+    if(userName != NULL)
+    {
+		strcpy(session.msg, userName);
+		free(userName);
+    }
+	
+	session.dataSize = strlen("SO") + 1;
+	session.data = malloc(session.dataSize);
+    strcpy(session.data, "SO");
+	
+    CallTransferDir(&session);
+    
+    size = MakeSessionData(session, &data);
+    ProcessRequest(&data, &size);
+	
+	return OK;
 }
 
 

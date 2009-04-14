@@ -45,6 +45,7 @@
 #define __SPAWN_INOTIFY__ 4
 #define __SPAWN_PING__    5
 #define __NO_RESPONSE__   6
+#define __SPAWN_OUTPUT__  7
 
 /* Definiciones para creacion de procesos con fork()
 */

@@ -153,7 +153,7 @@ FileAdd( fileT file, byte *data )
     if( FileExists(file) )
     {
 	//CONFLICTO
-	DeleteFile(file);
+		DeleteFile(file);
     }
 
     if( (fptr = CreateFile(file)) == NULL )
@@ -238,8 +238,8 @@ ReqDir( string userName, string dirName, fileT **files, byte ***databuffer )
 		    
     for(i=0; i<nfiles; i++)
     {
-	if( ((*databuffer)[i] = ReqFile((*files)[i])) == NULL )
-      return __ERROR_APPLICATION__;
+		if( ((*databuffer)[i] = ReqFile((*files)[i])) == NULL )
+		  return __ERROR_APPLICATION__;
     }
     
     return nfiles;

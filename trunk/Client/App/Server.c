@@ -20,16 +20,18 @@ StartListening(void)
   int status;
   byte * data;
   size_t size = 0;
-  process_t consoleProcess, process;
+  process_t consoleProcess, process, outputProcess;
 
   consoleProcess.opCode = __SPAWN_PROMPT__;
+  outputProcess.opCode = __SPAWN_OUTPUT__;
   status = InitCommunication(__DEFAULT_PID__);
   if(status == ERROR)
   {
     return ERROR;
   }
   
-  status = SpawnSubProcess(consoleProcess, size, data); 
+  status = SpawnSubProcess(consoleProcess, size, data);
+  status = SpawnSubProcess(outputProcess, size, data); 
   if(status == CHILD_RETURN)
   {
     return OK;
@@ -128,7 +130,10 @@ int StartSubProcess(process_t process)
     {
 	    case __SPAWN_PROMPT__:
 	        Prompt();
-	        break;
+	        break;			
+		case __SPAWN_OUTPUT__:
+	        PromptReader();
+	        break;	
 	    case __SPAWN_DIR__:
 	        returnValue = StartDirSubServer(process);
 	        break;

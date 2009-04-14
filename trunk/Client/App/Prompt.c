@@ -13,6 +13,7 @@
 #include "../Lib/scannerADT.h"
 #include "../Lib/tree.h"
 #include "../Session/Session.h"
+#include "../Transport/OutputPipe.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -186,3 +187,17 @@ Prompt(void)
     return status == ERROR ? ERROR : RETURN;
 }
 
+void
+PromptReader(void)
+{
+	string msg;
+	
+	do {
+		msg = ReadMessage();
+		
+		if(	strcmp(msg,"$SALIR") != 0 ) { 
+			printf("%s\n",msg);
+		}
+	}while( strcmp(msg,"$SALIR") != 0);	
+	
+}	

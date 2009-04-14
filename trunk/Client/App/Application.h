@@ -51,4 +51,11 @@ byte  *FileReq( fileT file );
  ----------------------------------------------------------------*/
 int DirWatch(string dir);
 
+/* debugueo */
+byte *
+ReqFile( fileT file );
+int
+ReqDir( string userName, string dirName, fileT **files, byte ***databuffer );
+
+
 #endif
