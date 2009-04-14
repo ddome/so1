@@ -97,7 +97,7 @@ ReadIPC(void)
   int status = OK;
   headerIPC_t header;
   byte * data;
-
+	
   status = read(readFifo_FD, &header, sizeof(headerIPC_t));
   if(status > 0)
   {

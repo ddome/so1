@@ -210,19 +210,17 @@ byte * ReadDirSubServerRequests(void)
 
 int StartDemandSubServer(process_t process)
 {
-    int status;
+    int status=OK;
     char * aux;
-    char ble[MAXMSG];
-    sprintf(ble, "%d", process.status);
-    fopen(ble, "w+");
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
     free(aux);
-    
+
     status = InitCommunication(key);
     if(status > ERROR)
-    {
+    { 
         status = SendDirPack(process);
     }
+    
     
     return status;
 }

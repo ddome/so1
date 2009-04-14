@@ -212,10 +212,11 @@ int StartDemandSubServer(process_t process)
 	byte * data;
 	process_t p;
 	size_t size;
+
     char * aux;
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), getppid());
     free(aux);
-    
+
     status = InitCommunication(key);
     if(status > ERROR)
     {
@@ -224,6 +225,7 @@ int StartDemandSubServer(process_t process)
 			if( (data = GetRequest()) != NULL)
 			{
 				p = ProcessRequest(&data, &size);
+				    
 			}
 		}
     }

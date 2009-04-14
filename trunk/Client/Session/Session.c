@@ -268,11 +268,13 @@ ProcessCall( session_t *data )
 			p.status = OK;
 			p.opCode = __SPAWN_DIR__;
 			strcpy(p.dir, (*data).data);
+			p.pid = (*data).pid;
 
 			break;
 		case SR_DIR_CON_OK:
 			p.status = OK;
 			strcpy(p.dir, (*data).data);
+			p.pid = (*data).pid;
 			p.opCode = __SPAWN_DEMAND__;
 			break;
 		case SR_DIR_TRANS:
