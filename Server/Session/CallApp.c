@@ -315,6 +315,8 @@ CallDirList(session_t *dataPtr)
 	
 	ndirs = ListAllSyncDirs( &out );
 	
+	(*dataPtr).opCode = SR_DIR_LST;
+	
 	(*dataPtr).dataSize = MakeDirListPack( ndirs, out, &((*dataPtr).data) );
 	
 	for( i=0; i<ndirs; i++ ) {
