@@ -11,6 +11,8 @@
 #include "./Lib/defines.h"
 #include "./Transport/OutputPipe.h"
 
+int ReqDir( string userName, string dirName, fileT **files, byte ***databuffer );
+
 int
 main(void)
 {	

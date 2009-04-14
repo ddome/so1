@@ -41,12 +41,12 @@ FileRem( fileT file )
 	return OK;
 }
 
-
 int
 DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 {	
 	
 	int i;
+	int size;
 	
 	for( i=0; i < nfiles; i++ ) {
 		
@@ -56,6 +56,7 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 				return ERROR;
 			}
 		}
+		size = GetSize(files[i]);
 		FileAdd(files[i], data[i]); 
 	}
 	
@@ -63,7 +64,7 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 }
 	
 byte *
-ReqFile( fileT file )
+FileReq( fileT file )
 {
 	FILE *fptr;
 	byte *data;

@@ -43,7 +43,7 @@ int FileAdd( fileT file, byte *data );
  Almacena en 'data' el contenido binario de un archivo indicado
  por 'file'. El usuario es responsable de liberar data.
  ----------------------------------------------------------------*/
-int FileReq( fileT file, byte *data );
+byte  *FileReq( fileT file );
 
 /*---------------------------------------------------------------- 
  Vigila un directorio hasta que haya un cambio, devolviendo
