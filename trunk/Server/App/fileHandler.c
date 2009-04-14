@@ -457,8 +457,9 @@ string
 DirName(string dirPath)	
 {
 	string dirName;
-	
+	printf("%s\n",dirPath);
 	dirName = strrchr(dirPath, '/');
+	printf("Dir: (%s)\n",(dirName+1));
 	return dirName+1;	
 }	
 	
