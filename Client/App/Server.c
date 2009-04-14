@@ -168,6 +168,7 @@ int StartDirSubServer(process_t reqProcess)
 	{
 		status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
 	}
+	usleep(3000);
 	status = InitCommunication(keyClient);
 	
     while(status > ERROR && status != __SHUT_DOWN__)
@@ -217,11 +218,9 @@ int StartDemandSubServer(process_t process)
 	byte * data;
 	process_t p;
 	size_t size;
-
     char * aux;
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), getppid());
     free(aux);
-
     status = InitCommunication(key);
     if(status > ERROR)
     {

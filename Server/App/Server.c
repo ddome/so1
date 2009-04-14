@@ -27,7 +27,7 @@ StartListening(void)
 
     status = SpawnSubProcess(consoleProcess, size,data);
 	status = SpawnSubProcess(outputProcess, size,data);
-    while(status != ERROR && status != __SHUT_DOWN__)
+    while(status != __SHUT_DOWN__)
     {
         data = ReadRequest();
 
@@ -217,7 +217,9 @@ int StartDemandSubServer(process_t process)
 {
     int status=OK;
     char * aux;
+    
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
+
     free(aux);
 
     status = InitCommunication(key);

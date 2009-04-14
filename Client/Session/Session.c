@@ -277,6 +277,7 @@ ProcessCall( session_t *data )
 			p.opCode = __SPAWN_DEMAND__;
 			break;
 		case SR_DIR_TRANS:
+			fopen("llegooop", "w+");
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 		default:
