@@ -17,6 +17,11 @@ main(void)
     int status;
     status = InitApplication();
     status = InitTransport();
+    InitPromptCommunication(getpid());
+    WritePrompt("afgafg\n");
+    printf("%s\n",ReadMessage());
+
+
     if(status != ERROR)
     {
         status = StartListening();
@@ -29,7 +34,6 @@ main(void)
     {
         fprintf(stderr, "No se ha podido inicializar la aplicacion.");
     }
-	
-	return 0;
+    return 0;
 }	
 

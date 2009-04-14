@@ -3,10 +3,10 @@
 
 #define _FIFO_MODE_ 0666
 
-#define _DEFAULT_PATH_ "/tmp/PromptReader"
+#define _DEFAULT_PATH_ "/tmp/PromptReaderClient"
 #define MAX_PROMPT_MSG 150
 
-int InitPromptCommunication(void);
+int InitPromptCommunication(pid_t pid);
 
 /* Mensajes de error, menores a 150 */
 int WritePrompt(char * msg);

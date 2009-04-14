@@ -73,11 +73,14 @@ DB_STAT UserPidExist(sqliteADT db, int pid,int * boolRet);
 
 DB_STAT IsUserOnline(sqliteADT db, const char * userName,int * boolRet);
 
+DB_STAT IsUserOnlinePID(sqliteADT db, int pid,int * boolRet);
+
 DB_STAT ShowOnlineByPID(sqliteADT db,pqADT queue);
 
 DB_STAT ShowOnline(sqliteADT db,pqADT queue);
 
 DB_STAT PIDToUserName(sqliteADT db,int pid,pqADT queue);
+
 
 
 

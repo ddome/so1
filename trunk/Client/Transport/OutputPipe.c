@@ -26,15 +26,30 @@
 #include "../Lib/defines.h"
 #include "../Lib/genlib.h"
 #include "OutputPipe.h"
+char * path=NULL;
 
 int
-InitPromptCommunication(void)
+MakePath(pid_t pid)
 {
-	if( open(_DEFAULT_PATH_, O_RDWR) >= 0 ) {
-		remove(_DEFAULT_PATH_);
+    if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
+	return ERROR;
+
+    sprintf(path,"%s_prompt_%d_wr",_DEFAULT_PATH_,(int)pid);
+
+    return OK;
+}
+
+int
+InitPromptCommunication(pid_t pid)
+{
+	if(MakePath(pid)==ERROR)
+	    return ERROR;	
+	
+	if( open(path, O_RDWR) >= 0 ) {
+		remove(path);
 	}	
 		
-	return mkfifo(_DEFAULT_PATH_,_FIFO_MODE_);	
+	return mkfifo(path,_FIFO_MODE_);	
 }
 
 int
@@ -43,7 +58,7 @@ WritePrompt(string msg)
 	int fd;
 	int size;
 	
-	if( ( fd = open(_DEFAULT_PATH_, O_RDWR) ) < 0 ) {
+	if( ( fd = open(path, O_RDWR) ) < 0 ) {
 		return ERROR;
 	}
 	
@@ -66,7 +81,7 @@ ReadMessage(void)
 	int fd;
 	char msg[MAX_PROMPT_MSG];
 	
-	if( ( fd = open(_DEFAULT_PATH_,O_RDWR) ) < 0 ) {
+	if( ( fd = open(path,O_RDWR) ) < 0 ) {
 		return NULL;
 	}
 	

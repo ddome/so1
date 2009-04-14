@@ -57,7 +57,7 @@ GetListDirs(const char * userName, string **out)
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
-	fprintf(stderr,"Error al crear la cola en TopList.\n");
+	fprintf(stderr,"Error al crear la cola en GetListDirs.\n");
 	return ERROR;
     }
 
@@ -100,12 +100,24 @@ SetName(int pid,const char * userName)
 {
     int ret;
     int boolRet;
+    
     if(pid<=0 || userName==NULL)
+    {
         return ERROR;
+    }
     UserPidExist(db,pid,&boolRet);
     if(boolRet<=0)
+    {
 	return ERROR;
+    }
+
+    IsUserOnlinePID(db,pid,&boolRet);
+    if(boolRet!=0)
+	return ERROR;
+
+
     ret=AddNameByPid(db,pid,userName);
+    
     if(ret==DB_SUCCESS)
     {
 	return OK;
@@ -115,7 +127,9 @@ SetName(int pid,const char * userName)
 	return ERROR;
     }
     else
+    {
 	return DB_ERROR;
+    }
 }
 
 
@@ -206,7 +220,7 @@ GetTopList(const char * userName,char ***out)
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
-	fprintf(stderr,"Error al crear la cola en TopList.\n");
+	fprintf(stderr,"Error al crear la cola en GetTopList.\n");
 	return ERROR;
     }
     if(userName==NULL)
@@ -216,7 +230,7 @@ GetTopList(const char * userName,char ***out)
     
     if( (*out=calloc(QueueDepth(queue)+1,sizeof(char*)))==NULL )
     {
-	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+	fprintf(stderr,"Error al alocar espacio en GetTopList.\n");
 	return ERROR;
     }
     while(!PQIsEmpty(queue))
@@ -240,13 +254,13 @@ GetUserOnlineList( char *** out )
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
-	fprintf(stderr,"Error al crear la cola en TopList.\n");
+	fprintf(stderr,"Error al crear la cola en GetUserOnlineList.\n");
 	return ERROR;
     }
     ShowOnline(db,queue);
     if( ( (*out)=calloc(QueueDepth(queue)+1,sizeof(char*)) )==NULL )
     {
-	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+	fprintf(stderr,"Error al alocar espacio en GetUserOnlineList.\n");
 	return ERROR;
     }
     while(!PQIsEmpty(queue))
@@ -278,7 +292,7 @@ GetListDirsAll(char *** out)
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
-	fprintf(stderr,"Error al crear la cola en TopList.\n");
+	fprintf(stderr,"Error al crear la cola en GetListDirsAll.\n");
 	return ERROR;
     }
 
@@ -286,7 +300,7 @@ GetListDirsAll(char *** out)
     cant=QueueDepth(queue);
     if( (*out=calloc(cant+1,sizeof(char*)))==NULL )
     {
-	fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+	fprintf(stderr,"Error al alocar espacio en GetListDirsAll.\n");
 	return ERROR;
     }
     while(!PQIsEmpty(queue))
@@ -308,7 +322,7 @@ GetCantUsersLinkToDir(char * pathName)
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
-        fprintf(stderr,"Error al crear la cola en TopList.\n");
+        fprintf(stderr,"Error al crear la cola en GetCantUsersLinkToDir.\n");
         return ERROR;
     }
 
@@ -328,7 +342,7 @@ GetListPIDsLinkToDir(char * pathName,int ** pids)
     queue=NewPQ(NULL,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
-        fprintf(stderr,"Error al crear la cola en TopList.\n");
+        fprintf(stderr,"Error al crear la cola en GetCantUsersLinkToDir.\n");
         return ERROR;
     }
 
@@ -336,7 +350,7 @@ GetListPIDsLinkToDir(char * pathName,int ** pids)
     cant=QueueDepth(queue);
     if( (*pids=calloc(cant+1,sizeof(int)))==NULL )
     {
-        fprintf(stderr,"Error al alocar espacio en GetListDirs.\n");
+        fprintf(stderr,"Error al alocar espacio en GetCantUsersLinkToDir.\n");
         return ERROR;
     }
     while(!PQIsEmpty(queue))
@@ -357,7 +371,7 @@ GetPIDToUserName(int pid)
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
-        fprintf(stderr,"Error al crear la cola en TopList.\n");
+        fprintf(stderr,"Error al crear la cola en GetPIDToUserName.\n");
         return NULL;
     }
 
