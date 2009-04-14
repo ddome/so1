@@ -73,9 +73,9 @@ SendDirPack(process_t process)
       free(userName);
     }
 	
-	session.dataSize = strlen("SO") + 1;
+	session.dataSize = strlen(process.dir) + 1;
 	session.data = malloc(session.dataSize);
-    strcpy(session.data, "SO");
+    strcpy(session.data, process.dir);
 	
     CallTransferDir(&session);
     
