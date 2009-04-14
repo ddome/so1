@@ -429,7 +429,7 @@ UserPidExist(sqliteADT db, int pid,int * boolRet)
 
     if( (idAux=calloc(50,sizeof(char)))==NULL )
     {
-	logError( db->logFile, "No hay memoria suficiente en GetUserWithID." );
+	logError( db->logFile, "No hay memoria suficiente en UserPidExist." );
 	return DB_NO_MEMORY;
     }
     sprintf(idAux,"%d",pid);
@@ -459,6 +459,7 @@ UserPidExist(sqliteADT db, int pid,int * boolRet)
     }
 }
 
+
 DB_STAT
 IsUserOnline(sqliteADT db, const char * userName,int * boolRet)
 {
@@ -476,6 +477,49 @@ IsUserOnline(sqliteADT db, const char * userName,int * boolRet)
     ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, userN);
     *boolRet=sqlite3_column_int(statement,0);
     free(userN);
+
+    switch (ret)
+    {
+        case SQLITE_DONE:
+            sqlite3_finalize( statement );
+            return DB_SUCCESS;
+
+        case SQLITE_CONSTRAINT:
+            sqlite3_finalize( statement );
+            return DB_ALREADY_EXISTS;
+
+        default:
+            sqlite3_finalize(statement);
+            return DB_INTERNAL_ERROR;
+    }
+}
+
+DB_STAT
+IsUserOnlinePID(sqliteADT db, int pid,int * boolRet)
+{
+    sqlite3_stmt *statement;
+    int ret;
+    char * pidI;
+    char * idAux;
+    char *sqlSelect = "SELECT online FROM users WHERE pid='%s'";
+
+    if (db == NULL || pid==0 )
+        return DB_INVALID_ARG;
+
+    if( (idAux=calloc(50,sizeof(char)))==NULL )
+    {
+	logError( db->logFile, "No hay memoria suficiente en IsUserOnlinePID." );
+	return DB_NO_MEMORY;
+    }
+    sprintf(idAux,"%d",pid);
+
+    if ( ( pidI = EscapeString( db, idAux ) ) == NULL )
+        return DB_NO_MEMORY;
+    free(idAux);
+
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, pidI);
+    *boolRet=sqlite3_column_int(statement,0);
+    free(pidI);
 
     switch (ret)
     {

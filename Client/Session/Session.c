@@ -236,7 +236,7 @@ ProcessCall( session_t *data )
 			p.status = OK;
 			break;
 		case SR_NEW_USR_ERR:
-			WritePrompt("El nombre usuario no se encuentra disponible\n");
+			WritePrompt("El nombre usuario no se encuentra disponible o usted ya se encuantra conectado.\n");
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			break;
