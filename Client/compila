@@ -3,7 +3,7 @@ gcc -g -c -Wall -o fileHandler.o ./App/fileHandler.c
 gcc -g -c -Wall -o Prompt.o ./App/Prompt.c
 gcc -g -c -Wall -o Server.o ./App/Server.c
 gcc -g -c -Wall -o Transport.o ./Transport/Transport.c
-gcc -g -c -Wall -o ipcFifo.o ./Transport/ipcFifo.c
+gcc -g -c -Wall -o ipcSM.o ./Transport/ipcSM.c
 gcc -g -c -Wall -o OutputPipe.o ./Transport/OutputPipe.c
 gcc -g -c -Wall -o genlib.o ./Lib/genlib.c
 gcc -g -c -Wall -o pqADT.o ./Lib/pqADT.c
@@ -12,7 +12,7 @@ gcc -g -c -Wall -o tree.o ./Lib/tree.c
 gcc -g -c -Wall -o Session.o ./Session/Session.c
 gcc -g -c -Wall -o CallApp.o ./Session/CallApp.c
 gcc -g -c -Wall -o main.o main.c
-gcc -g -Wall -lpthread -ldl -o client Application.o fileHandler.o Prompt.o genlib.o pqADT.o scannerADT.o tree.o Session.o main.o Server.o Transport.o ipcFifo.o CallApp.o OutputPipe.o
+gcc -g -Wall -lpthread -ldl -o client Application.o fileHandler.o Prompt.o genlib.o pqADT.o scannerADT.o tree.o Session.o main.o Server.o Transport.o ipcSM.o CallApp.o OutputPipe.o
 rm *.o
 
 

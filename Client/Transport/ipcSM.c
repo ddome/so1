@@ -64,11 +64,11 @@ InitIPC(key_t key)
 {
     int keyAux1,keyAux2;
     /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
-    keyAux1=ftok("/",key);
+    keyAux1=ftok("/tmp",key);
     keyAux2=ftok("/home",key);
     shmid1=shmget(keyAux1,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
     shmid2=shmget(keyAux2,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
-    if( shmid==-1 || shmid2==-1 )
+    if( shmid1==-1 || shmid2==-1 )
     {
 	printf("Hola 1\n");
 	return ERROR;
@@ -80,8 +80,8 @@ InitIPC(key_t key)
 	printf("Hola 2\n");
 	return ERROR;
     }
-    keyAux=ftok("/root",keyAux);
-    if( GetSem(keyAux)==-1 )
+    keyAux1=ftok("/home",keyAux1);
+    if( GetSem(keyAux1)==-1 )
     {
 	printf("Hola 3\n");
 	return ERROR;
@@ -91,7 +91,7 @@ InitIPC(key_t key)
     */
     IPCStarted = TRUE;
     isChildProcess = TRUE;
-    printf("shmid=(%d) - semid=(%d)\n",shmid,semid);
+    printf("shmid1=(%d) - shmid2=(%d) - semid=(%d)\n",shmid1,shmid2,semid);
     return OK;
 }
 
@@ -119,10 +119,10 @@ ReadIPC(void)
     headerIPC_t header;
     byte *data;
     semop(semid,&p3,1);
-    semop(semid,&v4,1);
+    
     if( memcpy(&header,dataAux2,sizeof(headerIPC_t)) != &header )
 	return NULL;
-
+    semop(semid,&v4,1);
 
     if(status > 0)
     {
@@ -132,9 +132,10 @@ ReadIPC(void)
 	    return NULL;
 	}   
 	semop(semid,&p3,1);
-	semop(semid,&v4,1);
+	
 	memcpy(data,dataAux2,header.size * sizeof(byte));
-
+	semop(semid,&v4,1);
+	printf("Lei.\n");
 	if(status > 0)
 	{
 	    status = OK;
