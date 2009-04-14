@@ -92,3 +92,48 @@ InitApplication(void)
 }
 
 
+byte *
+ReqFile( fileT file )
+{
+    FILE *fptr;
+    byte *data;
+    int a;
+    
+    if( (fptr = OpenReadFile(file)) == NULL )
+    {
+		return NULL;
+    }
+    
+    if( (data=malloc(a=GetSize(file))) == NULL )
+    {
+		return NULL;
+    }
+    
+    
+    fread( data, 1, GetSize(file), fptr );
+    
+    return data;
+}
+
+int
+ReqDir( string userName, string dirName, fileT **files, byte ***databuffer )
+{
+    int nfiles;
+    int i;
+    string dir;
+    
+    dir = Concat(SERVER_PATH,dirName);
+    
+    nfiles = DirFilesList(dir,files);
+	
+    (*databuffer) = malloc(sizeof(byte**)*nfiles);
+	
+    for(i=0; i<nfiles; i++)
+    {
+		if( ((*databuffer)[i] = ReqFile((*files)[i])) == NULL )
+			return ERROR;
+    }
+    
+    return nfiles;
+}
+

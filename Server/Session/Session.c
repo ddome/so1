@@ -63,7 +63,7 @@ SendDirPack(process_t process)
 {
     session_t session;
     size_t size;
-    byte ** data;
+    byte * data;
 
     char * userName = ConvertPIDToUserName(process.pid);
         
@@ -72,17 +72,16 @@ SendDirPack(process_t process)
       strcpy(session.msg, userName);
       free(userName);
     }
-    session.opCode = SR_DIR_TRANS;
-    strcpy(session.data, process.dir);
-    session.dataSize = strlen(process.dir ) + 1;
-
+	
+	session.dataSize = strlen("SO") + 1;
+	session.data = malloc(session.dataSize);
+    strcpy(session.data, "SO");
+	
     CallTransferDir(&session);
     
-    size = MakeSessionData(session, data);
-
-
-    
-    return ProcessSendPack(data, size);
+    size = MakeSessionData(session, &data);
+   
+    return ProcessSendPack(&data, size);
 }
 
 void
@@ -141,6 +140,26 @@ ProcessCall( session_t *data )
             p.opCode = __NOT_SPAWN__;
 			break;
 			
+		case CL_DIR_LST:			
+			p.status = CallDirList(data);
+			p.opCode = __NOT_SPAWN__;
+			break;
+			
+		case CL_DIR_REQ:			
+			p.status = CallDirReq(data);
+			p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
+            strcpy(p.dir, (*data).data);
+            p.pid = (*data).pid;
+			break;
+			
+		case CL_DIR_CON:
+            (*data).opCode = SR_DIR_CON_OK;
+            p.opCode = __SPAWN_DEMAND__;  
+            p.pid = (*data).pid; 
+            sscanf((*data).senderID, "%d", &(p.status));        
+            strcpy(p.dir, (*data).data);
+            break;	
+			
 		case CL_EXT:	
 			p.status = CallClientExit(*data);
 			p.opCode = __NOT_SPAWN__;
@@ -150,26 +169,7 @@ ProcessCall( session_t *data )
 			p.status = __SHUT_DOWN__;
 			p.opCode = __NOT_SPAWN__;
 			break;	
-		
-		case CL_DIR_REQ:			
-			p.status = CallDirReq(data);
-			p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
-            strcpy(p.dir, (*data).data);
-            p.pid = (*data).pid;
-			break;	
-										
-		case CL_DIR_LST:			
-			p.status = CallDirList(data);
-			p.opCode = __NOT_SPAWN__;
-			break;
-        case CL_DIR_CON:
-            (*data).opCode = SR_DIR_CON_OK;
-            p.opCode = __SPAWN_DEMAND__;  
-            p.pid = (*data).pid; 
-            sscanf((*data).senderID, "%d", &(p.status));        
-            strcpy(p.dir, (*data).data);
-            break;
-            
+		            
 		default:
 			p.status = ERROR;
 	}	

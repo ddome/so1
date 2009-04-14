@@ -113,10 +113,14 @@ GetDirData(byte *data, fileT **fileListPtr, byte ***dataBufferPtr)
 	pos =0;
 	memmove(&nfiles, data, sizeof(int));
 	
+	fileList = malloc(sizeof(fileT)*nfiles);
+	dataBuffer = malloc(sizeof(byte *)*nfiles);
+	
 	pos+=sizeof(int);
 	for( i=0; i<nfiles; i++ ) {
 		memmove(&(fileList[i]), data + pos, sizeof(fileT));
 		pos += sizeof(fileT);
+		dataBuffer[i] = malloc(GetSize(fileList[i]));
 		memmove(&(dataBuffer[i]), data + pos,  GetSize(fileList[i]));
 		pos += GetSize(fileList[i]);
 	}
@@ -125,7 +129,7 @@ GetDirData(byte *data, fileT **fileListPtr, byte ***dataBufferPtr)
 	*fileListPtr = fileList;
 	*dataBufferPtr = dataBuffer;
 	
-	return OK;
+	return nfiles;
 }
 
 int 
@@ -133,17 +137,14 @@ CallDirAdd(session_t data)
 {
 	fileT *fileList;
 	byte **dataBuffer;
+	int nfiles;
 	
-	GetDirData(data.data, &fileList, &dataBuffer);
+	nfiles = GetDirData(data.data, &fileList, &dataBuffer);
 
-	return DirAdd(data.msg, fileList, dataBuffer, 0);	
+	return DirAdd(data.msg, fileList, dataBuffer, nfiles);	
 }	
 
 /* Server -> Client: Listar directorios */
-
-
-
-
 
 int
 GetDirList(session_t data, int *ndirs, string **dirList)

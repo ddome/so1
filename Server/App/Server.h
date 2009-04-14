@@ -38,6 +38,7 @@
 #define __SPAWN_DIR__     2
 #define __SPAWN_DEMAND__  3
 #define __NO_RESPONSE__   4
+#define __SPAWN_OUTPUT__  5
 
 /* Definiciones para creacion de procesos con fork()
 */

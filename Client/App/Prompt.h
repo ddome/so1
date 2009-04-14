@@ -5,4 +5,6 @@
 
 int Prompt(void);
 
+void PromptReader(void);
+
 #endif

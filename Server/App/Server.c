@@ -14,10 +14,11 @@ StartListening(void)
 {
     int status;
     byte * data;
-    process_t process, consoleProcess;
+    process_t process, consoleProcess, outputProcess;
     size_t size = 0;
     status = InitCommunication(__DEFAULT_PID__);
     consoleProcess.opCode = __SPAWN_PROMPT__;
+	outputProcess.opCode = __SPAWN_OUTPUT__;
 
     if(status == ERROR)
     {
@@ -25,6 +26,7 @@ StartListening(void)
     }
 
     status = SpawnSubProcess(consoleProcess, size,data);
+	status = SpawnSubProcess(outputProcess, size,data);
     while(status != ERROR && status != __SHUT_DOWN__)
     {
         data = ReadRequest();
@@ -127,6 +129,9 @@ int StartSubProcess(process_t process)
 	    case __SPAWN_PROMPT__:
 	        Prompt();
 	        break;
+		case __SPAWN_OUTPUT__:
+	        PromptReader();
+	        break;	
 	    case __SPAWN_DIR__:
 	        returnValue = StartDirSubServer(process);
 	        break;

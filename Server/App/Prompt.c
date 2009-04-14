@@ -14,6 +14,7 @@
 #include "../Lib/tree.h"
 #include "../Lib/defines.h"
 #include "Application.h"
+#include "../Transport/OutputPipe.h"
 
 
 #define TRUE 1
@@ -184,4 +185,22 @@ Prompt(void)
     FreeTree(tree);
   /*  GoodBye();*/
 }
+
+void
+PromptReader(void)
+{
+	string msg;
+	
+	do {
+		msg = ReadMessage();
+		
+		if(	strcmp(msg,"$SALIR") != 0 ) { 
+			printf("%s\n",msg);
+		}
+	}while( strcmp(msg,"$SALIR") != 0);	
+		
+}	
+	
+
+
 

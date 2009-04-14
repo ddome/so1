@@ -5,12 +5,9 @@
 #define __INVALID_COMMAND__ -3
 
 void Prompt(void);
-<<<<<<< .mine
 
-void PromptOutput(void);
-=======
+void PromptReader(void);
 
->>>>>>> .r137
 #endif
 
 
