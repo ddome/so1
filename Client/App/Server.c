@@ -162,7 +162,10 @@ int StartDirSubServer(process_t reqProcess)
 	free(aux);
 	keyClient = ftok(aux = Concat(BK_PATH,reqProcess.dir), reqProcess.pid);
 	free(aux);
-	status = InitCommunication(keyDefault);
+	while(status<=ERROR)
+	{
+	    status = InitCommunication(keyDefault);
+	}
 	
 	if(status > ERROR)
 	{
@@ -224,7 +227,10 @@ int StartDemandSubServer(process_t process)
     fopen("llegooop 2", "w+");
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), getppid());
     free(aux);
-    status = InitCommunication(key);
+    while(status<=ERROR)
+    {
+	status = InitCommunication(key);
+    }
     if(status > ERROR)
     {
 		while(!requestExists)
