@@ -44,6 +44,7 @@ MakeWRPath(key_t key)
 
 int InitIPC(key_t key)
 {
+   // initmutex();
     int status = OK;
     /* Se arman los nombres de los fifos para el proceso que se pidio, 
     *  y luego se crean los fifo's propiamente.
@@ -82,6 +83,8 @@ int
 WriteIPC(void * data, size_t size)
 {
     int status;
+   // leave();
+  //  lock();
     /* Se arma el header de transporte
     */
     headerIPC_t header;
@@ -93,6 +96,7 @@ WriteIPC(void * data, size_t size)
     {
         status = write(writeFifo_FD,data,size);
     }
+   // leave();
     return status == ERROR ? __ERROR_IPC_WRITE__: status ;
 }
 
@@ -102,6 +106,8 @@ ReadIPC(void)
     int status = OK;
     headerIPC_t header;
     byte * data;
+  //  leave();
+  //  lock();
     status = read(readFifo_FD, &header, sizeof(headerIPC_t));
     if(status > 0)
     {
@@ -129,7 +135,7 @@ ReadIPC(void)
     {
 	    status = ERROR;
     }
-
+  //  leave();
     return status == ERROR ? NULL: data ;
 }
 

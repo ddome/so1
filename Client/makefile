@@ -66,7 +66,7 @@ mq:
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
 	$(CC) $(CC_OP) OutputPipe.o $(TRANSP)/OutputPipe.c
-	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcFifo.c
+	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcMQ.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
 	$(CC) $(CC_OP) scannerADT.o $(LIB)/scannerADT.c
@@ -88,7 +88,7 @@ sockets:
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
 	$(CC) $(CC_OP) OutputPipe.o $(TRANSP)/OutputPipe.c
-	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcFifo.c
+	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcSockets.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
 	$(CC) $(CC_OP) scannerADT.o $(LIB)/scannerADT.c
@@ -110,7 +110,7 @@ shmem:
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
 	$(CC) $(CC_OP) OutputPipe.o $(TRANSP)/OutputPipe.c
-	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcFifo.c
+	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcSM.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
 	$(CC) $(CC_OP) scannerADT.o $(LIB)/scannerADT.c

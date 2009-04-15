@@ -12,10 +12,11 @@ gcc -g -c -Wall -o scannerADT.o ./Lib/scannerADT.c
 gcc -g -c -Wall -o tree.o ./Lib/tree.c
 gcc -g -c -Wall -o Session.o ./Session/Session.c
 gcc -g -c -Wall -o CallApp.o ./Session/CallApp.c
+gcc -g -c -Wall -o locks.o ./Lib/locks.c
 gcc -g -c -Wall -o sqlite.o ./SQLite/sqlite3.c
 gcc -g -c -Wall -o sqliteADT.o ./sqliteADT/sqliteADT.c
 gcc -g -c -Wall -o main.o main.c
-gcc -g -Wall -lpthread -ldl -o server Application.o fileHandler.o Prompt.o genlib.o pqADT.o scannerADT.o tree.o Session.o sqlite.o sqliteADT.o main.o DBexec.o Server.o Transport.o ipcFifo.o CallApp.o OutputPipe.o
+gcc -g -Wall -lpthread -ldl -o server locks.o Application.o fileHandler.o Prompt.o genlib.o pqADT.o scannerADT.o tree.o Session.o sqlite.o sqliteADT.o main.o DBexec.o Server.o Transport.o ipcFifo.o CallApp.o OutputPipe.o
 rm *.o
 
 
