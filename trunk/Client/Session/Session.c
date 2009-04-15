@@ -90,7 +90,6 @@ SendDirConectionSignal(  pid_t pid, string dir )
 	aux.opCode = CL_DIR_CON;
 	aux.dataSize = strlen(dir)+1;
 	aux.data = dir;
-	fopen("CL_DIR_CON", "w+");
 	size = MakeSessionData(aux, &data);
 	
 	return WriteIPC(data, size);
@@ -183,7 +182,7 @@ SendDirListReq( string userName )
 	session_t pack;
 	byte *data;
 	size_t size;
-	
+	pack.pid = getppid();
 	pack.opCode = CL_DIR_LST;
 	strcpy(pack.msg,userName);
 	pack.dataSize = 0;
@@ -265,7 +264,6 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_DIR_REQ_OK:
-			fopen("dirreqok", "w+");
 			p.status = OK;
 			p.opCode = __SPAWN_DIR__;
 			strcpy(p.dir, (*data).data);
@@ -276,6 +274,7 @@ ProcessCall( session_t *data )
 			strcpy(p.dir, (*data).data);
 			p.pid = (*data).pid;
 			p.opCode = __SPAWN_DEMAND__;
+fopen("CL_DIR_CONOKKK", "w+");
 			break;
 		case SR_DIR_TRANS:
 			fopen("llegooop", "w+");

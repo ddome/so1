@@ -65,7 +65,7 @@ int InitIPC(key_t key)
 
   if(readFifo_FD == -1 || writeFifo_FD == -1 )
   {
-    printf("no se puede abrir el fifo\n");
+   //printf("no se puede abrir el fifo\n");
   }
    
   IPCStarted = TRUE;

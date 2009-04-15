@@ -64,8 +64,8 @@ static int Server(scannerADT scanner, void * data)
         retValue=OK;
       }
     }
-    
-    return retValue;    
+
+    return retValue;
 }
 
 static int Name(scannerADT scanner, void * data)
