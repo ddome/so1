@@ -25,9 +25,10 @@ main(void)
     if(status != ERROR)
     {
         status = StartListening();
-		if(status == ERROR){
-				printf("OK");
-	getchar();
+		if(status == ERROR)
+		{
+		    printf("OK");
+		    getchar();
 		}
     }
     else
