@@ -34,7 +34,7 @@
 
 #define __DEFAULT_PID__	  0
 
-#define BK_PATH "/home/bombax/workspace/so1/Server/backup/"
+#define BK_PATH "/home/carlos/Desktop/so1/Server/backup/"
 
 /* Tipos de procesos disponibles para crearse
 */

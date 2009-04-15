@@ -16,7 +16,6 @@
 */
 
 #include "../Lib/defines.h"
-#include "../Lib/locks.h"
 #include "Transport.h"
 
 /* Defines de los Fifo's en particular

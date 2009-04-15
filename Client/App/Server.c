@@ -19,33 +19,53 @@ StartListening(void)
 {
   int status;
   byte * data;
+  key_t key;
   size_t size = 0;
   process_t consoleProcess, process, outputProcess;
+  key = ftok("/", getpid());
 
   consoleProcess.opCode = __SPAWN_PROMPT__;
   outputProcess.opCode = __SPAWN_OUTPUT__;
-  status = InitCommunication(__DEFAULT_PID__);
-  if(status == ERROR)
-  {
-    return ERROR;
-  }
-  
-  status = SpawnSubProcess(consoleProcess, size, data);
-  status = SpawnSubProcess(outputProcess, size, data); 
+
+  status = SpawnSubProcess(outputProcess, size, data);
   if(status == CHILD_RETURN)
   {
     return OK;
   }
 
-  while(status != ERROR && status != __SHUT_DOWN__)
+  do
   {
+        status = InitCommunication(__DEFAULT_PID__);
+  } while(status == ERROR);
+
+  status = SpawnSubProcess(consoleProcess, size, data);
+
+  if(status == CHILD_RETURN)
+  {
+    return OK;
+  }
+
+  while(status != __SHUT_DOWN__)
+  {
+
+    do{
+        status = InitCommunication(key);
+    }while(status == ERROR);
+
     data = ReadRequest();
     if(data != NULL)
     {
-        /* se manda a que sea procesado en la capa de sesion 
-        */
-      process = ProcessRequest(&data, &size);
-	  status = AnalyzeOperation(process, data, size);
+        status = InitCommunication(__DEFAULT_PID__);
+        /* Aca si status == ERROR quiere decir
+         q el servidor salio */
+        if(status != ERROR)
+        {
+            /* se manda a que sea procesado en la capa de sesion 
+            */
+            process = ProcessRequest(&data, &size);
+            status = AnalyzeOperation(process, data, size);
+        }
+
     }
   }
   return status;
@@ -130,15 +150,17 @@ int StartSubProcess(process_t process)
     {
 	    case __SPAWN_PROMPT__:
 	        Prompt();
+                returnValue = CHILD_RETURN;
 	        break;			
 		case __SPAWN_OUTPUT__:
 	        PromptReader();
+                returnValue = CHILD_RETURN;
 	        break;	
 	    case __SPAWN_DIR__:
 	        returnValue = StartDirSubServer(process);
 	        break;
 	    case __SPAWN_DEMAND__:
-            returnValue = StartDemandSubServer(process);
+                returnValue = StartDemandSubServer(process);
 	        break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
@@ -152,43 +174,42 @@ int StartSubProcess(process_t process)
 
 int StartDirSubServer(process_t reqProcess)
 {
-	process_t process;
-	int status;
+    process_t process;
+    int status = ERROR;
     size_t size;
-	key_t keyDefault, keyClient;
-	byte * data;
-	char * aux;
-	keyDefault = ftok(aux = Concat(BK_PATH,reqProcess.dir), __DEFAULT_PID__);
-	free(aux);
-	keyClient = ftok(aux = Concat(BK_PATH,reqProcess.dir), reqProcess.pid);
-	free(aux);
-	while(status<=ERROR)
-	{
-	    status = InitCommunication(keyDefault);
-	}
-	
-	if(status > ERROR)
-	{
-		status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
-	}
-	if(status > ERROR)
-	{
-	    status = InitCommunication(keyClient);
-	}
-    while(status > ERROR && status != __SHUT_DOWN__)
+    key_t keyDefault, keyClient;
+    byte * data;
+    char * aux;
+    keyDefault = ftok(aux = Concat(BK_PATH,reqProcess.dir), __DEFAULT_PID__);
+    free(aux);
+    keyClient = ftok(aux = Concat(BK_PATH,reqProcess.dir), reqProcess.pid);
+    free(aux);
+    while(status<=ERROR)
+    {
+        status = InitCommunication(keyDefault);
+    }
+
+    status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
+
+    do
+    {
+        status = InitCommunication(keyClient);
+    }while(status <= ERROR);
+
+
+    while(status != __SHUT_DOWN__)
     {
 	    data = ReadRequest();
-    
+
 	    if(data != NULL)
 	    {
 	        /* se manda a que sea procesado en la capa de sesion 
 	        */
 	        process = ProcessRequest(&data, &size);
-			status = InitCommunication(keyDefault);
-			if(status > ERROR)
-				status = AnalyzeOperation(process, data, size);
-			if(status > ERROR )
-				status = InitCommunication(keyClient);
+                status = InitCommunication(keyDefault);
+                if(status > ERROR)
+                    status = AnalyzeOperation(process, data, size);
+		status = InitCommunication(keyClient);
 	    }
 	    else
 	    {
@@ -203,7 +224,7 @@ byte * ReadDirSubServerRequests(void)
 {
     byte * data;
     int requestExists = FALSE;
-    int status;
+
     while(!requestExists)
     {
         if( (data = GetRequest()) != NULL)
@@ -217,14 +238,13 @@ byte * ReadDirSubServerRequests(void)
 
 int StartDemandSubServer(process_t process)
 {
-    int status;
-	int requestExists = FALSE;
-	byte * data;
-	process_t p;
-	size_t size;
+    int status = ERROR;
+    int requestExists = FALSE;
+    byte * data;
+    process_t p;
+    size_t size;
     char * aux;
-    
-    fopen("llegooop 2", "w+");
+
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), getppid());
     free(aux);
     while(status<=ERROR)
@@ -239,7 +259,6 @@ int StartDemandSubServer(process_t process)
 			{
 				p = ProcessRequest(&data, &size);
 				requestExists=TRUE;
-				    
 			}
 		}
     }

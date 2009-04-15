@@ -15,8 +15,8 @@ int
 main(void)
 {	
     int status;
-    status = InitApplication();
     status = InitTransport();
+    status = InitApplication();
     InitPromptCommunication(getpid());
     WritePrompt("afgafg\n");
     printf("%s\n",ReadMessage());
@@ -27,7 +27,7 @@ main(void)
         status = StartListening();
 		if(status == ERROR)
 		{
-		    printf("OK");
+		    printf("ERROR");
 		    getchar();
 		}
     }

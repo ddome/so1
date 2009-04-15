@@ -113,6 +113,7 @@ ProcessCall( session_t *data )
 		case CL_NEW_CON:
 			p.status = CallNewConection(data);
 			p.opCode = __NOT_SPAWN__;
+            p.pid = (*data).pid;
 			break;
 			
 		case CL_NEW_USR:
@@ -140,7 +141,8 @@ ProcessCall( session_t *data )
             p.opCode = __NOT_SPAWN__;
 			break;
 			
-		case CL_DIR_LST:			
+		case CL_DIR_LST:		
+            p.pid = (*data).pid;	
 			p.status = CallDirList(data);
 			p.opCode = __NOT_SPAWN__;
 			break;

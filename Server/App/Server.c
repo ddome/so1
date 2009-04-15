@@ -14,40 +14,41 @@ StartListening(void)
 {
     int status;
     byte * data;
+    key_t key;
     process_t process, consoleProcess, outputProcess;
     size_t size = 0;
     status = InitCommunication(__DEFAULT_PID__);
     consoleProcess.opCode = __SPAWN_PROMPT__;
 	outputProcess.opCode = __SPAWN_OUTPUT__;
-
-    if(status == ERROR)
+    if((status = InitCommunication(__DEFAULT_PID__)) <= ERROR)
     {
-	    return ERROR;
+        return ERROR;
     }
-
     status = SpawnSubProcess(consoleProcess, size,data);
 	status = SpawnSubProcess(outputProcess, size,data);
     while(status != __SHUT_DOWN__)
     {
-        data = ReadRequest();
-
-        if(data != NULL)
+        if((status = InitCommunication(__DEFAULT_PID__)) > ERROR)
         {
-            /* se manda a que sea procesado en la capa de sesion 
-            */
-            process = ProcessRequest(&data, &size);
-	    if(process.status > ERROR)
-		status = AnalyzeOperation(process, data, size);
-	    else
-		WritePrompt("Se ha producido un error interno");
+            data = ReadRequest();
+    
+            if(data != NULL)
+            {
+                /* se manda a que sea procesado en la capa de sesion 
+                */
+                process = ProcessRequest(&data, &size);
+                key = ftok("/", process.pid);
+                status = InitCommunication(key);
+                if(status > ERROR)                    
+                    status = AnalyzeOperation(process, data, size);
+            }
+            else
+            {
+                status = ERROR;
+            }
+            if(status <= ERROR)
+                WritePrompt("Se ha producido un error interno");
         }
-        else
-        {
-            status = ERROR;
-	    WritePrompt("Se ha producido un error interno");
-        }
-	if(status <= ERROR)
-	    WritePrompt("Se ha producido un error interno");
     }
     return status;
 }
@@ -119,13 +120,15 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             break;
         default:
             if(size > 0)
-	    {
-		if(process.opCode==__SPAWN_DEMAND__)
-		{
-		    //wait(&aux);
-		}
-                returnValue = ProcessSendPack(&data, size);
-	    }
+            {
+             //   if(process.opCode == __SPAWN_DEMAND__)
+             //       wait(&aux);
+                if(process.opCode!=__NO_RESPONSE__)
+                {
+                    returnValue = ProcessSendPack(&data, size);
+                }
+                    
+            }
             break;
     }
 
@@ -171,18 +174,21 @@ int StartDirSubServer(process_t reqProcess)
     
     keyClient = ftok(aux = Concat(BK_PATH, reqProcess.dir), reqProcess.pid);
     free(aux);
-    fopen("llegooop 3", "w+");
-    status = InitCommunication(keyClient);
+    do{
+        status = InitCommunication(keyClient);
+    } while (status <= ERROR);
     if(status > ERROR)
     {
         keyDefault = ftok(aux = Concat(BK_PATH, reqProcess.dir), __DEFAULT_PID__);
         free(aux);
-	fopen("llegooop 4", "w+");
         status = InitCommunication(keyDefault);
     }
     
     while(status != __SHUT_DOWN__)
     {
+        /* Se retorna al IPC default
+        */
+        status = InitCommunication(keyDefault);
 	    data = ReadRequest();
     
 	    if(data != NULL)
@@ -197,10 +203,8 @@ int StartDirSubServer(process_t reqProcess)
             free(aux);
             if((status = InitCommunication(keyClient)) > ERROR)
 	            status = AnalyzeOperation(process, data, size);
-            /* Se retorna al IPC default
-            */
-            if(status > ERROR)
-                status = InitCommunication(keyDefault);
+
+               
 	    }
 	    else
 	    {
@@ -235,8 +239,9 @@ int StartDemandSubServer(process_t process)
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
 
     free(aux);
-
-    status = InitCommunication(key);
+    do{
+        status = InitCommunication(key);
+    }while(status <= ERROR);
     if(status > ERROR)
     { 
         status = SendDirPack(process);
