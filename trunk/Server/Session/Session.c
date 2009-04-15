@@ -153,6 +153,7 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_DIR_CON:
+	        fopen("llegooop 5", "w+");
             (*data).opCode = SR_DIR_CON_OK;
             p.opCode = __SPAWN_DEMAND__;  
             p.pid = (*data).pid; 

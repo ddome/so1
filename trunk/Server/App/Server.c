@@ -46,7 +46,7 @@ StartListening(void)
             status = ERROR;
 	    WritePrompt("Se ha producido un error interno");
         }
-	if(status < ERROR)
+	if(status <= ERROR)
 	    WritePrompt("Se ha producido un error interno");
     }
     return status;
@@ -181,7 +181,7 @@ int StartDirSubServer(process_t reqProcess)
         status = InitCommunication(keyDefault);
     }
     
-    while(status > ERROR && status != __SHUT_DOWN__)
+    while(status != __SHUT_DOWN__)
     {
 	    data = ReadRequest();
     
