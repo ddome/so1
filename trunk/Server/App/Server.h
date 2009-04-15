@@ -21,13 +21,14 @@
 #include "../Lib/defines.h"
 #include "../Session/Session.h"
 #include "../Lib/Error.h"
+#include "../Transport/OutputPipe.h"
 /*
 *  Defines
 */
 
 #define __DEFAULT_PID__	  0
 
-#define BK_PATH "/home/damian/Desktop/so1/Server/backup/"
+#define BK_PATH "/home/bombax/workspace/so1/Server/backup/"
 
 /* Tipos de procesos disponibles para crearse
 */

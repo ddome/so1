@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "../Lib/defines.h"
+#include "../Lib/locks.h"
 #include "Transport.h"
 #include "../Lib/Error.h"
 

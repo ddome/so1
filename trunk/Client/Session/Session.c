@@ -169,7 +169,7 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
 
-	pack.dataSize = strlen(dirPath)+1;;	
+	pack.dataSize = strlen(dirPath)+1;
 	pack.data = dirPath;
 	pack.pid = pid;
 
@@ -280,6 +280,7 @@ ProcessCall( session_t *data )
 			fopen("llegooop", "w+");
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
+			break;
 		default:
 			p.status = ERROR;
 			break;

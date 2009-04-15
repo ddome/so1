@@ -145,7 +145,7 @@ ProcessCall( session_t *data )
 			p.opCode = __NOT_SPAWN__;
 			break;
 			
-		case CL_DIR_REQ:			
+		case CL_DIR_REQ:
 			p.status = CallDirReq(data);
 			p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
             strcpy(p.dir, (*data).data);
