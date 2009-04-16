@@ -79,7 +79,7 @@ typedef struct {
 /*  Functions */
 
 int InitCommunication(key_t key);
-
+int SendDirPack(process_t process);
 byte * GetRequest(void);
 
 process_t ProcessRequest(byte ** data, size_t * size);

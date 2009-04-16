@@ -6,7 +6,7 @@ int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 static int recibidos=0;
 
-#define MAX_SIZE 1024
+#define MAX_SIZE 2048
 #define SERVER_MTYPE 1
 #define CLIENT_MTYPE 3
 
@@ -20,9 +20,8 @@ InitIPC(key_t key)
 {
     /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
     if(key==0)
-	key=ftok("/tmp/comm",key);
+	key=ftok("/",key);
     queue_id=msgget(key,IPC_CREAT | __DEFAULT_FIFO_MODE__);
-    printf("key=(%d) - queueid=(%d)\n",key,queue_id);
     if( queue_id<0 )
     {
 	    return ERROR;
@@ -48,12 +47,12 @@ WriteIPC(void * data, size_t size)
 	return ERROR;
     w_data.mtype=(long)CLIENT_MTYPE;
     memcpy(&(w_data.mtext),&header,sizeof(headerIPC_t));
-    status=msgsnd(queue_id,&w_data,sizeof(headerIPC_t),IPC_NOWAIT);
+    status=msgsnd(queue_id,&w_data,sizeof(headerIPC_t),0);
     w_data.mtype=(long)CLIENT_MTYPE;
     memcpy(&(w_data.mtext),data,size);
     /*El envio del mensaje espera a que se liberen recursos para poder efectuar la
       operacion en caso de que los recursos no esten disponibles.*/
-    status=msgsnd(queue_id,&w_data,size,IPC_NOWAIT);
+    status=msgsnd(queue_id,&w_data,size,0);
     
 
     return (status<0)?ERROR:OK;
@@ -67,8 +66,8 @@ ReadIPC(void)
     headerIPC_t header;
     byte *data;
 
-    status=msgrcv(queue_id,&w_data,MAX_SIZE,(long)SERVER_MTYPE,IPC_NOWAIT);
-    
+    status=msgrcv(queue_id,&w_data,sizeof(headerIPC_t),(long)SERVER_MTYPE,0);
+    printf("msgrcv1: %d\n",status);
     if(status > 0)
     {
 	memcpy(&header,w_data.mtext,sizeof(headerIPC_t));
@@ -79,7 +78,8 @@ ReadIPC(void)
 	    return NULL;
 	}   
 
-	status=msgrcv(queue_id,&w_data,MAX_SIZE,(long)SERVER_MTYPE,IPC_NOWAIT);
+	status=msgrcv(queue_id,&w_data,header.size,(long)SERVER_MTYPE,0);
+	printf("msgrcv2: %d\n",status);
 	if(status > 0)
 	{
 	    memcpy(data,w_data.mtext,header.size * sizeof(byte));

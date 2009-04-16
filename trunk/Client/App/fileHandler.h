@@ -79,6 +79,8 @@ int CreateDir( string dir );
 
 int RemoveDir( string dir );
 
+int DirPathList(string dir, string **dirList);
+
 #endif
 
 

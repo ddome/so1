@@ -29,12 +29,12 @@ GetSem(key_t key)
 {
     semun x;
     x.val=0;
-    if( (semid=semget(key,4,IPC_CREAT | __DEFAULT_FIFO_MODE__))==-1 )
+    if( (semid=semget(key,4, __DEFAULT_FIFO_MODE__))==-1 )
     {
 	printf("Aca 1\n");
 	return ERROR;
     }
-    if(semctl(semid,0,SETVAL,x)==-1)
+    /*if(semctl(semid,0,SETVAL,x)==-1)
     {
 	printf("Aca 2\n");
 	return ERROR;
@@ -53,7 +53,7 @@ GetSem(key_t key)
     {
 	printf("Aca 3\n");
 	return ERROR;
-    }
+    }*/
     
     return semid;
 }
@@ -66,8 +66,8 @@ InitIPC(key_t key)
     /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
     keyAux1=ftok("/tmp",key);
     keyAux2=ftok("/home",key);
-    shmid1=shmget(keyAux1,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
-    shmid2=shmget(keyAux2,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    shmid1=shmget(keyAux1,MAX_SIZE, __DEFAULT_FIFO_MODE__);
+    shmid2=shmget(keyAux2,MAX_SIZE, __DEFAULT_FIFO_MODE__);
     if( shmid1==-1 || shmid2==-1 )
     {
 	printf("Hola 1\n");
@@ -91,7 +91,7 @@ InitIPC(key_t key)
     */
     IPCStarted = TRUE;
     isChildProcess = TRUE;
-    printf("shmid1=(%d) - shmid2=(%d) - semid=(%d)\n",shmid1,shmid2,semid);
+    /*printf("shmid1=(%d) - shmid2=(%d) - semid=(%d)\n",shmid1,shmid2,semid);*/
     return OK;
 }
 

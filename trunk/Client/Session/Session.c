@@ -133,7 +133,8 @@ SendFileModPack( string userName, fileT file, byte *dataBuffer )
 {
 	session_t pack;
 	byte *data;
-	
+	        size_t size;
+
 	pack.opCode = CL_FIL_MOD;
 	strcpy(pack.msg,userName);
 	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );

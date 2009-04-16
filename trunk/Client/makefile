@@ -11,7 +11,7 @@ CC_OP = -g -Wall -c -o
 LD = gcc
 LD_OP = -Wall -lpthread -ldl -o
 
-OBJS = Application.o fileHandler.o Prompt.o Server.o Transport.o ipc.o genlib.o pqADT.o scannerADT.o tree.o Session.o CallApp.o main.o OutputPipe.o
+OBJS = Application.o fileHandler.o Prompt.o Server.o Transport.o ipc.o genlib.o pqADT.o scannerADT.o tree.o Session.o CallApp.o main.o OutputPipe.o inotify.o listADT.o
 
 help:
 	@-echo ""
@@ -40,6 +40,7 @@ fifo:
 	@-echo ""
 	$(CC) $(CC_OP) Application.o $(APP)/Application.c
 	$(CC) $(CC_OP) fileHandler.o $(APP)/fileHandler.c
+	$(CC) $(CC_OP) inotify.o $(APP)/inotify.c
 	$(CC) $(CC_OP) Prompt.o $(APP)/Prompt.c
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
@@ -47,6 +48,7 @@ fifo:
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcFifo.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
+	$(CC) $(CC_OP) listADT.o $(LIB)/listADT.c
 	$(CC) $(CC_OP) scannerADT.o $(LIB)/scannerADT.c
 	$(CC) $(CC_OP) tree.o $(LIB)/tree.c
 	$(CC) $(CC_OP) Session.o $(SESSION)/Session.c
@@ -62,6 +64,7 @@ mq:
 	@-echo ""
 	$(CC) $(CC_OP) Application.o $(APP)/Application.c
 	$(CC) $(CC_OP) fileHandler.o $(APP)/fileHandler.c
+	$(CC) $(CC_OP) inotify.o $(APP)/inotify.c
 	$(CC) $(CC_OP) Prompt.o $(APP)/Prompt.c
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
@@ -69,6 +72,7 @@ mq:
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcMQ.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
+	$(CC) $(CC_OP) listADT.o $(LIB)/listADT.c
 	$(CC) $(CC_OP) scannerADT.o $(LIB)/scannerADT.c
 	$(CC) $(CC_OP) tree.o $(LIB)/tree.c
 	$(CC) $(CC_OP) Session.o $(SESSION)/Session.c
@@ -84,6 +88,7 @@ sockets:
 	@-echo ""
 	$(CC) $(CC_OP) Application.o $(APP)/Application.c
 	$(CC) $(CC_OP) fileHandler.o $(APP)/fileHandler.c
+	$(CC) $(CC_OP) inotify.o $(APP)/inotify.c
 	$(CC) $(CC_OP) Prompt.o $(APP)/Prompt.c
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
@@ -91,6 +96,7 @@ sockets:
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcSockets.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
+	$(CC) $(CC_OP) listADT.o $(LIB)/listADT.c
 	$(CC) $(CC_OP) scannerADT.o $(LIB)/scannerADT.c
 	$(CC) $(CC_OP) tree.o $(LIB)/tree.c
 	$(CC) $(CC_OP) Session.o $(SESSION)/Session.c
@@ -106,6 +112,7 @@ shmem:
 	@-echo ""
 	$(CC) $(CC_OP) Application.o $(APP)/Application.c
 	$(CC) $(CC_OP) fileHandler.o $(APP)/fileHandler.c
+	$(CC) $(CC_OP) inotify.o $(APP)/inotify.c
 	$(CC) $(CC_OP) Prompt.o $(APP)/Prompt.c
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
@@ -113,6 +120,7 @@ shmem:
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcSM.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
+	$(CC) $(CC_OP) listADT.o $(LIB)/listADT.c
 	$(CC) $(CC_OP) scannerADT.o $(LIB)/scannerADT.c
 	$(CC) $(CC_OP) tree.o $(LIB)/tree.c
 	$(CC) $(CC_OP) Session.o $(SESSION)/Session.c
