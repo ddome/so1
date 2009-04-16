@@ -20,10 +20,10 @@ int
 main(void)
 {
     int status;
-    status = InitApplication();
+
     status = InitPromptCommunication();
     status = InitTransport();
-	
+    status = InitApplication();
     if(status != ERROR)
     {
 		status = StartListening();

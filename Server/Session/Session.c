@@ -36,9 +36,12 @@ byte * GetRequest(void)
 process_t
 ProcessRequest(byte ** data, size_t * size)
 {
+	char a[20];
 	session_t pack;
 	process_t process;           
 	pack  = GetSessionData(*data);
+				sprintf(a,"En process %d",(int)(pack.pid));
+			WritePrompt(a);
 
 	process = ProcessCall( &pack );
 	
@@ -107,18 +110,18 @@ static process_t
 ProcessCall( session_t *data )
 {
         process_t p;
-	
 	switch( (*data).opCode ) {
 			
 		case CL_NEW_CON:
 			p.status = CallNewConection(data);
 			p.opCode = __NOT_SPAWN__;
-            p.pid = (*data).pid;
+			p.pid = (*data).pid;
 			break;
 			
 		case CL_NEW_USR:
+			p.pid = (*data).pid;
 			p.status = CallNewClient(data);
-            p.opCode = __NOT_SPAWN__;
+			p.opCode = __NOT_SPAWN__;
 			break;
 
 		case CL_DIR_REM:			
@@ -142,7 +145,7 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_DIR_LST:		
-            p.pid = (*data).pid;	
+			p.pid = (*data).pid;	
 			p.status = CallDirList(data);
 			p.opCode = __NOT_SPAWN__;
 			break;
@@ -150,8 +153,8 @@ ProcessCall( session_t *data )
 		case CL_DIR_REQ:
 			p.status = CallDirReq(data);
 			p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
-            strcpy(p.dir, (*data).data);
-            p.pid = (*data).pid;
+			strcpy(p.dir, (*data).data);
+			p.pid = (*data).pid;
 			break;
 			
 		case CL_DIR_CON:
