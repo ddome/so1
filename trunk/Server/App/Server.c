@@ -103,6 +103,9 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __DIR_BROADCAST__:
                 status = DirBroadcastMsg(process, size, data);
                 break;
+			case __KILL_DIR__:
+				status = KillDirProcess(process);
+				break;
             case __NO_RESPONSE__:
                // free(data);
                 //data = NULL;
@@ -333,7 +336,7 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             do
             {
                 status = InitCommunication(key);
-            } while(status <= ERROR)
+            } while(status <= ERROR);
             
             /* Se envia el mensaje
             */
@@ -351,7 +354,12 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
 }
 
 
-
+int
+KillDirProcess(process_t p)
+{
+	//SendClientDirRem(p)
+	return OK;
+}
 
 
 

@@ -4,7 +4,7 @@
 
 #include "tree.h"
 
-#define COMANDO_INVALIDO -1
+#define COMANDO_INVALIDO -2
 #define OK 		  1
 
 typedef struct nodeCDT {

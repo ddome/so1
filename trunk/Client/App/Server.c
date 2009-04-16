@@ -270,7 +270,7 @@ int StartDemandSubServer(process_t process)
     return status;
 }
 
-int StartDemandSubServer(process_t process)
+/*int StartDemandSubServer(process_t process)
 {
   int status=OK;
   char * aux;
@@ -289,7 +289,7 @@ int StartDemandSubServer(process_t process)
     
     
   return status;
-}
+}*/
 
 int StartPingServer(pid_t pid, char msg[MAX_MSG])
 {

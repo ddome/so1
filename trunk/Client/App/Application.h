@@ -51,6 +51,8 @@ byte  *FileReq( fileT file );
  ----------------------------------------------------------------*/
 int DirWatch(string dir);
 
+int DelDir( string dir );
+
 /* debugueo */
 byte *
 ReqFile( fileT file );

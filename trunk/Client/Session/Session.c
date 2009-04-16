@@ -65,8 +65,8 @@ int
 SendConectionSignal(  pid_t pid )
 {
 	session_t aux;
-        byte * data;
-        size_t size;
+	byte * data;
+	size_t size;
     
 	aux.pid = pid;
 	aux.opCode = CL_NEW_CON;
@@ -197,7 +197,7 @@ int
 SendExitSignal( string userName )
 {
 	session_t pack;
-        size_t size;
+	size_t size;
 	byte *data;
 	pack.pid = 0;
 	pack.opCode = CL_EXT;
@@ -210,6 +210,23 @@ SendExitSignal( string userName )
 	return WriteIPC(data, size);
 }
 
+int
+SendDirRem( string userName, pid_t pid, string dirName )
+{
+	session_t pack;
+	size_t size;
+	byte *data;
+	pack.pid = pid;
+	pack.opCode = CL_DIR_REM;
+	strcpy(pack.msg,userName);
+	pack.dataSize = strlen(dirName);	
+	strcpy(pack.data,dirName);
+	
+	size = MakeSessionData(pack, &data);
+	pack = GetSessionData(data);
+	
+	return WriteIPC(data, size);		
+}
 
 /* Static Functions */
 

@@ -63,7 +63,18 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 	return OK;
 }
 
+int
+DelDir( string dir )
+{   
+	string dest;
+	dest = Concat(SERVER_PATH,dir);
+	dest = Concat(dest,"/");
+	RemoveDir(dest);
+	free(dest);
 	
+    return OK;
+}
+
 byte *
 FileReq( fileT file )
 {
