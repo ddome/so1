@@ -1,6 +1,3 @@
-
-
-
 #include "ipcFifo.h"
 #include "ipcInterface.h"
 

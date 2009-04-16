@@ -19,6 +19,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 
+
 /*
 *  Project Includes
 */
@@ -27,6 +28,8 @@
 #include "Application.h"
 #include "../Lib/defines.h"
 #include "../Session/Session.h"
+#include "inotify.h"
+#include "../Transport/inotifyMsg.h"
 
 /*
 *  Defines
@@ -34,7 +37,7 @@
 
 #define __DEFAULT_PID__	  0
 
-#define BK_PATH "/home/damian/Desktop/so1/Server/backup/"
+#define BK_PATH "/home/bombax/workspace/so1/Server/backup/"
 
 /* Tipos de procesos disponibles para crearse
 */
@@ -69,7 +72,11 @@ byte * ReadDirSubServerRequests(void);
 
 int StartDirSubServer(process_t process);
 
+int StartInotifySubServer(process_t process);
+
 int StartDemandSubServer(process_t process);
+
+int StartDemandSndSubServer(process_t process);
 
 int SpawnSubProcess(process_t process, size_t size, byte * data);
 

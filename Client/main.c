@@ -39,6 +39,6 @@ main(void)
         fprintf(stderr, "No se ha podido inicializar la aplicacion.");
     }
     return 0;
+}
 
-}	
 

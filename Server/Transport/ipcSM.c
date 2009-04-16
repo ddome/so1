@@ -91,7 +91,7 @@ InitIPC(key_t key)
     */
     IPCStarted = TRUE;
     isChildProcess = TRUE;
-    printf("shmid1=(%d) - shmid2=(%d) - semid=(%d)\n",shmid1,shmid2,semid);
+    /*printf("shmid1=(%d) - shmid2=(%d) - semid=(%d)\n",shmid1,shmid2,semid);*/
     return OK;
 }
 

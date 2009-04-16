@@ -166,6 +166,10 @@ int StartSubProcess(process_t process)
 	    case __SPAWN_DEMAND__:
                 returnValue = StartDemandSubServer(process);
 	        break;
+	    case __SPAWN_INOTIFY__:
+		returnValue = StartInotifySubServer(process);
+		returnValue = CHILD_RETURN;
+	        break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
 	    default:
@@ -178,7 +182,7 @@ int StartSubProcess(process_t process)
 
 int StartDirSubServer(process_t reqProcess)
 {
-    process_t process;
+    process_t process,inotifyProcess;
     int status = ERROR;
     size_t size;
     key_t keyDefault, keyClient;
@@ -192,7 +196,22 @@ int StartDirSubServer(process_t reqProcess)
     {
         status = InitCommunication(keyDefault);
     }
-
+    
+    
+    status = InitINotifyMsg(getpid());
+    if(status == ERROR)
+    {
+	return ERROR;
+    }
+    
+    inotifyProcess.pid = getppid();
+    strcpy(inotifyProcess.dir,reqProcess.dir);
+    inotifyProcess.opCode=__SPAWN_INOTIFY__;
+    status=SpawnSubProcess(inotifyProcess,0,NULL);
+    
+    if(status==CHILD_RETURN)
+	return OK;
+    
     status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
     if(status != ERROR)
     {
@@ -274,6 +293,8 @@ int StartDemandSubServer(process_t process)
     return status;
 }
 
+
+
 static char *
 ReadBkPath()
 {
@@ -332,4 +353,18 @@ InitServerPath()
 int StartPingServer(pid_t pid, char msg[MAX_MSG])
 {
     return 1;
+}
+
+int
+StartInotifySubServer(process_t process)
+{
+    char * aux;
+    int status;
+    aux = Concat(BK_PATH,process.dir);
+    /*do
+    {
+	status = inotifyWatcher(process);
+    }while(status == ERROR);*/
+    free(aux);
+    return OK;
 }

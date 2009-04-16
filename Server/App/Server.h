@@ -28,7 +28,7 @@
 
 #define __DEFAULT_PID__	  0
 
-#define BK_PATH "/home/damian/Desktop/so1/Server/backup/"
+#define BK_PATH "/home/bombax/workspace/so1/Server/backup/"
 
 
 
