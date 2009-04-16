@@ -190,33 +190,37 @@ int StartDirSubServer(process_t reqProcess)
     }
 
     status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
-
-    do
+    if(status != ERROR)
     {
-        status = InitCommunication(keyClient);
-    }while(status <= ERROR);
+	do
+	{
+	    status = InitCommunication(keyClient);
+	}while(status <= ERROR);
 
 
-    while(status != __SHUT_DOWN__)
-    {
-	    data = ReadRequest();
+	while(status != __SHUT_DOWN__)
+	{
+		data = ReadRequest();
 
-	    if(data != NULL)
-	    {
-	        /* se manda a que sea procesado en la capa de sesion 
-	        */
-	        process = ProcessRequest(&data, &size);
-                status = InitCommunication(keyDefault);
-                if(status > ERROR)
-                    status = AnalyzeOperation(process, data, size);
-		status = InitCommunication(keyClient);
-	    }
-	    else
-	    {
-	        status = ERROR;
-	    }
+		if(data != NULL)
+		{
+		    /* se manda a que sea procesado en la capa de sesion 
+		    */
+		    process = ProcessRequest(&data, &size);
+		    status = InitCommunication(keyDefault);
+		    if(status > ERROR)
+			status = AnalyzeOperation(process, data, size);
+		    do
+		    {
+			status = InitCommunication(keyClient);
+		    } while (status <= ERROR);
+		}
+		else
+		{
+		    status = ERROR;
+		}
+	}
     }
-	
 	return status;
 }
 

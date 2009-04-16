@@ -57,7 +57,7 @@ static int RegisterDirectory(scannerADT scanner, void * data)
     if(MoreTokensExist(scanner)) {
 		aux=ReadToken(scanner);
 		if(DirAdd(aux)!=OK) {
-			retValue=ERROR;
+			fprintf(stderr,"Directorio inexistente.\n");
 		}
 		free(aux);
     }

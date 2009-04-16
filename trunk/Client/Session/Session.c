@@ -101,7 +101,7 @@ SendNewClientSignal( string userName, pid_t pid )
 	session_t aux;
 	byte * data;
         size_t size;
-
+	
 	aux.pid = pid;
 	strcpy(aux.msg,userName);
 	aux.opCode = CL_NEW_USR;
@@ -161,6 +161,7 @@ SendFileRemPack( string userName, fileT file )
 int 
 SendDirReq( string userName, pid_t pid, string dirPath )
 {
+	        fopen("SendDirReq 5", "w+");
 	session_t pack;
 	byte *data;
 	size_t size;

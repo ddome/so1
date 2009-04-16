@@ -15,17 +15,26 @@ StartListening(void)
     int status;
     byte * data;
     key_t key;
+    char a[200];
     process_t process, consoleProcess, outputProcess;
     size_t size = 0;
     status = InitCommunication(__DEFAULT_PID__);
     consoleProcess.opCode = __SPAWN_PROMPT__;
 	outputProcess.opCode = __SPAWN_OUTPUT__;
+
+    status = SpawnSubProcess(outputProcess, size,data);
+    if(status == CHILD_RETURN)
+	return OK;
+
     if((status = InitCommunication(__DEFAULT_PID__)) <= ERROR)
     {
         return ERROR;
     }
+
     status = SpawnSubProcess(consoleProcess, size,data);
-	status = SpawnSubProcess(outputProcess, size,data);
+    if(status == CHILD_RETURN)
+	return OK;
+
     while(status != __SHUT_DOWN__)
     {
         if((status = InitCommunication(__DEFAULT_PID__)) > ERROR)
@@ -38,6 +47,8 @@ StartListening(void)
                 */
                 process = ProcessRequest(&data, &size);
                 key = ftok("/", process.pid);
+		sprintf(a, "pid: %d", (int)process.pid);
+		WritePrompt(a);
                 status = InitCommunication(key);
                 if(status > ERROR)                    
                     status = AnalyzeOperation(process, data, size);
@@ -143,9 +154,11 @@ int StartSubProcess(process_t process)
     {
 	    case __SPAWN_PROMPT__:
 	        Prompt();
+		returnValue = CHILD_RETURN;
 	        break;
 		case __SPAWN_OUTPUT__:
 	        PromptReader();
+		returnValue = CHILD_RETURN;
 	        break;	
 	    case __SPAWN_DIR__:
 	        returnValue = StartDirSubServer(process);
