@@ -27,6 +27,8 @@
 */
 
 char name[MAX_LINE];
+boolean conect=FALSE;
+boolean hab=FALSE;
 
 /* Funciones de utilidad
 */
@@ -65,24 +67,32 @@ static int Server(scannerADT scanner, void * data)
       }
     }
 
+	conect = TRUE;
     return retValue;
 }
 
 static int Name(scannerADT scanner, void * data)
 {
-    int retValue = ERROR;
+    int retValue = OK;
     char * aux;
-    if(MoreTokensExist(scanner))
-    {
-        aux = ReadToken(scanner);
-        if(!MoreTokensExist(scanner) && SendNewClientSignal( aux, getppid()) == OK)
-        {
-			strcpy(name, aux);
-            retValue = OK;
-        }
-		free(aux);
-    }
-    return retValue;
+	
+	if( conect == FALSE ) {
+		printf("Debe conectarse al servidor antes de elegir el nombre\n");
+	}
+	else {
+		if(MoreTokensExist(scanner))
+		{
+			aux = ReadToken(scanner);
+			if(!MoreTokensExist(scanner) && SendNewClientSignal( aux, getppid()) == OK)
+			{
+				strcpy(name, aux);
+				retValue = OK;
+			}
+			free(aux);
+		}	
+		hab = TRUE;
+	}
+	return retValue;
 }
 
 static int ListSincDirs(scannerADT scanner, void * data)
@@ -101,14 +111,21 @@ static int AddDir(scannerADT scanner, void * data)
 {
     int retValue = ERROR;
 	char * aux;
-	if(MoreTokensExist(scanner))
-	{
-		aux = ReadToken(scanner);
-		if(!MoreTokensExist(scanner) && SendDirReq(name, getppid(), aux) == OK)
+	
+	if( hab == FALSE ) {
+		printf("Debe elegir un nombre de usuario para agregar directorios\n");
+	}
+	else {
+	
+		if(MoreTokensExist(scanner))
 		{
-			retValue = OK;
+			aux = ReadToken(scanner);
+			if(!MoreTokensExist(scanner) && SendDirReq(name, getppid(), aux) == OK)
+			{
+				retValue = OK;
+			}
+			free(aux);
 		}
-		free(aux);
 	}
     return retValue;
 }
@@ -116,8 +133,24 @@ static int AddDir(scannerADT scanner, void * data)
 
 static int RemDir(scannerADT scanner, void * data)
 {
-    int retValue = OK;
-    
+    int retValue = ERROR;
+	char * aux;
+	
+	if( hab == FALSE ) {
+		printf("Debe elegir un nombre de usuario para agregar directorios\n");
+	}
+	else {
+		if(MoreTokensExist(scanner))
+		{
+			aux = ReadToken(scanner);
+			if(!MoreTokensExist(scanner) && SendDirRem(name, getppid(), aux) == OK)
+			{
+				DelDir(aux);
+				retValue = OK;
+			}
+			free(aux);
+		}
+	}
     return retValue;
 }
 
@@ -126,13 +159,14 @@ static int Exit(scannerADT scanner, void * data)
     int retValue = ERROR;
     if(!MoreTokensExist(scanner))
     {
-      if(SendConectionSignal(getppid())==OK)
+      if(SendExitSignal(name)==OK)
       {
         retValue=OK;
       }
     }
+	
 
-    return retValue;
+    return -3;
 }
 
 static int Help(scannerADT scanner, void * data)
@@ -178,8 +212,10 @@ Prompt(void)
             status = ReadExpression( tree, strAux, NULL );
         else
             status = 0;
-         if(status < 0)
+         if(status == -2)
             fprintf(stderr, "Comando invalido.\n");
+		 if(status == -3)
+			 terminar = TRUE;
 
         free(strAux);
     }

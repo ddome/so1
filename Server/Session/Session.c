@@ -87,6 +87,7 @@ SendDirPack(process_t process)
     return ProcessSendPack(&data, size);
 }
 
+
 void
 GoodBye(void)
 {
@@ -136,7 +137,7 @@ ProcessCall( session_t *data )
 			
 		case CL_FIL_REM:			
 			p.status = CallFileRem(*data);
-            p.opCode = __NOT_SPAWN__;
+            p.opCode = __KILL_DIR__;
 			break;
 			
 		case CL_FIL_MOD:			
