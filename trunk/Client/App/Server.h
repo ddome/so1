@@ -75,4 +75,6 @@ int SpawnSubProcess(process_t process, size_t size, byte * data);
 
 int StartPingServer(pid_t pid, char msg[MAX_MSG]);
 
+int InitServerPath(void);
+
 #endif

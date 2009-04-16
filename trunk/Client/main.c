@@ -19,6 +19,8 @@ main(void)
     int status;
     status = InitTransport();
     status = InitApplication();
+	status =  InitServerPath();
+	
     InitPromptCommunication(getpid());
     WritePrompt("afgafg\n");
     printf("%s\n",ReadMessage());

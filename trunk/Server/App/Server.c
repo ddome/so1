@@ -5,6 +5,8 @@
 #include "Server.h"
 
 
+char * bk_path;
+
 /*
 *  Functions
 */
@@ -191,14 +193,14 @@ int StartDirSubServer(process_t reqProcess)
 	byte * data;
     char * aux;
     
-    keyClient = ftok(aux = Concat(BK_PATH, reqProcess.dir), reqProcess.pid);
+    keyClient = ftok(aux = Concat(bk_path, reqProcess.dir), reqProcess.pid);
     free(aux);
     do{
         status = InitCommunication(keyClient);
     } while (status <= ERROR);
     if(status > ERROR)
     {
-        keyDefault = ftok(aux = Concat(BK_PATH, reqProcess.dir), __DEFAULT_PID__);
+        keyDefault = ftok(aux = Concat(bk_path, reqProcess.dir), __DEFAULT_PID__);
         free(aux);
         status = InitCommunication(keyDefault);
     }
@@ -218,7 +220,7 @@ int StartDirSubServer(process_t reqProcess)
             /*
             *  Se switchea al key del cliente para escribir
             */
-            keyClient = ftok(aux = Concat(BK_PATH, reqProcess.dir), process.pid);
+            keyClient = ftok(aux = Concat(bk_path, reqProcess.dir), process.pid);
             free(aux);
             if((status = InitCommunication(keyClient)) > ERROR)
 	            status = AnalyzeOperation(process, data, size);
@@ -255,7 +257,7 @@ int StartDemandSubServer(process_t process)
     int status=OK;
     char * aux;
 
-    key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
+    key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);
 
     free(aux);
     do{
@@ -279,7 +281,7 @@ int StartDemandRecieveSubServer(process_t process)
   size_t size;
   char * aux;
 
-  key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
+  key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);
   free(aux);
   while(status<=ERROR)
   {
@@ -361,7 +363,39 @@ KillDirProcess(process_t p)
 	return OK;
 }
 
+static char *
+ReadBkPath()
+{
+	FILE *fd;
+	char *path;
+	int c;
+	
+	if( (fd = fopen("config", "r")) == NULL )
+		return NULL;
+	path = malloc(150);
+	
+	int i=0;
+	while( (c=fgetc(fd)) != '#' ) {
+		path[i] = c;
+		i++;
+	}
+	path[i] = '\0';
+	
+	return path;
+	
+}
 
+int
+InitServerPath()
+{
+	if( (bk_path = ReadBkPath()) == NULL ) {
+		WritePrompt("El archivo config esta dañado");
+		return ERROR;
+	}
+	else
+		return OK;
+}	
+	
 
 
 
