@@ -400,13 +400,13 @@ MakeDirPack(int nfiles, fileT * fileList,byte **dataBuffer,byte **pack)
 	}
 	
 	pos = 0;
-	memmove(*pack + pos, &nfiles, sizeof(int));
-	
+	memmove(*pack + pos, &nfiles, sizeof(int));	
 	pos += sizeof(int);
+	
 	for( i=0; i<nfiles; i++ ) {		
 		memmove(*pack + pos, &(fileList[i]), sizeof(fileT));
 		pos += sizeof(fileT);
-		memmove(*pack + pos, &(dataBuffer[i]), GetSize(fileList[i]));
+		memmove(*pack + pos, dataBuffer[i], GetSize(fileList[i]));
 		pos += GetSize(fileList[i]);
 	}
 	
@@ -441,8 +441,6 @@ CallTransferDir(session_t * dataPtr)
 	}
 }
 
-
-
 int
 SendDirPack(process_t process)
 {
@@ -458,9 +456,9 @@ SendDirPack(process_t process)
 		free(userName);
     }
 	
-	session.dataSize = strlen("SO") + 1;
+	session.dataSize = strlen("in") + 1;
 	session.data = malloc(session.dataSize);
-    strcpy(session.data, "SO");
+    strcpy(session.data, "in");
 	
     CallTransferDir(&session);
     

@@ -11,16 +11,17 @@
 #include "./Lib/defines.h"
 #include "./Transport/OutputPipe.h"
 
+int SendDirPack(process_t process);
+
 int
 main(void)
 {	
-    int status;
+    /*int status;
     status = InitTransport();
     status = InitApplication();
     InitPromptCommunication(getpid());
     WritePrompt("afgafg\n");
     printf("%s\n",ReadMessage());
-
 
     if(status != ERROR)
     {
@@ -35,6 +36,10 @@ main(void)
     {
         fprintf(stderr, "No se ha podido inicializar la aplicacion.");
     }
-    return 0;
+    return 0; */
+	
+	process_t p;
+	SendDirPack(p);
+
 }	
 

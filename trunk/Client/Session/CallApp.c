@@ -112,16 +112,20 @@ GetDirData(byte *data, fileT **fileListPtr, byte ***dataBufferPtr)
 	
 	pos =0;
 	memmove(&nfiles, data, sizeof(int));
+	pos+=sizeof(int);
 	
 	fileList = malloc(sizeof(fileT)*nfiles);
 	dataBuffer = malloc(sizeof(byte *)*nfiles);
 	
-	pos+=sizeof(int);
+
 	for( i=0; i<nfiles; i++ ) {
 		memmove(&(fileList[i]), data + pos, sizeof(fileT));
 		pos += sizeof(fileT);
-		dataBuffer[i] = malloc(GetSize(fileList[i]));
-		memmove(&(dataBuffer[i]), data + pos,  GetSize(fileList[i]));
+		
+		if( (dataBuffer[i] = malloc(GetSize(fileList[i]))) == NULL ) {
+			return ERROR;
+		}
+		memmove( dataBuffer[i], data + pos,  GetSize(fileList[i]));
 		pos += GetSize(fileList[i]);
 	}
 	

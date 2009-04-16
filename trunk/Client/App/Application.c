@@ -43,11 +43,11 @@ FileRem( fileT file )
 
 int
 DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
-{	
+{       
 	
 	int i;
 	int size;
-	
+
 	for( i=0; i < nfiles; i++ ) {
 		
 		if( !DirExists(files[i].path) ) {
@@ -62,6 +62,7 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 	
 	return OK;
 }
+
 	
 byte *
 FileReq( fileT file )
