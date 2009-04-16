@@ -24,6 +24,8 @@ main(void)
     status = InitPromptCommunication();
     status = InitTransport();
     status = InitApplication();
+	status = InitServerPath();
+	
     if(status != ERROR)
     {
 		status = StartListening();

@@ -30,6 +30,8 @@
 
 #define BK_PATH "/home/damian/Desktop/so1/Server/backup/"
 
+
+
 /* Tipos de procesos disponibles para crearse
 */
 
@@ -77,6 +79,8 @@ int SpawnSubProcess(process_t process, size_t size, byte * data);
 int DirBroadcastMsg(process_t process, size_t size, byte * data);
 
 int KillDirProcess(process_t p);
+
+int InitServerPath();
 
 #endif
 

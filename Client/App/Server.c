@@ -10,6 +10,10 @@
 
 #include "Server.h"
 
+
+
+char *bk_path;
+
 /*
 *  Functions
 */
@@ -180,9 +184,9 @@ int StartDirSubServer(process_t reqProcess)
     key_t keyDefault, keyClient;
     byte * data;
     char * aux;
-    keyDefault = ftok(aux = Concat(BK_PATH,reqProcess.dir), __DEFAULT_PID__);
+    keyDefault = ftok(aux = Concat(bk_path,reqProcess.dir), __DEFAULT_PID__);
     free(aux);
-    keyClient = ftok(aux = Concat(BK_PATH,reqProcess.dir), reqProcess.pid);
+    keyClient = ftok(aux = Concat(bk_path,reqProcess.dir), reqProcess.pid);
     free(aux);
     while(status<=ERROR)
     {
@@ -249,7 +253,7 @@ int StartDemandSubServer(process_t process)
     size_t size;
     char * aux;
 
-    key_t key = ftok(aux = Concat(BK_PATH, process.dir), getppid());
+    key_t key = ftok(aux = Concat(bk_path, process.dir), getppid());
     free(aux);
     while(status<=ERROR)
     {
@@ -269,6 +273,40 @@ int StartDemandSubServer(process_t process)
     
     return status;
 }
+
+static char *
+ReadBkPath()
+{
+	FILE *fd;
+	char *path;
+	int c;
+	
+	if( (fd = fopen("config", "r")) == NULL )
+		return NULL;
+	path = malloc(150);
+	
+	int i=0;
+	while( (c=fgetc(fd)) != '#' ) {
+		path[i] = c;
+		i++;
+	}
+	path[i] = '\0';
+	
+	return path;
+	
+}
+
+int
+InitServerPath()
+{
+	if( (bk_path = ReadBkPath()) == NULL ) {
+		WritePrompt("El archivo config esta dañado");
+		return ERROR;
+	}	
+		
+	return OK;
+}	
+
 
 /*int StartDemandSubServer(process_t process)
 {
