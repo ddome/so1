@@ -15,7 +15,6 @@ StartListening(void)
     int status;
     byte * data;
     key_t key;
-    char a[200];
     process_t process, consoleProcess, outputProcess;
     size_t size = 0;
     status = InitCommunication(__DEFAULT_PID__);
@@ -47,8 +46,7 @@ StartListening(void)
                 */
                 process = ProcessRequest(&data, &size);
                 key = ftok("/", process.pid);
-		sprintf(a, "pid: %d", (int)process.pid);
-		WritePrompt(a);
+
                 status = InitCommunication(key);
                 if(status > ERROR)                    
                     status = AnalyzeOperation(process, data, size);
@@ -101,6 +99,9 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
                 break;
             case __SPAWN_DEMAND__:
               status = SpawnSubProcess(process, size, data);
+                break;
+            case __DIR_BROADCAST__:
+                status = DirBroadcastMsg(process, size, data);
                 break;
             case __NO_RESPONSE__:
                // free(data);
@@ -166,6 +167,8 @@ int StartSubProcess(process_t process)
 	    case __SPAWN_DEMAND__:
             returnValue = StartDemandSubServer(process);
 	        break;
+        case __SPAWN_REC_DEMAND__:
+            returnValue = StartDemandRecieveSubServer(process);
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
 	    default:
@@ -248,7 +251,7 @@ int StartDemandSubServer(process_t process)
 {
     int status=OK;
     char * aux;
-    fopen("llegooop 2", "w+");
+
     key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
 
     free(aux);
@@ -264,8 +267,88 @@ int StartDemandSubServer(process_t process)
     return status;
 }
 
+int StartDemandRecieveSubServer(process_t process)
+{
+  int status = ERROR;
+  int requestExists = FALSE;
+  byte * data;
+  process_t p;
+  size_t size;
+  char * aux;
 
+  key_t key = ftok(aux = Concat(BK_PATH, process.dir), process.status);
+  free(aux);
+  while(status<=ERROR)
+  {
+    status = InitCommunication(key);
+  }
+  if(status > ERROR)
+  {
+    while(!requestExists)
+    {
+      if( (data = GetRequest()) != NULL)
+      {
+        p = ProcessRequest(&data, &size);
+        requestExists=TRUE;
+      }
+    }
+  }
+    
+  return status;
+}
 
+int
+DirBroadcastMsg(process_t process, size_t size, byte * data)
+{
+    int status = OK;
+    key_t key;
+    int cantUsersInDir, i;
+    int * userPidArray;
+    
+    /* Se obtienen la cantidad de usuarios conectados al directorio.
+    ** Si hay 1 solo, no se manda broadcast, pues el unico que hay
+    ** es el que hizo la modificacion del archivo en primera instancia.
+    */
+    if((cantUsersInDir = CantUsersLinkToDir(process.dir)) < 2)
+        return OK;
+    /* Se almacenan en userPidArray los pids de dichos usuarios
+    *
+    */
+    userPidArray = PIDsLinkToDir(process.dir);
+    
+    if(userPidArray == NULL)
+      return ERROR;
+    
+    for(i = 0; i < cantUsersInDir; i++)
+    {
+        /* Se envia el mensaje a todos, excepto al cliente que
+        *  genero el broadcast a traves de una modificacion del directorio.
+        */
+        if(userPidArray[i] != process.pid)
+        {
+            /* Se genera el key correspondiente al usuario, y se switchea 
+            *  la comunicacion a ese canal.
+            */
+            key = ftok(process.dir, userPidArray[i]);
+            do
+            {
+                status = InitCommunication(key);
+            } while(status <= ERROR)
+            
+            /* Se envia el mensaje
+            */
+            status = ProcessSendPack(&data, size);
+        }
+    }
+
+    /* Antes de finalizar se vuelve al canal default de comunicación
+    */
+    key = ftok(process.dir, __DEFAULT_PID__);
+    status = InitCommunication(key);
+    
+    return status;
+    
+}
 
 
 
