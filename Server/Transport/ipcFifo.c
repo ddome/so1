@@ -11,6 +11,8 @@ int mainFifo_FD,
 int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 
+static byte * GetBlock(byte *org, size_t size, int index);
+
 string
 MakeRDPath(key_t key)
 {
@@ -79,64 +81,93 @@ int InitIPC(key_t key)
     return status;
 }
 
+static int
+GetTotalPackets(size_t size)
+{
+	return (int)(size / PACKET_SIZE + 1) ;
+}
+
 int 
 WriteIPC(void * data, size_t size)
 {
     int status;
-   // leave();
-  //  lock();
-    /* Se arma el header de transporte
-    */
     headerIPC_t header;
-    header.nPacket = 1;
-    header.size = size;
-    status = write(writeFifo_FD, &header, sizeof(headerIPC_t));
-
-    if(status != ERROR)
-    {
-        status = write(writeFifo_FD,data,size);
-    }
-   // leave();
-    return status == ERROR ? __ERROR_IPC_WRITE__: status ;
+	byte *block;
+	int bytesLeft;	
+	
+	header.totalPackets = GetTotalPackets(size);
+	
+	int npacket   = 1;
+	bytesLeft = size;
+	int i;
+	
+	for( i=0; i < header.totalPackets; i++ ) {
+		header.nPacket = npacket;
+		header.size = PACKET_SIZE;
+		
+		status = write(writeFifo_FD, &header, sizeof(headerIPC_t));
+		if(status != ERROR)
+		{
+			block = GetBlock(data, header.size, npacket-1);
+			status = write(writeFifo_FD,block, header.size);
+			free(block);
+			
+			if( status == ERROR )
+				return ERROR;
+		}
+		
+		bytesLeft -= PACKET_SIZE;
+		npacket++;
+	}
+	
+    return status;
 }
 
-byte * 
+byte *
 ReadIPC(void)
 {
-    int status = OK;
-    headerIPC_t header;
-    byte * data;
-  //  leave();
-  //  lock();
-    status = read(readFifo_FD, &header, sizeof(headerIPC_t));
-    if(status > 0)
-    {
-	    printf("\n\npaquete numero: %d\n", header.nPacket);
-
-	    if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
-	    {
-			return NULL;
-	    }
-
-	    printf("size :%d",(int)header.size);
-		
-	    status=read(readFifo_FD, data, header.size);
-	    if(status > 0)
-	    {
-		    status = OK;
-		    recibidos++;
-	    }
-	    else
-	    {
-		    status = ERROR;
-	    }
-    }
-    else
-    {
-	    status = ERROR;
-    }
-  //  leave();
-    return status == ERROR ? NULL: data ;
+	int status = OK;
+	headerIPC_t header;
+	byte * data=NULL;
+	int nPacketsRead;
+	int pos;
+	byte *aux;
+	
+	printf("Descargando paquetes...");
+	
+	nPacketsRead=0;
+	pos=0;
+	do{
+		status = read(readFifo_FD, &header, sizeof(headerIPC_t));
+		if(status > 0)
+		{	
+			data = realloc(data, pos + header.size );
+			aux = malloc(header.size);			
+			status=read(readFifo_FD, aux, header.size);
+			
+			memmove(data+pos, aux, header.size);
+			pos += header.size;
+			nPacketsRead++;
+			
+			if(status > 0)
+			{
+				status = OK;
+				recibidos++;
+			}
+			else
+			{
+				status = ERROR;
+			}			  
+		}
+		else
+		{
+			status = ERROR;
+		}
+	}while( status != ERROR && nPacketsRead < header.totalPackets );
+	
+	printf("recibidos: %d\n", recibidos);
+	
+	return status == ERROR ? NULL: data ;
 }
 
 void
@@ -144,5 +175,18 @@ CloseIPC(void)
 {
     /*Liberar recursos...*/
 }
+
+static byte *
+GetBlock(byte *org, size_t size, int index)
+{
+	byte *block;
+	
+	if( (block=malloc(size)) == NULL ) {
+		return NULL;
+	}
+	
+	return memcpy(block, org+index*size, size);
+}
+
 
 

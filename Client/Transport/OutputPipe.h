@@ -3,7 +3,7 @@
 
 #define _FIFO_MODE_ 0666
 
-#define _DEFAULT_PATH_ "/tmp/PromptReaderClient"
+#define _DEFAULT_PATH_ "/tmp/comm/PromptReaderClient"
 #define MAX_PROMPT_MSG 150
 
 int InitPromptCommunication(pid_t pid);
