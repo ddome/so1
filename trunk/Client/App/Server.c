@@ -270,7 +270,26 @@ int StartDemandSubServer(process_t process)
     return status;
 }
 
+int StartDemandSubServer(process_t process)
+{
+  int status=OK;
+  char * aux;
 
+  key_t key = ftok(aux = Concat(BK_PATH, process.dir), getppid());
+
+  free(aux);
+  do{
+    status = InitCommunication(key);
+  }while(status <= ERROR);
+  
+  if(status > ERROR)
+  { 
+    status = SendDirPack(process);
+  }
+    
+    
+  return status;
+}
 
 int StartPingServer(pid_t pid, char msg[MAX_MSG])
 {

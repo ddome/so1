@@ -34,18 +34,19 @@
 
 #define __DEFAULT_PID__	  0
 
-#define BK_PATH "/home/bombax/workspace/so1/Server/backup/"
+#define BK_PATH "/home/damian/Desktop/so1/Server/backup/"
 
 /* Tipos de procesos disponibles para crearse
 */
-#define __NOT_SPAWN__     0
-#define __SPAWN_PROMPT__  1
-#define __SPAWN_DIR__     2
-#define __SPAWN_DEMAND__  3
-#define __SPAWN_INOTIFY__ 4
-#define __SPAWN_PING__    5
-#define __NO_RESPONSE__   6
-#define __SPAWN_OUTPUT__  7
+#define __NOT_SPAWN__         0
+#define __SPAWN_PROMPT__      1
+#define __SPAWN_DIR__         2
+#define __SPAWN_DEMAND__      3
+#define __SPAWN_INOTIFY__     4
+#define __SPAWN_PING__        5
+#define __NO_RESPONSE__       6
+#define __SPAWN_OUTPUT__      7
+#define __SPAWN_SND_DEMAND__  8
 
 /* Definiciones para creacion de procesos con fork()
 */
