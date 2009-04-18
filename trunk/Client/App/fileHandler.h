@@ -81,6 +81,10 @@ int RemoveDir( string dir );
 
 int DirPathList(string dir, string **dirList);
 
+string GetFileName(string path);
+
+string GetPathFromBackup(string path);
+
 #endif
 
 

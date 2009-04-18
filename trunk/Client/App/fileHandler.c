@@ -486,7 +486,28 @@ RemoveDir( string dir )
 	return ret;
 }	
 	
-	
+
+string
+GetFileName(string path) 
+{
+  string fileName;
+  fileName = strrchr(path, '/');
+  return fileName+1;   
+}   
+
+string GetPathFromBackup(string path)
+{
+    int offset;
+    string pathFromBk, aux1, aux, ret;
+    pathFromBk = strstr(path, "backup");
+    aux1 = CreateString(pathFromBk);
+    aux = strrchr(aux1, '/');
+    offset = aux - aux1;
+    ret = malloc(offset);
+    strncpy(ret, aux1, offset);
+    return ret;
+}
+
 	
 	
 	

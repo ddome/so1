@@ -19,9 +19,14 @@ typedef struct resp_T{
     int opCode;
 }resp_T;
 
+extern char * bk_path;
+extern char name[MAX_LINE];
+
 resp_T * read_events (int fd,listADT list,int * lastCookie,int* lastMask);
 
 dirWD_T * MakeDirWD(int wd,char * path);
+
+int NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE]);
 
 int
 AddNewDir(int fd, char * pathAux,listADT list)
@@ -41,7 +46,7 @@ AddNewDir(int fd, char * pathAux,listADT list)
 	    printf("Read access to the given file is not permitted. \n");
 	else if(errno==EBADF)
 	    printf("The given file descriptor is not valid. . \n");
-	else if(errno==EFAULT)
+    else if(errno==EFAULT)// 
 	    printf("pathname points outside of the process's accessible address space.  \n");
 	else if(errno==EINVAL)
 	    printf("The given event mask contains no legal events; or fd is not an inotify file descriptor.  \n");
@@ -66,7 +71,6 @@ AddNewDir(int fd, char * pathAux,listADT list)
     }
     
     /*free(paths);*/
-
     return OK;
 }
 
@@ -113,7 +117,8 @@ inotifyWatcher(process_t process)
     int fd;
     int ret=0;
     int error=0;
-    char * pathAux;
+    key_t key;
+    char * pathAux, * serverPath;
     char signal = __INOTIFY_NO_DATA__;
     resp_T * resp;
     listADT list;
@@ -123,59 +128,65 @@ inotifyWatcher(process_t process)
         fprintf(stderr,"Error al crear la lista.\n");
         return ERROR;
     }
-
+    
     /* Se espera el OK de que ya esta creada la carpeta
     *  a vigilar.
     */
-    fopen("antesdelinicio", "w+");
+
     while(signal == __INOTIFY_NO_DATA__)
     {
       signal = ReadINotifyMsg();
     }
     
-    /* Se inicia inotify. */
-    fopen("Seiniciadeverdad", "w+");
+    /* Se inicia inotify. 
+    */
+
     fd = inotify_init();
     if (fd < 0)
     {
-	//close(fd);
         printf ("Error: inotify_init\n");
         return ERROR;
     }
-    //WritePrompt("Aca 1");
-    /*Agregar directorio y subdirectorios al vigilador.*/
+
+    /*Agregar directorio y subdirectorios al vigilador.
+    */
     pathAux=Concat(BK_PATH_CLIENT,process.dir);
-    //WritePrompt(pathAux);
+    serverPath = Concat(bk_path, process.dir);
+    key = ftok(serverPath, __DEFAULT_PID__);
+    
     ret=AddNewDir(fd,pathAux,list);
+    
     if(ret==ERROR)
     {
-	close(fd);
-	return ERROR;
+      close(fd);
+      return ERROR;
     }
-    WritePrompt("Aca 2");
+
     while (1)
     {
         printf("Leo evento.\n");
         printf("===========\n");
         resp=read_events(fd,list,&lastCookie,&lastMask);
 
-	
-
-	if( resp->opCode==BORRAR )
-	    //printf("Borrar: ");
-	    WritePrompt("borrado");
-	else if( resp->opCode==CREAR )
-	    WritePrompt("borrado");
-	    //printf("Crear: ");
-	else if( resp->opCode==MODIFICAR )
-	    WritePrompt("borrado");
-	  //  printf("Modificar: ");
-	else
-	    error=1;
-	if(!error)
-	    printf("%s - %s no se directorio\n",resp->path,resp->isDir?"SI":"NO");
-	error=0;
+	    if( resp->opCode==BORRAR )
+	        WritePrompt("Borrar");
+	    else if( resp->opCode==CREAR )
+	        WritePrompt("Crear");
+	    else if( resp->opCode==MODIFICAR )
+	        WritePrompt("Modificar");
+	    else
+	        error=1;
+        
+        /* Aviso al servidor de la modificacion
+        */
+        ret = NotifyServer(process.pid, key, resp, name);
+        
+	    if(!error)
+	        printf("%s - %s no se directorio\n",resp->path,resp->isDir?"SI":"NO");
+	    error=0;
     }
+    if(pathAux != NULL)
+        free(pathAux);
     FreeList(list);
     return OK;
 }
@@ -195,7 +206,8 @@ print_mask_info ( unsigned int mask , int isDir,struct inotify_event * event,int
         break;
         case IN_ATTRIB:           	printf ("Metadata changed\n");
         break;
-        case IN_CLOSE_WRITE:    	printf ("File opened for writing was closed\n");
+        case IN_CLOSE_WRITE: 
+            printf ("File opened for writing was closed\n");
         break;
         case IN_CLOSE_NOWRITE:    	printf ("File not opened for writing was closed\n");
         break;
@@ -375,6 +387,25 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
     return resp;
 }
 
+int
+NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
+{
+    fileT file;
+    char * path, * fileName;
+    path = GetPathFromBackup(resp->path);
+    fileName = GetFileName(resp->path);
+    WritePrompt(path);
+    WritePrompt(fileName);
+    while(InitCommunication(key) == ERROR)
+      usleep(__POOL_WAIT__);
+    
+    file = NewFileT(path, fileName);
+        fopen("antesdesend", "w+");
+    if(resp->opCode == BORRAR)
+        return SendFileRemPack( name, file, pid );
+    else
+        return OK;
+}
 
 
 
