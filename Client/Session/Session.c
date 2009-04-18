@@ -145,24 +145,25 @@ SendFileModPack( string userName, fileT file, byte *dataBuffer )
 }
 
 int 
-SendFileRemPack( string userName, fileT file )
+SendFileRemPack( string userName, fileT file, pid_t pid )
 {
 	session_t pack;
 	byte *data;
-	
+	size_t size;
+    pack.pid = pid;
 	pack.opCode = CL_FIL_REM;
 	strcpy(pack.msg,userName);
 	pack.dataSize = MakeFilePack( file, NULL, &pack.data );
 
-	MakeSessionData(pack, &data);
-	
-	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
+	size = MakeSessionData(pack, &data);
+	WritePrompt("enviado papaaaaaaaaaaaaaaaaaa");
+    fopen("enviado", "w+");
+	return WriteIPC(data, size);
 }
 
 int 
 SendDirReq( string userName, pid_t pid, string dirPath )
 {
-	        fopen("SendDirReq 5", "w+");
 	session_t pack;
 	byte *data;
 	size_t size;

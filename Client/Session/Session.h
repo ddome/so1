@@ -90,7 +90,7 @@ int SendDirConectionSignal(  pid_t pid, string dir );
 int SendNewClientSignal( string userName, pid_t pid );
 int SendFileAddPack(  string userName, fileT file, byte *data );
 int SendFileModPack(  string userName, fileT file, byte *data );
-int SendFileRemPack( string userName, fileT file );
+int SendFileRemPack( string userName, fileT file, pid_t pid );
 int SendDirReq( string userName, pid_t pid, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );

@@ -13,11 +13,17 @@
 #include "../Lib/listADT.h"
 #include "../Transport/inotifyMsg.h"
 #include "../Transport/OutputPipe.h"
+#include "../Session/Session.h"
 
-#define BORRAR 1
-#define CREAR 2
-#define RENAME 3
+#define BORRAR    1
+#define CREAR     2
+#define RENAME    3
 #define MODIFICAR 4
+
+#define MAX_LINE 120
+#define MAX_PATH 255
+
+#define __DEFAULT_PID__ 0
 
 #define BK_PATH_CLIENT "/home/damian/Desktop/so1/Client/backup/"
 

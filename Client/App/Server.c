@@ -131,8 +131,7 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
 {
     pid_t childPid;
     int returnValue = OK;
-    if(process.opCode == __SPAWN_INOTIFY__)
-      fopen("spawninoti","w+");
+
     switch(childPid = fork())
     {
         case ERROR: 
@@ -366,11 +365,12 @@ StartInotifySubServer(process_t process)
     char * aux;
     int status;
     aux = Concat(BK_PATH,process.dir);
-    fopen("antesdellamarinotify", "w+");
+    
     do
     {
 	    status = inotifyWatcher(process);
     }while(status == ERROR);
+    
     free(aux);
     return OK;
 }
