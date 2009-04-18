@@ -11,7 +11,7 @@ CC_OP = -g -Wall -c -o
 LD = gcc
 LD_OP = -Wall -lpthread -ldl -o
 
-OBJS = Application.o fileHandler.o Prompt.o Server.o Transport.o ipc.o genlib.o pqADT.o scannerADT.o tree.o Session.o CallApp.o main.o OutputPipe.o inotify.o listADT.o
+OBJS = Application.o fileHandler.o Prompt.o Server.o Transport.o ipc.o genlib.o pqADT.o inotifyMsg.o scannerADT.o tree.o Session.o CallApp.o main.o OutputPipe.o inotify.o listADT.o
 
 help:
 	@-echo ""
@@ -45,6 +45,7 @@ fifo:
 	$(CC) $(CC_OP) Server.o $(APP)/Server.c
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
 	$(CC) $(CC_OP) OutputPipe.o $(TRANSP)/OutputPipe.c
+	$(CC) $(CC_OP) inotifyMsg.o $(TRANSP)/inotifyMsg.c
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcFifo.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
@@ -70,6 +71,7 @@ mq:
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
 	$(CC) $(CC_OP) OutputPipe.o $(TRANSP)/OutputPipe.c
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcMQ.c
+	$(CC) $(CC_OP) inotifyMsg.o $(TRANSP)/inotifyMsg.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
 	$(CC) $(CC_OP) listADT.o $(LIB)/listADT.c
@@ -94,6 +96,7 @@ sockets:
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
 	$(CC) $(CC_OP) OutputPipe.o $(TRANSP)/OutputPipe.c
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcSockets.c
+	$(CC) $(CC_OP) inotifyMsg.o $(TRANSP)/inotifyMsg.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
 	$(CC) $(CC_OP) listADT.o $(LIB)/listADT.c
@@ -118,6 +121,7 @@ shmem:
 	$(CC) $(CC_OP) Transport.o $(TRANSP)/Transport.c
 	$(CC) $(CC_OP) OutputPipe.o $(TRANSP)/OutputPipe.c
 	$(CC) $(CC_OP) ipc.o $(TRANSP)/ipcSM.c
+	$(CC) $(CC_OP) inotifyMsg.o $(TRANSP)/inotifyMsg.c
 	$(CC) $(CC_OP) genlib.o $(LIB)/genlib.c
 	$(CC) $(CC_OP) pqADT.o $(LIB)/pqADT.c
 	$(CC) $(CC_OP) listADT.o $(LIB)/listADT.c

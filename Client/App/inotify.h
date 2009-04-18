@@ -13,12 +13,13 @@
 #include "../Lib/listADT.h"
 #include "../Transport/inotifyMsg.h"
 #include "../Transport/OutputPipe.h"
+
 #define BORRAR 1
 #define CREAR 2
 #define RENAME 3
 #define MODIFICAR 4
 
-#define BK_PATH_CLIENT "/home/bombax/workspace/so1/Client/backup/"
+#define BK_PATH_CLIENT "/home/damian/Desktop/so1/Client/backup/"
 
 int inotifyWatcher(process_t process);
 

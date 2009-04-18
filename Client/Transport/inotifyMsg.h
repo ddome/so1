@@ -1,5 +1,5 @@
-#ifndef __IPC_FIFO_H__
-#define __IPC_FIFO_H__
+#ifndef __INOTIFY_MSG_H__
+#define __INOTIFY_MSG_H__
 
 /* System Includes
 */
@@ -29,10 +29,10 @@
 *  Posibles mensajes al INotify
 */
 
-#define __NO_DATA__ 1
-#define __ENABLE__  2
-#define __DISABLE__ 3
-#define __EXIT__    4
+#define __INOTIFY_NO_DATA__ '&'
+#define __INOTIFY_ENABLE__  '+'
+#define __INOTIFY_DISABLE__ '-'
+#define __INOTIFY_EXIT__    '$'
 
 /* Funciones
 */
@@ -46,4 +46,6 @@ char ReadINotifyMsg(void);
 void CloseINotifyMsg(void);
 
 #endif
+
+
 
