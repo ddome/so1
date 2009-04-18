@@ -293,10 +293,8 @@ ProcessCall( session_t *data )
 			strcpy(p.dir, (*data).data);
 			p.pid = (*data).pid;
 			p.opCode = __SPAWN_DEMAND__;
-fopen("CL_DIR_CONOKKK", "w+");
 			break;
 		case SR_DIR_TRANS:
-			fopen("llegooop", "w+");
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;

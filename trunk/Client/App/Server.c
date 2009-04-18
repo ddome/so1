@@ -131,6 +131,8 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
 {
     pid_t childPid;
     int returnValue = OK;
+    if(process.opCode == __SPAWN_INOTIFY__)
+      fopen("spawninoti","w+");
     switch(childPid = fork())
     {
         case ERROR: 
@@ -167,8 +169,8 @@ int StartSubProcess(process_t process)
                 returnValue = StartDemandSubServer(process);
 	        break;
 	    case __SPAWN_INOTIFY__:
-		returnValue = StartInotifySubServer(process);
-		returnValue = CHILD_RETURN;
+		    returnValue = StartInotifySubServer(process);
+		    returnValue = CHILD_RETURN;
 	        break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
@@ -201,7 +203,7 @@ int StartDirSubServer(process_t reqProcess)
     status = InitINotifyMsg(getpid());
     if(status == ERROR)
     {
-	return ERROR;
+	    return ERROR;
     }
     
     inotifyProcess.pid = getppid();
@@ -210,7 +212,7 @@ int StartDirSubServer(process_t reqProcess)
     status=SpawnSubProcess(inotifyProcess,0,NULL);
     
     if(status==CHILD_RETURN)
-	return OK;
+	    return OK;
     
     status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
     if(status != ERROR)
@@ -285,6 +287,9 @@ int StartDemandSubServer(process_t process)
 			if( (data = GetRequest()) != NULL)
 			{
 				p = ProcessRequest(&data, &size);
+                if(p.status != ERROR)
+                  while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR)
+                    ;
 				requestExists=TRUE;
 			}
 		}
@@ -361,10 +366,11 @@ StartInotifySubServer(process_t process)
     char * aux;
     int status;
     aux = Concat(BK_PATH,process.dir);
-    /*do
+    fopen("antesdellamarinotify", "w+");
+    do
     {
-	status = inotifyWatcher(process);
-    }while(status == ERROR);*/
+	    status = inotifyWatcher(process);
+    }while(status == ERROR);
     free(aux);
     return OK;
 }

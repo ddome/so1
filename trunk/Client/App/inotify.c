@@ -114,6 +114,7 @@ inotifyWatcher(process_t process)
     int ret=0;
     int error=0;
     char * pathAux;
+    char signal = __INOTIFY_NO_DATA__;
     resp_T * resp;
     listADT list;
     list=Newlist( (int (*)(void*,void*))Compare,(void (*)(void*))FreeElement);
@@ -123,8 +124,17 @@ inotifyWatcher(process_t process)
         return ERROR;
     }
 
+    /* Se espera el OK de que ya esta creada la carpeta
+    *  a vigilar.
+    */
+    fopen("antesdelinicio", "w+");
+    while(signal == __INOTIFY_NO_DATA__)
+    {
+      signal = ReadINotifyMsg();
+    }
+    
     /* Se inicia inotify. */
-
+    fopen("Seiniciadeverdad", "w+");
     fd = inotify_init();
     if (fd < 0)
     {
@@ -364,6 +374,8 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 
     return resp;
 }
+
+
 
 
 
