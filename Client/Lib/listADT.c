@@ -11,10 +11,8 @@ struct listCDT
 {
         struct nodoCDT * nodos;
         fn compara;
-        fn copyElement;
         fnfree freeElement;
         struct nodoCDT * actual;
-        size_t tam;
 };
 
 /* Estructura de cada nodo de la lista */
@@ -26,9 +24,9 @@ typedef struct nodoCDT
 } nodoCDT;
 
 static int
-Error(const char * msg)
+Error(char * msg)
 {
-    fprintf(stderr,msg);
+    fprintf(stderr,"%s.\n",msg);
     return 0;
 }
 
@@ -40,17 +38,16 @@ ListTail(nodoCDT * sublist)
                 Error("Final node reached \n");
                 return NULL;
         }
-       
+
         return (sublist -> tail);
 }
 
 static void
 FreeNodes(nodoCDT * nodo, fnfree freeElement)
 {
-       
         if (nodo == NULL)
                 return;
-               
+
         FreeNodes(nodo -> tail, freeElement);
         freeElement(nodo -> dato); /*libero el dato */
         free(nodo); /* libero el nodo */
@@ -58,11 +55,11 @@ FreeNodes(nodoCDT * nodo, fnfree freeElement)
 }
 
 listADT
-Newlist(fn compara, fn copyElement, fnfree freeElement, int tam)
+Newlist(fn compara, fnfree freeElement)
 {
         listADT auxi;
-       
-        if (compara == NULL || copyElement == NULL || freeElement == NULL || tam <= 0)
+
+        if (compara == NULL || freeElement == NULL )
                 return NULL;
 
         if ( (auxi = malloc(sizeof(struct listCDT))) == NULL)
@@ -73,11 +70,9 @@ Newlist(fn compara, fn copyElement, fnfree freeElement, int tam)
 
         auxi -> nodos = NULL;
         auxi -> compara = compara;
-        auxi -> copyElement = copyElement;
         auxi -> freeElement = freeElement;
         auxi -> actual = NULL;
-        auxi -> tam = tam;
-       
+
         return auxi;
 }
 
@@ -85,7 +80,7 @@ int
 Insert(listADT lista, listElementT dato)
 {
         nodoCDT * anterior, * siguiente, * auxi;
-       
+
         if (lista == NULL || dato == NULL)
         {
                 Error("Invalid list or data \n");
@@ -93,9 +88,9 @@ Insert(listADT lista, listElementT dato)
         }
        
 /* anterior y siguiente apuntan al primer nodo de la lista */
-       
+
         anterior = siguiente = lista -> nodos;
-       
+
         while (siguiente != NULL && lista -> compara(siguiente -> dato, dato) == -1)
         {
                 anterior = siguiente;
@@ -104,7 +99,7 @@ Insert(listADT lista, listElementT dato)
         }
 
 /* Se chequea que el elemento no est� repetido */
-       
+
         if (siguiente != NULL && lista -> compara(siguiente -> dato, dato) == 0)
         {
                 Error("Element already exists \n");
@@ -112,7 +107,7 @@ Insert(listADT lista, listElementT dato)
         }
 
 /* Se aloca la memoria para insertar el nuevo nodo */
-       
+
         if ( (auxi = malloc(sizeof(struct nodoCDT))) == NULL )
         {
                 Error("Not enought physical memory to allocate list node \n");
@@ -120,32 +115,20 @@ Insert(listADT lista, listElementT dato)
         }
 
 /*
-*       el "tail" del nuevo nodo, apunta al nodo "siguiente", es decir el que quedo
-*       en la variable puntero nodoCDT "siguiente".
+* el "tail" del nuevo nodo, apunta al nodo "siguiente", es decir el que quedo
+* en la variable puntero nodoCDT "siguiente".
 */
         auxi -> tail = siguiente;
-       
-/* Se aloca el espacio para insertar el elemento "dato" dentro del nodo correspondiente en la lista */
-       
-        if ( (auxi -> dato = malloc(lista -> tam)) == NULL)
-        {
-                free(auxi);
-                Error("Not enough physical memory to allocate element into the list node \n");
-                return 0;
-        }
-       
-        if (lista -> copyElement(auxi -> dato, dato) == 0) /* copio los elementos con deep copy */
-        {
-                Error("Unable to insert element to node in list \n");
-                free(auxi -> dato);
-                free(auxi);
-                return 0;
-        }
+
+/* Guardo el dato
+*/
+
+	auxi->dato=dato;
 /* si es el primer elemento a insertar, el header -> nodos es el nodo recien insertado.
 *  sino, el "tail" del nodo anterior ahora apunta a el nodo insertado "auxi".
 */
 
-        if (anterior == siguiente)      
+        if (anterior == siguiente)
                 lista -> nodos = auxi;
         else
                 anterior -> tail = auxi;
@@ -157,43 +140,43 @@ int
 Delete(listADT lista, listElementT dato)
 {
         nodoCDT * anterior, * siguiente;
-       
+
         anterior = siguiente = lista -> nodos;
-       
+
         if (lista == NULL || dato == NULL)
         {
                 Error("Invalid data type or NULL list \n");
                 return 0;
         }
-               
+
 /* Mientras no encuentre el elemento recorre nodo x nodo la lista */
-               
+
         while (siguiente != NULL && lista -> compara(siguiente -> dato, dato) == -1)
         {
                 anterior = siguiente;
                 siguiente = ListTail(siguiente);
         }
-       
-/* Si se llego al final de la lista, y el elemento no se encontro, no puede ser borrado */      
-       
+
+/* Si se llego al final de la lista, y el elemento no se encontro, no puede ser borrado */
+
         if (siguiente == NULL || lista -> compara(siguiente -> dato, dato) != 0)
         {
                 Error("Element could not be deleted \n");
                 return 0;
         }
-       
+
 /* Lo encontr�, por lo tanto habr� que borrarlo */
-       
+
         if (anterior == siguiente)
                 lista -> nodos = anterior -> tail; /*si es el primero, ahora el primer nodo del header sera el 2do */
         else
                 anterior -> tail = siguiente -> tail; /* el nodo anterior apunta al siguiente del nodo "siguiente" */
-       
+
 /* Si en el header, el nodo "actual" apunta al que va a ser borrado, actualizo actual al nodo contiguo */
-       
+
         if (siguiente == lista -> actual)
                 lista -> actual = ListTail(lista -> actual);
-       
+
         lista -> freeElement(siguiente -> dato); /* Borra con criterio deep copy */
         free(siguiente);
         return 1;
@@ -248,7 +231,7 @@ SetBegin(listADT lista)
 }
 
 int
-GetData(listADT lista, listElementT element)
+GetData(listADT lista, listElementT * element)
 {
         nodoCDT * actual;
         int final = 1;
@@ -269,12 +252,7 @@ GetData(listADT lista, listElementT element)
         }
 /* Se copia en el par�metro de respuesta en modo deep copy el dato del nodo actual */
        
-       
-        if (lista -> copyElement(element, actual -> dato) == 0)
-        {
-                Error("Unable to get data from node \n");
-                return final;
-        }
+	*element=actual->dato;
        
         lista -> actual = ListTail(actual);
         return final;
@@ -295,4 +273,28 @@ FreeList(listADT lista)
         free(lista); /*libera la lista */
         return;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

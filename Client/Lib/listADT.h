@@ -31,10 +31,10 @@ typedef struct listCDT * listADT;
 *                       Usar antes y por nica vez previo al resto de las operaciones del ADT.
 *              
 * Precondicin:          Funcin de comparacin, copiado y borrado no nulas. tamao elemento > 0.
-* Postcondicin: Lista creada.
+* Postcondicin: 	Lista creada.
 */
 
-listADT Newlist(fn compara, fn copyElement, fnfree freeElement, int tam);
+listADT Newlist(fn compara, fnfree freeElement);
 
 /*
 * Funcion               InsertADT
@@ -48,7 +48,7 @@ listADT Newlist(fn compara, fn copyElement, fnfree freeElement, int tam);
 *                       con la memoria, no inserta el elemento y retorna.
 *
 * Precondicin:          Lista vlida previamente creada, puntero al elemento vlido.
-* Postcondicin: Lista con el nuevo elemento insertado (de no estar repetido).
+* Postcondicin: 	Lista con el nuevo elemento insertado (de no estar repetido).
 */
 
 int Insert(listADT lista, listElementT dato);
@@ -77,7 +77,7 @@ int Delete(listADT lista, listElementT dato);
 *                       en caso contrario.
 *
 * Precondicin:          lista vlida previamente creada. Funcin de liberacin no nula.
-* Postcondicin: lista invariante.
+* Postcondicin: 	lista invariante.
 */
 
 int listIsEmpty(listADT lista);
@@ -91,7 +91,7 @@ int listIsEmpty(listADT lista);
 *                       en caso contrario.
 *
 * Precondicin:          lista previamente creada.
-* Postcondicin: lista invariante.
+* Postcondicin: 	lista invariante.
 */
 
 int ElementBelongs(listADT lista, listElementT dato);
@@ -104,7 +104,7 @@ int ElementBelongs(listADT lista, listElementT dato);
 *                       conjuntamente con GetDataADT.
 *
 * Precondicin:          lista previamente creada.
-* Postcondicin: Prximo nodo que se accede con GetDataADT -> el primero.
+* Postcondicin: 	Proximo nodo que se accede con GetDataADT -> el primero.
 */
 
 void SetBegin(listADT lista);
@@ -127,10 +127,10 @@ void SetBegin(listADT lista);
 *                       por el usuario del tamao del elemento donde se dejar el valor del nodo.
 *
 * Precondicin:          lista no vaca y vlida
-* Postcondicin: lista invariante.
+* Postcondicin: 	lista invariante.
 */
 
-int GetData(listADT lista, listElementT element);
+int GetData(listADT lista, listElementT * element);
 
 /*
 * Funcion:              FreeListADT
@@ -145,3 +145,23 @@ int GetData(listADT lista, listElementT element);
 void FreeList(listADT lista);
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
