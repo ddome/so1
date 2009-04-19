@@ -161,10 +161,10 @@ FileAdd( fileT file, byte *data )
       return __ERROR_APPLICATION__;
     }
     //Armo el archivo con la informacion que llego
-    fwrite(data,sizeof(byte),GetSize(file),fptr);
-    printf("%d\n",GetSize(file));		
+    fwrite(data,sizeof(byte),GetSize(file),fptr);		
 
-    
+    fclose(fptr);    
+
     return OK;
 }
 
