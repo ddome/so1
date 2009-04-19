@@ -11,6 +11,7 @@
 #include "Session.h"
 #include "CallApp.h"
 #include "../App/fileHandler.h"
+#include "../Transport/OutputPipe.h"
 
 /* Funciones generales */
 
@@ -247,12 +248,16 @@ CallTransferDir(session_t * dataPtr)
 	string dirPath;
 	string userName;
 	int nfiles;
+	string aux;
     
 	dirPath  = (*dataPtr).data;
 	userName = (*dataPtr).msg;
 	
 	/* armo el paquete respuesta */	
 	(*dataPtr).opCode = SR_DIR_TRANS;
+	aux = Concat(SERVER_PATH,dirPath);
+	strcpy((*dataPtr).msg,aux);
+	free(aux);
 	
 	if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
 		return ERROR;
@@ -279,7 +284,7 @@ CallDirReq(session_t *dataPtr)
     userName = (*dataPtr).msg;
 
     (*dataPtr).opCode = SR_DIR_REQ_OK;
-	usersxdir = GetCantUsersLinkToDir(dirPath); 
+    usersxdir = GetCantUsersLinkToDir(dirPath); 
 	
     return usersxdir;
 }	

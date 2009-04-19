@@ -11,6 +11,7 @@
 #include "Session.h"
 #include "CallApp.h"
 #include "../App/fileHandler.h"
+#include "../Transport/OutputPipe.h"
 
 /* Funciones generales */
 
@@ -127,6 +128,8 @@ GetDirData(byte *data, fileT **fileListPtr, byte ***dataBufferPtr)
 		}
 		memmove( dataBuffer[i], data + pos,  GetSize(fileList[i]));
 		pos += GetSize(fileList[i]);
+
+
 	}
 	
 	

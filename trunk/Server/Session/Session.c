@@ -40,8 +40,8 @@ ProcessRequest(byte ** data, size_t * size)
 	session_t pack;
 	process_t process;           
 	pack  = GetSessionData(*data);
-				sprintf(a,"En process %d",(int)(pack.pid));
-			WritePrompt(a);
+	sprintf(a,"En process %d",(int)(pack.pid));
+	WritePrompt(a);
 
 	process = ProcessCall( &pack );
 	
@@ -76,8 +76,8 @@ SendDirPack(process_t process)
       free(userName);
     }
 	
-	session.dataSize = strlen(process.dir) + 1;
-	session.data = malloc(session.dataSize);
+    session.dataSize = strlen(process.dir) + 1;
+    session.data = malloc(session.dataSize);
     strcpy(session.data, process.dir);
 	
     CallTransferDir(&session);
@@ -127,22 +127,22 @@ ProcessCall( session_t *data )
 
 		case CL_DIR_REM:			
 			p.status = CallDirRem(*data);
-            p.opCode = __NOT_SPAWN__;
+           		p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_ADD:			
 			p.status = CallFileAdd(*data);
-            p.opCode = __NOT_SPAWN__;
+            		p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_FIL_REM:			
 			p.status = CallFileRem(*data);
-            p.opCode = __KILL_DIR__;
+            		p.opCode = __KILL_DIR__;
 			break;
 			
 		case CL_FIL_MOD:			
 			p.status = CallFileMod(*data);
-            p.opCode = __NOT_SPAWN__;
+            		p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_DIR_LST:		
@@ -159,13 +159,13 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_DIR_CON:
-	        fopen("llegooop 5", "w+");
-            (*data).opCode = SR_DIR_CON_OK;
-            p.opCode = __SPAWN_DEMAND__;  
-            p.pid = (*data).pid; 
-            sscanf((*data).senderID, "%d", &(p.status));        
-            strcpy(p.dir, (*data).data);
-            break;	
+		        fopen("llegooop 5", "w+");
+          		(*data).opCode = SR_DIR_CON_OK;
+           	 	p.opCode = __SPAWN_DEMAND__;  
+            		p.pid = (*data).pid; 
+            		sscanf((*data).senderID, "%d", &(p.status));        
+            		strcpy(p.dir, (*data).data);
+            		break;	
 			
 		case CL_EXT:	
 			p.status = CallClientExit(*data);

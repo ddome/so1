@@ -21,8 +21,11 @@ FileAdd( fileT file, byte *data )
 		WritePrompt("No se pudo crear el archivo");
 		return ERROR;
 	}
+
 	//Armo el archivo con la informacion que llego
 	fwrite(data,sizeof(byte),GetSize(file),fptr);
+
+	fclose(fptr);
 		
 	return OK;
 }
@@ -48,11 +51,18 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 	int i;
 	int size;
 
+	if( !DirExists(dirName) ) {
+		if( CreateDir(dirName) == ERROR ){
+			WritePrompt("Error al crear un directorio");
+			return ERROR;
+		}
+	}	
+
 	for( i=0; i < nfiles; i++ ) {
 		
 		if( !DirExists(files[i].path) ) {
 			if( CreateDir(files[i].path) == ERROR ){
-				WritePrompt("Error al crear el directorio");
+				WritePrompt("Error al crear un directorio");
 				return ERROR;
 			}
 		}

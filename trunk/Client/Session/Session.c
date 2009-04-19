@@ -389,6 +389,7 @@ MakeFilePack( fileT file, byte *data, byte **dataBuffer )
 
 /* funciones de debugueo */
 
+
 static int
 GetFileListSize( int nfiles, fileT *fileList )
 {
