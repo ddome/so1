@@ -135,12 +135,12 @@ inotifyWatcher(process_t process)
 
     while(signal == __INOTIFY_NO_DATA__)
     {
+      usleep(__POOL_WAIT__);
       signal = ReadINotifyMsg();
     }
     
     /* Se inicia inotify. 
     */
-
     fd = inotify_init();
     if (fd < 0)
     {
@@ -392,19 +392,23 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
 {
     fileT file;
     char * path, * fileName;
+    char a[20];
     path = GetPathFromBackup(resp->path);
     fileName = GetFileName(resp->path);
-    WritePrompt(path);
-    WritePrompt(fileName);
+
+    sprintf(a, "%d", resp->opCode);
+    WritePrompt(a);
+
     while(InitCommunication(key) == ERROR)
       usleep(__POOL_WAIT__);
-    
+
     file = NewFileT(path, fileName);
-        fopen("antesdesend", "w+");
-    if(resp->opCode == BORRAR)
+
+  //  if(resp->opCode == BORRAR)
+    //    fopen("opcpdeborrar","w+");
         return SendFileRemPack( name, file, pid );
-    else
-        return OK;
+    //else
+      //  return OK;
 }
 
 

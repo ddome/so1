@@ -286,9 +286,9 @@ int StartDemandSubServer(process_t process)
 			if( (data = GetRequest()) != NULL)
 			{
 				p = ProcessRequest(&data, &size);
-                if(p.status != ERROR)
-                  while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR)
-                    ;
+                                if(p.status != ERROR)
+                                while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR)
+                                    usleep(__POOL_WAIT__);
 				requestExists=TRUE;
 			}
 		}
@@ -365,12 +365,9 @@ StartInotifySubServer(process_t process)
     char * aux;
     int status;
     aux = Concat(BK_PATH,process.dir);
-    
-    do
-    {
-	    status = inotifyWatcher(process);
-    }while(status == ERROR);
-    
+
+    status = inotifyWatcher(process);
+
     free(aux);
-    return OK;
+    return status;
 }

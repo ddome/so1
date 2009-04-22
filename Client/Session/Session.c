@@ -16,7 +16,7 @@ static process_t ProcessCall( session_t *data );
 static size_t MakeSessionData( session_t data, byte ** pack );
 static session_t GetSessionData( byte *data );
 static int MakeFilePack( fileT file, byte *data, byte **dataBuffer );
-
+static int MakeFileRemPack( fileT file, byte **dataBuffer );
 /* Functions */
 
 int
@@ -166,14 +166,13 @@ SendFileRemPack( string userName, fileT file, pid_t pid )
 	session_t pack;
 	byte *data;
 	size_t size;
-    pack.pid = pid;
+        pack.pid = pid;
 	pack.opCode = CL_FIL_REM;
 	strcpy(pack.msg,userName);
-	pack.dataSize = MakeFilePack( file, NULL, &pack.data );
+	pack.dataSize = MakeFileRemPack( file, &pack.data );
 
 	size = MakeSessionData(pack, &data);
-	WritePrompt("enviado papaaaaaaaaaaaaaaaaaa");
-    fopen("enviado", "w+");
+        fopen("mandandorem","w+");
 	return WriteIPC(data, size);
 }
 
@@ -402,6 +401,18 @@ MakeFilePack( fileT file, byte *data, byte **dataBuffer )
 	return (GetSize(file) + sizeof(fileT));
 }
 
+
+static int
+MakeFileRemPack( fileT file, byte **dataBuffer )
+{
+	if( (*dataBuffer=malloc(sizeof(fileT))) == NULL ) {
+		return ERROR;
+	}
+	
+	memmove(*dataBuffer, &file, sizeof(fileT));
+	
+	return (sizeof(fileT));
+}
 
 /* funciones de debugueo */
 

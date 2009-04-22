@@ -61,7 +61,7 @@ char
 ReadINotifyMsg(void)
 {
     int status = OK;
-    char msg;
+    char msg = __INOTIFY_NO_DATA__;
 
     status = read(rdFifo_FD, &msg, sizeof(char));
    
