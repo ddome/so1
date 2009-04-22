@@ -24,6 +24,25 @@ typedef union _semun{
 struct sembuf p1={0,-1,0}, p2={1,-1,0},p3={2,-1,0}, p4={3,-1,0};
 struct sembuf v1={0,1,0}, v2={1,1,0},v3={2,1,0}, v4={3,1,0};
 
+static byte *
+GetBlock(byte *org, size_t size, int index)
+{
+	byte *block=NULL;
+	
+	if( (block=malloc(size*sizeof(byte))) == NULL ) {
+		return NULL;
+	}
+	
+	return memmove(block, org+index*size, size);
+}
+
+static int
+GetTotalPackets(size_t size)
+{
+	return (int)(size / PACKET_SIZE + 1) ;
+}
+
+
 static int
 GetSem(key_t key)
 {
@@ -98,10 +117,47 @@ InitIPC(key_t key)
 int 
 WriteIPC(void * data, size_t size)
 {
+    int status,i,bytesLeft,npacket;
+    byte *block;
     headerIPC_t header;
-    header.size=size;
-    header.nPacket=1;
     
+    bytesLeft = size;
+    npacket=1;
+    
+    header.nPacket = 1;
+    header.size = size;
+    header.totalPackets = GetTotalPackets(size);
+    
+    for( i=0; i < header.totalPackets; i++ )
+    {
+	    header.nPacket = npacket;
+	    header.size = PACKET_SIZE;
+	    printf("totalPackets= %d\n",header.totalPackets );
+	    memcpy(dataAux2,&header,sizeof(headerIPC_t));
+	    semop(semid,&v3,1);
+	    semop(semid,&p4,1);
+	
+	    if(status != ERROR)
+	    {
+		    block = GetBlock(data, header.size, npacket-1);
+		    memcpy(dataAux2,block,header.size);
+		    semop(semid,&v3,1);
+		    semop(semid,&p4,1);
+		    printf("status=%d\n",status);
+		    free(block);
+		    if( status == ERROR )
+			return ERROR;
+	    }
+	    else
+		return ERROR;
+	    bytesLeft -= PACKET_SIZE;
+	    npacket++;
+    }
+    printf("Enviados: %d\n",npacket-1);
+
+
+    return (status<0)?ERROR:OK;
+  /*
     memcpy(dataAux2,&header,sizeof(headerIPC_t));
     semop(semid,&v3,1);
     semop(semid,&p4,1);
@@ -109,54 +165,68 @@ WriteIPC(void * data, size_t size)
     memcpy(dataAux2,data,size);
     semop(semid,&v3,1);
     semop(semid,&p4,1);
-    return OK;
+    return OK;*/
 }
 
 byte*
 ReadIPC(void)
 {
-    int status=OK;
+    int status = OK,pos,nPacketsRead;
     headerIPC_t header;
-    byte *data;
-    semop(semid,&p1,1);
-    
-    if( memcpy(&header,dataAux1,sizeof(headerIPC_t)) != &header )
-	return NULL;
-    semop(semid,&v2,1);
-
-    if(status > 0)
-    {
-	printf("\n\npaquete numero: %d\n", header.nPacket);
-	if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
-	{
-	    return NULL;
-	}   
+    byte * data=NULL;
+    byte *aux;
+    int prueba=0;
+    nPacketsRead=0;
+    pos=0;
+    do{
 	semop(semid,&p1,1);
-	
-	memcpy(data,dataAux1,header.size * sizeof(byte));
+	memcpy(&header,dataAux1,sizeof(headerIPC_t));
 	semop(semid,&v2,1);
-	printf("Lei.\n");
+
 	if(status > 0)
 	{
-	    status = OK;
-	    printf("recibidos: %d\n", recibidos);
-	    recibidos++;
+	    printf("Aca 3\n");
+	    data = realloc(data, pos + header.size );
+	    aux = malloc(header.size);
+	    printf("Aca 4\n");
+	    
+	    semop(semid,&p1,1);
+	    memcpy(aux,dataAux1,header.size);
+	    semop(semid,&v2,1);
+
+	    printf("Aca 5\n");
+	    memmove(data+pos, aux, header.size);
+	    printf("Aca 6\n");
+	    pos += header.size;
+	    printf("Aca 7\n");
+	    nPacketsRead++;
+	    prueba=1;
+	    printf("Aca 8\n");
+	    if(status > 0)
+	    {
+		status = OK;
+		recibidos++;
+	    }
+	    else
+	    {
+		status = ERROR;
+	    }			  
 	}
 	else
 	{
-	    return NULL;
-	}
-    }
-    else
-    {
-	status = ERROR;
-    }
+	    status = ERROR;
+	}	
+    }while( status != ERROR && nPacketsRead < header.totalPackets );
+    if(prueba)
+	printf("Sali\n");
+    if(nPacketsRead!=0)
+	printf("recibidos: %d\n", nPacketsRead);
     return status == ERROR ? NULL: data ;
 }
 
 void
 CloseIPC(void)
 {
-    return ;
+    return;
 }
 
