@@ -6,7 +6,7 @@ int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 static int recibidos=0;
 
-#define MAX_SIZE 2048
+#define MAX_SIZE 2056
 #define SERVER_MTYPE 1
 #define CLIENT_MTYPE 3
 
@@ -15,13 +15,31 @@ struct mymsg{
     char mtext[MAX_SIZE];
 };
 
+static byte *
+GetBlock(byte *org, size_t size, int index)
+{
+	byte *block=NULL;
+	
+	if( (block=calloc(size,sizeof(byte))) == NULL ) {
+		return NULL;
+	}
+	
+	return memmove(block, org+index*size, size);
+}
+
+static int
+GetTotalPackets(size_t size)
+{
+	return (int)(size / PACKET_SIZE + 1) ;
+}
+
 int
 InitIPC(key_t key)
 {
     /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
     if(key==0)
 	key=ftok("/",key);
-    queue_id=msgget(key,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    queue_id=msgget(key,__DEFAULT_FIFO_MODE__);
     if( queue_id<0 )
     {
 	    return ERROR;
@@ -36,24 +54,38 @@ InitIPC(key_t key)
 int 
 WriteIPC(void * data, size_t size)
 {
-    int status;
+    int status,i,bytesLeft,npacket;
     struct mymsg w_data;
+    byte *block;
     headerIPC_t header;
-    header.nPacket = 1;
-    header.size = size;
-    /*El size del dato a almacenar no puede ser mayor del tamaño que se puede
-      almacenar en la estructura.*/
-    if(size>MAX_SIZE)
-	return ERROR;
-    w_data.mtype=(long)CLIENT_MTYPE;
-    memcpy(&(w_data.mtext),&header,sizeof(headerIPC_t));
-    status=msgsnd(queue_id,&w_data,sizeof(headerIPC_t),0);
-    w_data.mtype=(long)CLIENT_MTYPE;
-    memcpy(&(w_data.mtext),data,size);
-    /*El envio del mensaje espera a que se liberen recursos para poder efectuar la
-      operacion en caso de que los recursos no esten disponibles.*/
-    status=msgsnd(queue_id,&w_data,size,0);
     
+    bytesLeft = size;
+    npacket=1;
+
+    header.totalPackets = GetTotalPackets(size);
+    
+    for( i=0; i < header.totalPackets; i++ )
+    {
+	    header.nPacket = npacket;
+	    header.size = PACKET_SIZE;
+	    w_data.mtype=(long)CLIENT_MTYPE;
+	    memcpy(w_data.mtext,&header,sizeof(headerIPC_t));
+	    status=msgsnd(queue_id,&w_data,sizeof(headerIPC_t),0);
+	
+	    if(status != ERROR)
+	    {
+		    block = GetBlock(data, header.size, npacket-1);
+		    w_data.mtype=(long)CLIENT_MTYPE;
+		    memcpy(w_data.mtext,block,header.size);
+		    status=msgsnd(queue_id,&w_data,header.size,0);
+		    free(block);
+		    if( status == ERROR )
+			return ERROR;
+	    }
+	    bytesLeft -= PACKET_SIZE;
+	    npacket++;
+    }
+    printf("Enviados: %d\n",npacket-1);
 
     return (status<0)?ERROR:OK;
 }
@@ -61,41 +93,53 @@ WriteIPC(void * data, size_t size)
 byte*
 ReadIPC(void)
 {
+    int status = OK,pos,nPacketsRead;
     struct mymsg w_data;
-    int status=OK;
     headerIPC_t header;
-    byte *data;
-
-    status=msgrcv(queue_id,&w_data,sizeof(headerIPC_t),(long)SERVER_MTYPE,0);
-    printf("msgrcv1: %d\n",status);
-    if(status > 0)
-    {
-	memcpy(&header,w_data.mtext,sizeof(headerIPC_t));
-	printf("\n\npaquete numero: %d\n", header.nPacket);
-
-	if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
-	{
-	    return NULL;
-	}   
-
-	status=msgrcv(queue_id,&w_data,header.size,(long)SERVER_MTYPE,0);
-	printf("msgrcv2: %d\n",status);
+    byte * data=NULL;
+    byte *aux;
+    int prueba=0;
+    nPacketsRead=0;
+    pos=0;
+    printf("Descargando paquetes...");
+    do{
+	status=msgrcv(queue_id,&w_data,sizeof(headerIPC_t),(long)SERVER_MTYPE,0);
+	
 	if(status > 0)
 	{
-	    memcpy(data,w_data.mtext,header.size * sizeof(byte));
-	    status = OK;
-	    printf("recibidos: %d\n", recibidos);
-	    recibidos++;
+	    memcpy(&header,w_data.mtext,sizeof(headerIPC_t));
+	    printf("totalPackets= %d\n",header.totalPackets );
+	    data = realloc(data, pos + header.size );
+	    aux = malloc(header.size);
+	    
+	    status=msgrcv(queue_id,&w_data,header.size,(long)SERVER_MTYPE,0);
+	    memcpy(aux,w_data.mtext,header.size);
+	    
+	    memmove(data+pos, aux, header.size);
+	    pos += header.size;
+	    nPacketsRead++;
+	    prueba=1;
+	    if(status > 0)
+	    {
+		status = OK;
+		recibidos++;
+	    }
+	    else
+	    {
+		status = ERROR;
+	    }			  
 	}
 	else
 	{
 	    status = ERROR;
-	}
-    }
+	}	
+    }while( status != ERROR && nPacketsRead < header.totalPackets );
+    if(prueba)
+	printf("Sali\n");
+    if(nPacketsRead!=0)
+	printf("recibidos: %d\n", nPacketsRead);
     else
-    {
-	status = ERROR;
-    }
+	getchar();
     return status == ERROR ? NULL: data ;
 }
 

@@ -84,33 +84,34 @@ WriteIPC(void * data, size_t size)
 {
     int status;
     headerIPC_t header;
-	byte *block;
-	int bytesLeft;	
-	
-	header.totalPackets = GetTotalPackets(size);
-	
-	int npacket   = 1;
-	bytesLeft = size;
-	int i;
-	
-	for( i=0; i < header.totalPackets; i++ ) {
-		header.nPacket = npacket;
-		header.size = PACKET_SIZE;
-		
-		status = write(writeFifo_FD, &header, sizeof(headerIPC_t));
-		if(status != ERROR)
-		{
-			block = GetBlock(data, header.size, npacket-1);
-			status = write(writeFifo_FD,block, header.size);
-			free(block);
-			
-			if( status == ERROR )
-				return ERROR;
-		}
-		
-		bytesLeft -= PACKET_SIZE;
-		npacket++;
-	}
+    byte *block;
+    int bytesLeft;	
+    
+    header.totalPackets = GetTotalPackets(size);
+    
+    int npacket   = 1;
+    bytesLeft = size;
+    int i;
+    
+    for( i=0; i < header.totalPackets; i++ )
+    {
+	    header.nPacket = npacket;
+	    header.size = PACKET_SIZE;
+	    
+	    status = write(writeFifo_FD, &header, sizeof(headerIPC_t));
+	    if(status != ERROR)
+	    {
+		    block = GetBlock(data, header.size, npacket-1);
+		    status = write(writeFifo_FD,block, header.size);
+		    free(block);
+		    
+		    if( status == ERROR )
+			    return ERROR;
+	    }
+	    
+	    bytesLeft -= PACKET_SIZE;
+	    npacket++;
+    }
 	
     return status;
 }
