@@ -134,12 +134,7 @@ ReadIPC(void)
 	    status = ERROR;
 	}	
     }while( status != ERROR && nPacketsRead < header.totalPackets );
-    if(prueba)
-	printf("Sali\n");
-    if(nPacketsRead!=0)
-	printf("recibidos: %d\n", nPacketsRead);
-    else
-	getchar();
+
     return status == ERROR ? NULL: data ;
 }
 
