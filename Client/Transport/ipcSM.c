@@ -70,7 +70,6 @@ InitIPC(key_t key)
     shmid2=shmget(keyAux2,MAX_SIZE, __DEFAULT_FIFO_MODE__);
     if( shmid1==-1 || shmid2==-1 )
     {
-	printf("Hola 1\n");
 	return ERROR;
     }
     dataAux1=shmat(shmid1,NULL,0);

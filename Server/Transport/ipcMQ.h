@@ -22,6 +22,8 @@
 
 #define __DEFAULT_MQ_MODE__ 0777
 
+#define PACKET_SIZE 1000
+
 /* Funciones
 */
 

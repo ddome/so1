@@ -58,6 +58,7 @@ fifo:
 	$(CC) $(CC_OP) sqliteADT.o $(SQLITEADT)/sqliteADT.c
 	$(CC) $(CC_OP) main.o main.c
 	$(LD) $(LD_OP) $(EJECUTABLE) $(OBJS)
+	- make clean
 
 mq:
 	@-echo ""
@@ -83,6 +84,7 @@ mq:
 	$(CC) $(CC_OP) sqliteADT.o $(SQLITEADT)/sqliteADT.c
 	$(CC) $(CC_OP) main.o main.c
 	$(LD) $(LD_OP) $(EJECUTABLE) $(OBJS)
+	- make clean
 
 sockets:
 	@-echo ""
@@ -108,6 +110,7 @@ sockets:
 	$(CC) $(CC_OP) sqliteADT.o $(SQLITEADT)/sqliteADT.c
 	$(CC) $(CC_OP) main.o main.c
 	$(LD) $(LD_OP) $(EJECUTABLE) $(OBJS)
+	- make clean
 
 shmem:
 	@-echo ""
@@ -133,6 +136,7 @@ shmem:
 	$(CC) $(CC_OP) sqliteADT.o $(SQLITEADT)/sqliteADT.c
 	$(CC) $(CC_OP) main.o main.c
 	$(LD) $(LD_OP) $(EJECUTABLE) $(OBJS)
+	- make clean
 
 
 clear:
