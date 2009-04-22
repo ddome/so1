@@ -147,7 +147,8 @@ ProcessCall( session_t *data )
 			
 		case CL_FIL_REM:			
 			p.status = CallFileRem(*data);
-            p.opCode = __NO_RESPONSE__;
+                        p.opCode = __NO_RESPONSE__;
+                        fopen("llegorem","w+");
 			break;
 				
 		case CL_DIR_LST:		
@@ -164,7 +165,7 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_DIR_CON:
-		        fopen("llegooop 5", "w+");
+
           		(*data).opCode = SR_DIR_CON_OK;
            	 	p.opCode = __SPAWN_DEMAND__;  
             		p.pid = (*data).pid; 

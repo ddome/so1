@@ -35,5 +35,6 @@ typedef struct
     pid_t pid;
     int status;
 }process_t;
+
 #endif
 

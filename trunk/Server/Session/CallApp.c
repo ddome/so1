@@ -137,6 +137,12 @@ GetFileData(session_t data,fileT *filePtr, byte *fileData)
 	}	
 }	
 
+void
+GetFileRemData(session_t data,fileT *filePtr)
+{
+	memmove(filePtr, data.data, sizeof(fileT) );
+}
+
 int 
 CallFileAdd(session_t data)
 {
@@ -185,7 +191,7 @@ CallFileRem(session_t data)
 	string user; //Usado solo para agregar a los Logs
 	
 	user = data.msg;	
-	GetFileData(data,&file,NULL);
+	GetFileRemData(data,&file);
 	LogAction(user, GetPath(file), "Del");
 	
 	return FileRem(file);	
