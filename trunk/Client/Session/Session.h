@@ -60,6 +60,7 @@
 #define CL_DIR_LST 14
 #define CL_EXT     15
 #define CL_DIR_CON 21
+#define CL_FIL_TRANSFER 26
 
 
 /* Paquete de session */
@@ -95,5 +96,7 @@ int SendDirReq( string userName, pid_t pid, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );
 int SendDirRem( string userName, pid_t pid, string dirName );
+
+int SendFileTransferSignal( string userName, fileT file, byte *dataBuffer );
 
 #endif

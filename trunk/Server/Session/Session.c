@@ -127,24 +127,29 @@ ProcessCall( session_t *data )
 
 		case CL_DIR_REM:			
 			p.status = CallDirRem(*data);
-           		p.opCode = __NOT_SPAWN__;
+           		p.opCode = __NO_RESPONSE__;
+			break;
+			
+		case CL_FIL_TRANSFER:			
+			p.status = OK;
+			p.opCode = __NOT_SPAWN__; /* Aca tiene que crear el hijo para la transferencia */
 			break;
 			
 		case CL_FIL_ADD:			
 			p.status = CallFileAdd(*data);
-            		p.opCode = __NOT_SPAWN__;
-			break;
-			
-		case CL_FIL_REM:			
-			p.status = CallFileRem(*data);
-            		p.opCode = __KILL_DIR__;
+			p.opCode = __NO_RESPONSE__;
 			break;
 			
 		case CL_FIL_MOD:			
 			p.status = CallFileMod(*data);
-            		p.opCode = __NOT_SPAWN__;
+            p.opCode = __NO_RESPONSE__;
 			break;
 			
+		case CL_FIL_REM:			
+			p.status = CallFileRem(*data);
+            p.opCode = __NO_RESPONSE__;
+			break;
+				
 		case CL_DIR_LST:		
 			p.pid = (*data).pid;	
 			p.status = CallDirList(data);
@@ -165,7 +170,7 @@ ProcessCall( session_t *data )
             		p.pid = (*data).pid; 
             		sscanf((*data).senderID, "%d", &(p.status));        
             		strcpy(p.dir, (*data).data);
-            		break;	
+			break;	
 			
 		case CL_EXT:	
 			p.status = CallClientExit(*data);

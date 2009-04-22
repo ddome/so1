@@ -117,15 +117,15 @@ SendFileAddPack( string userName, fileT file, byte *dataBuffer )
 {
 	session_t pack;
 	byte *data;
+	size_t size;
 	
 	pack.opCode = CL_FIL_ADD;
 	strcpy(pack.msg,userName);
+	/* Armo el paquete con la informacion del file a mandar */
 	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
 	
-	MakeSessionData(pack, &data);
-	
-	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
-	
+	size = MakeSessionData(pack, &data);
+	return WriteIPC(data, size);
 }
 
 int 
@@ -133,16 +133,32 @@ SendFileModPack( string userName, fileT file, byte *dataBuffer )
 {
 	session_t pack;
 	byte *data;
-	        size_t size;
+	size_t size;
 
 	pack.opCode = CL_FIL_MOD;
 	strcpy(pack.msg,userName);
+	/* Armo el paquete con la informacion del file a mandar */
 	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
 	
-	MakeSessionData(pack, &data);
-	
-	return OK; //LLAMARTRANSPORTE( MakeSessionData(pack) );
+	size = MakeSessionData(pack, &data);
+	return WriteIPC(data, size);
 }
+
+int
+SendFileTransferSignal( string userName, fileT file, byte *dataBuffer )
+{
+	session_t pack;
+	byte *data;
+	size_t size;
+	
+	pack.opCode = CL_FIL_TRANSFER;
+	strcpy(pack.msg,userName);
+	pack.dataSize = 0;
+		
+	size = MakeSessionData(pack, &data);
+	return WriteIPC(data, size);
+}
+
 
 int 
 SendFileRemPack( string userName, fileT file, pid_t pid )
