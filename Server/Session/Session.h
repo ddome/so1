@@ -62,6 +62,7 @@
 #define CL_DIR_LST 14
 #define CL_EXT     15
 #define CL_DIR_CON 21
+#define CL_FIL_TRANSFER 26
 
 /* Paquete de session */
 
