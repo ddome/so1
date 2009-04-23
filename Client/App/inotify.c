@@ -138,7 +138,9 @@ inotifyWatcher(process_t process)
       usleep(__POOL_WAIT__);
       signal = ReadINotifyMsg();
     }
-    
+    /* No reventemos el micro
+    */
+    usleep(500000);
     /* Se inicia inotify. 
     */
     fd = inotify_init();

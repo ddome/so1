@@ -193,7 +193,7 @@ CallFileRem(session_t data)
 	user = data.msg;	
 	GetFileRemData(data,&file);
 	LogAction(user, GetPath(file), "Del");
-	
+	data.opCode = SR_FIL_REM;
 	return FileRem(file);	
 }
 

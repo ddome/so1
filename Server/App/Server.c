@@ -105,7 +105,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __DIR_BROADCAST__:
                 status = DirBroadcastMsg(process, size, data);
                 break;
-			case __KILL_DIR__:
+	   case __KILL_DIR__:
 				status = KillDirProcess(process);
 				break;
             case __NO_RESPONSE__:
@@ -140,11 +140,10 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             {
              //   if(process.opCode == __SPAWN_DEMAND__)
              //       wait(&aux);
-                if(process.opCode!=__NO_RESPONSE__)
+                if( process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__)
                 {
                     returnValue = ProcessSendPack(&data, size);
                 }
-                    
             }
             break;
     }
@@ -170,10 +169,12 @@ int StartSubProcess(process_t process)
 	        returnValue = StartDirSubServer(process);
 	        break;
 	    case __SPAWN_DEMAND__:
-            returnValue = StartDemandSubServer(process);
+                returnValue = StartDemandSubServer(process);
+                returnValue = CHILD_RETURN;
 	        break;
         case __SPAWN_REC_DEMAND__:
             returnValue = StartDemandRecieveSubServer(process);
+                break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
 	    default:
@@ -205,7 +206,7 @@ int StartDirSubServer(process_t reqProcess)
         status = InitCommunication(keyDefault);
     }
     
-    while(status != __SHUT_DOWN__)
+    while(status != __SHUT_DOWN__ && status != CHILD_RETURN)
     {
         /* Se retorna al IPC default
         */
@@ -224,8 +225,7 @@ int StartDirSubServer(process_t reqProcess)
             free(aux);
             if((status = InitCommunication(keyClient)) > ERROR)
 	            status = AnalyzeOperation(process, data, size);
-
-               
+    
 	    }
 	    else
 	    {

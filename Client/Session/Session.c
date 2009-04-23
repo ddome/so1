@@ -172,7 +172,6 @@ SendFileRemPack( string userName, fileT file, pid_t pid )
 	pack.dataSize = MakeFileRemPack( file, &pack.data );
 
 	size = MakeSessionData(pack, &data);
-        fopen("mandandorem","w+");
 	return WriteIPC(data, size);
 }
 
@@ -287,6 +286,7 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_REM:
+                        fopen("llegobroad","w+");
 			p.status = CallFileRem(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;

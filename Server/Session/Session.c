@@ -33,21 +33,18 @@ byte * GetRequest(void)
 /*
 * ProcessRequest: Procesa los pedidos entrantes
 */
+
 process_t
 ProcessRequest(byte ** data, size_t * size)
 {
-	char a[20];
 	session_t pack;
 	process_t process;           
 	pack  = GetSessionData(*data);
-	sprintf(a,"En process %d",(int)(pack.pid));
-	WritePrompt(a);
 
 	process = ProcessCall( &pack );
 	
 	free(*data);
 	*size = MakeSessionData(pack, data);
-	//ret = WriteIPC(*data, size);
 	return process;
 }
 
@@ -69,7 +66,7 @@ SendDirPack(process_t process)
     byte * data;
 
     char * userName = ConvertPIDToUserName(process.pid);
-        
+
     if(userName != NULL)
     {
       strcpy(session.msg, userName);
@@ -78,12 +75,11 @@ SendDirPack(process_t process)
 	
     session.dataSize = strlen(process.dir) + 1;
     session.data = malloc(session.dataSize);
-    strcpy(session.data, process.dir);
-	
+    strcpy(session.data, process.dir);	
     CallTransferDir(&session);
-    
+
     size = MakeSessionData(session, &data);
-   
+
     return ProcessSendPack(&data, size);
 }
 
@@ -91,7 +87,7 @@ SendDirPack(process_t process)
 void
 GoodBye(void)
 {
-    
+
 }
 
 void ShutDown(void)
@@ -125,33 +121,34 @@ ProcessCall( session_t *data )
 			p.opCode = __NOT_SPAWN__;
 			break;
 
-		case CL_DIR_REM:			
+		case CL_DIR_REM:	
 			p.status = CallDirRem(*data);
            		p.opCode = __NO_RESPONSE__;
 			break;
 			
-		case CL_FIL_TRANSFER:			
+		case CL_FIL_TRANSFER:	
 			p.status = OK;
 			p.opCode = __NOT_SPAWN__; /* Aca tiene que crear el hijo para la transferencia */
 			break;
 			
-		case CL_FIL_ADD:			
+		case CL_FIL_ADD:	
 			p.status = CallFileAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
 			
-		case CL_FIL_MOD:			
+		case CL_FIL_MOD:	
 			p.status = CallFileMod(*data);
             p.opCode = __NO_RESPONSE__;
 			break;
 			
-		case CL_FIL_REM:			
-			p.status = CallFileRem(*data);
-                        p.opCode = __NO_RESPONSE__;
-                        fopen("llegorem","w+");
+		case CL_FIL_REM:
+			p.pid = (*data).pid;
+                        strcpy(p.dir, (*data).data);
+                        p.status = CallFileRem(*data);
+                        p.opCode = __DIR_BROADCAST__;
 			break;
 				
-		case CL_DIR_LST:		
+		case CL_DIR_LST:
 			p.pid = (*data).pid;	
 			p.status = CallDirList(data);
 			p.opCode = __NOT_SPAWN__;
