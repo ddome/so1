@@ -112,6 +112,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
                 break;
             case __SPAWN_DEMAND__:
                 status = SpawnSubProcess(process, size, data);
+                status = CHILD_RETURN;
                 break;
             case __NO_RESPONSE__:
                // free(data);
@@ -166,6 +167,7 @@ int StartSubProcess(process_t process)
 	        break;
 	    case __SPAWN_DEMAND__:
                 returnValue = StartDemandSubServer(process);
+                returnValue = CHILD_RETURN;
 	        break;
 	    case __SPAWN_INOTIFY__:
 		    returnValue = StartInotifySubServer(process);
@@ -222,7 +224,7 @@ int StartDirSubServer(process_t reqProcess)
 	}while(status <= ERROR);
 
 
-	while(status != __SHUT_DOWN__)
+	while(status != __SHUT_DOWN__ && status != CHILD_RETURN)
 	{
 		data = ReadRequest();
 
@@ -234,10 +236,13 @@ int StartDirSubServer(process_t reqProcess)
 		    status = InitCommunication(keyDefault);
 		    if(status > ERROR)
 			status = AnalyzeOperation(process, data, size);
-		    do
-		    {
-			status = InitCommunication(keyClient);
-		    } while (status <= ERROR);
+                    if(status != CHILD_RETURN)
+                    {
+                        do
+                        {
+                            status = InitCommunication(keyClient);
+                        } while (status <= ERROR);
+                    }
 		}
 		else
 		{
