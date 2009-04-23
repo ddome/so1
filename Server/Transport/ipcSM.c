@@ -2,7 +2,6 @@
 #include "ipcInterface.h"
 
 #define MAX_SIZE 1024
-#define ERR_HEADER ((headerIPC_t * )-1)
 #define ERR_DATA ((void * )-1)
 
 int IPCStarted = FALSE;
@@ -11,8 +10,8 @@ static int recibidos;
 static int shmid1=-1;
 static int shmid2=-1;
 static int semid=-1;
-void * dataAux1;
-void * dataAux2;
+static void * dataAux1;
+static void * dataAux2;
 
 
 typedef union _semun{
@@ -21,8 +20,8 @@ typedef union _semun{
     ushort * array;
 } semun;
 
-struct sembuf p1={0,-1,0}, p2={1,-1,0},p3={2,-1,0}, p4={3,-1,0};
-struct sembuf v1={0,1,0}, v2={1,1,0},v3={2,1,0}, v4={3,1,0};
+struct sembuf p1={0,-1,SEM_UNDO}, p2={1,-1,SEM_UNDO},p3={2,-1,SEM_UNDO}, p4={3,-1,SEM_UNDO};
+struct sembuf v1={0,1,SEM_UNDO}, v2={1,1,SEM_UNDO},v3={2,1,SEM_UNDO}, v4={3,1,SEM_UNDO};
 
 static byte *
 GetBlock(byte *org, size_t size, int index)
@@ -94,7 +93,7 @@ InitIPC(key_t key)
     }
     dataAux1=shmat(shmid1,NULL,0);
     dataAux2=shmat(shmid2,NULL,0);
-    if(dataAux1==ERR_HEADER || dataAux2==ERR_HEADER)
+    if(dataAux1==ERR_DATA || dataAux2==ERR_DATA)
     {
 	printf("Hola 2\n");
 	return ERROR;
@@ -133,16 +132,19 @@ WriteIPC(void * data, size_t size)
 	    header.nPacket = npacket;
 	    header.size = PACKET_SIZE;
 	    printf("totalPackets= %d\n",header.totalPackets );
+	    printf("Write 1\n");
 	    memcpy(dataAux2,&header,sizeof(headerIPC_t));
 	    semop(semid,&v3,1);
 	    semop(semid,&p4,1);
-	
+	    printf("Write 2\n");
 	    if(status != ERROR)
 	    {
 		    block = GetBlock(data, header.size, npacket-1);
+		    printf("Write 3\n");
 		    memcpy(dataAux2,block,header.size);
 		    semop(semid,&v3,1);
 		    semop(semid,&p4,1);
+		    printf("Write 4\n");
 		    printf("status=%d\n",status);
 		    free(block);
 		    if( status == ERROR )
@@ -185,23 +187,23 @@ ReadIPC(void)
 
 	if(status > 0)
 	{
-	    printf("Aca 3\n");
+	    printf("Read 3\n");
 	    data = realloc(data, pos + header.size );
 	    aux = malloc(header.size);
-	    printf("Aca 4\n");
+	    printf("Read 4\n");
 	    
 	    semop(semid,&p1,1);
 	    memcpy(aux,dataAux1,header.size);
 	    semop(semid,&v2,1);
 
-	    printf("Aca 5\n");
+	    printf("Read 5\n");
 	    memmove(data+pos, aux, header.size);
-	    printf("Aca 6\n");
+	    printf("Read 6\n");
 	    pos += header.size;
-	    printf("Aca 7\n");
+	    printf("Read 7\n");
 	    nPacketsRead++;
 	    prueba=1;
-	    printf("Aca 8\n");
+	    printf("Read 8\n");
 	    if(status > 0)
 	    {
 		status = OK;

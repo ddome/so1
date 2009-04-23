@@ -36,17 +36,17 @@ AddNewDir(int fd, char * pathAux,listADT list)
     dirWD_T * aux;
     char ** paths;
     
-    
+    printf("fd=(%d) - pathAux=(%s)\n",fd,pathAux);
     /*FALTA: Agregar a la estructura de busqueda*/
     wd = inotify_add_watch (fd, pathAux,PARAMS );
 
-    if(wd<0)
+    /*if(wd<0)
     {
 	if(errno==EACCES)
 	    printf("Read access to the given file is not permitted. \n");
 	else if(errno==EBADF)
 	    printf("The given file descriptor is not valid. . \n");
-    else if(errno==EFAULT)// 
+	else if(errno==EFAULT)
 	    printf("pathname points outside of the process's accessible address space.  \n");
 	else if(errno==EINVAL)
 	    printf("The given event mask contains no legal events; or fd is not an inotify file descriptor.  \n");
@@ -56,20 +56,20 @@ AddNewDir(int fd, char * pathAux,listADT list)
 	    printf("The user limit on the total number of inotify watches was reached or the kernel failed to allocate a needed resource.\n");
 	
 	return ERROR;
-    }
+    }*/
     aux=MakeDirWD(wd,pathAux);
     printf("WD %d\n",wd);
     Insert(list,aux);
     /*free(aux);*/
     cant=DirPathList(pathAux, &paths);
     /*free(pathAux);*/
-    for(i=0;i<cant;i++)
+    for(i=0;i<cant-1;i++)
     {
 	auxS=paths[i];
-        AddNewDir(fd,auxS ,list);
+	if(auxS!=NULL)
+	    AddNewDir(fd,auxS ,list);
         /*free(auxS);*/
     }
-    
     /*free(paths);*/
     return OK;
 }
@@ -155,15 +155,12 @@ inotifyWatcher(process_t process)
     pathAux=Concat(BK_PATH_CLIENT,process.dir);
     serverPath = Concat(bk_path, process.dir);
     key = ftok(serverPath, __DEFAULT_PID__);
-    
     ret=AddNewDir(fd,pathAux,list);
-    
     if(ret==ERROR)
     {
       close(fd);
       return ERROR;
     }
-
     while (1)
     {
         printf("Leo evento.\n");
@@ -181,11 +178,12 @@ inotifyWatcher(process_t process)
         
         /* Aviso al servidor de la modificacion
         */
-        ret = NotifyServer(process.pid, key, resp, name);
+	if(!error)
+	    ret = NotifyServer(process.pid, key, resp, name);
         
-	    if(!error)
-	        printf("%s - %s no se directorio\n",resp->path,resp->isDir?"SI":"NO");
-	    error=0;
+	if(!error)
+	    printf("%s - %s no se directorio\n",resp->path,resp->isDir?"SI":"NO");
+	error=0;
     }
     if(pathAux != NULL)
         free(pathAux);
@@ -208,8 +206,7 @@ print_mask_info ( unsigned int mask , int isDir,struct inotify_event * event,int
         break;
         case IN_ATTRIB:           	printf ("Metadata changed\n");
         break;
-        case IN_CLOSE_WRITE: 
-            printf ("File opened for writing was closed\n");
+        case IN_CLOSE_WRITE: 		printf ("File opened for writing was closed\n");
         break;
         case IN_CLOSE_NOWRITE:    	printf ("File not opened for writing was closed\n");
         break;
@@ -317,7 +314,9 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
     int isDir=0;
     if(resp==NULL)
 	return NULL;
+    WritePrompt("1");
     len = read (fd, buf, BUF_LEN);
+    WritePrompt("2");
     event = (struct inotify_event *) &buf[i];
     if((event->name)[0]!='.')
     {
@@ -326,7 +325,7 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 	    printf ("Error al leer evento.\n");
 	    return NULL;
 	}
-	
+	WritePrompt("3");
 	while (i < len)
 	{
 	    printf("Proceso evento.\n");   
@@ -338,7 +337,9 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 	    }
 	    aux=GetNewPath(event,list);
 	    printf("(%s)\n",aux);
+	    WritePrompt("4");
 	    ret=print_mask_info ( mask , isDir,event,fd,aux,list);
+	    WritePrompt("5");
 	    /*free(aux);*/
 	    pathAux=Concat(aux,"/");
 	    pathAux=Concat(pathAux,event->name);
@@ -354,28 +355,26 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 		printf ("name=%s\n", event->name);
 	    }
 	    
-	    if(*lastCookie==event->cookie && *lastMask==40 && mask==80)
+	    /*if(*lastCookie==event->cookie && *lastMask==40 && mask==80)
 	    {
-		/*PARA PONER RENAME*/
 	    }
 	    else if( *lastCookie==event->cookie && *lastMask==40 && mask!=80)
 	    {
-		/*PARA PONER RENAME*/
 	    }
 	    else
-	    {
-		if(ret==IN_MODIFY)
-		    resp->opCode=MODIFICAR;
-		else if(ret==IN_CREATE || ret==IN_MOVED_TO)
-		    resp->opCode=CREAR;
-		else if(ret==IN_DELETE || ret==IN_DELETE_SELF || ret==IN_MOVED_FROM)
-		    resp->opCode=BORRAR;
-		else
-		    resp->opCode=ERROR;
-		
-		resp->isDir=isDir;
-		strcpy(resp->path,pathAux);
-	    }
+	    {*/
+	    if(ret==IN_MODIFY)
+		resp->opCode=MODIFICAR;
+	    else if(ret==IN_CREATE || ret==IN_MOVED_TO)
+		resp->opCode=CREAR;
+	    else if(ret==IN_DELETE || ret==IN_DELETE_SELF || ret==IN_MOVED_FROM)
+		resp->opCode=BORRAR;
+	    else
+		resp->opCode=ERROR;
+	    
+	    resp->isDir=isDir;
+	    strcpy(resp->path,pathAux);
+	    /*}*/
 	    *lastCookie=event->cookie;
 	    *lastMask=mask;
 	    printf ("\n");
@@ -384,8 +383,10 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 	    isDir=0;
 	}
     }
-    resp->opCode=ERROR;
+    else
+	resp->opCode=ERROR;
 
+    WritePrompt("6");
     return resp;
 }
 
