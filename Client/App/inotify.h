@@ -25,8 +25,8 @@
 
 #define __DEFAULT_PID__ 0
 
-#define BK_PATH_CLIENT "/home/carlos/Desktop/so1/Client/backup/"
-
 int inotifyWatcher(process_t process);
+
+int InitNotify(void);
 
 #endif

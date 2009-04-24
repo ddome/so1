@@ -283,19 +283,18 @@ int
 CallDirReq(session_t *dataPtr)
 {
     int usersxdir;
-    string dirPath;
+    string dirName;
     string userName;
     
-    dirPath  = (*dataPtr).data;
+    dirName  = (*dataPtr).data;
     userName = (*dataPtr).msg;
 
-
     (*dataPtr).opCode = SR_DIR_REQ_OK;
-    usersxdir = GetCantUsersLinkToDir(dirPath); 
+    usersxdir = GetCantUsersLinkToDir(dirName); 
 	    char a[20];
-    sprintf(a,"%s %d",userName,usersxdir);
+    sprintf(a,"%s %d %s",userName,usersxdir,dirName);
     fopen(a,"w+");
-	UserAddDir(userName, dirPath);
+	UserAddDir(userName, dirName);
 	
     return usersxdir;
 }	

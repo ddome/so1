@@ -67,8 +67,7 @@ SendDirPack(process_t process)
 
     char * userName = ConvertPIDToUserName(process.pid);
 
-    if(userName != NULL)
-    {
+    if(userName != NULL){
       strcpy(session.msg, userName);
       free(userName);
     }

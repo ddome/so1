@@ -16,28 +16,27 @@ int SendDirPack(process_t process);
 int
 main(void)
 {	
-    int status;
-    status = InitTransport();
-    status = InitApplication();
-	status =  InitServerPath();
-	
-    InitPromptCommunication(getpid());
-    WritePrompt("afgafg\n");
-    printf("%s\n",ReadMessage());
+    int status[6];
+    int i;
 
-    if(status != ERROR)
-    {
-        status = StartListening();
-		if(status == ERROR)
-		{
-		    printf("ERROR");
-		    getchar();
-		}
+    status[0] =  InitTransport();
+    status[1] =  InitApplication();
+    status[2] =  InitServerPath();
+    status[3] =  InitNotify();
+    status[4] =  InitPromptCommunication(getpid());
+
+    for( i=0; i<5; i++ ) {
+	if( status[i] == ERROR ) {
+		WritePrompt("No se a podido inicializar la aplicacion");
+		return 0;
+	}
     }
-    else
-    {
-        fprintf(stderr, "No se ha podido inicializar la aplicacion.");
+
+    status[5] = StartListening();
+    if(status[5] == ERROR) {
+	WritePrompt("No se a podido inicializar la comunicacion");
     }
+   
     return 0;
 }
 
