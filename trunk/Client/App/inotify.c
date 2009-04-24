@@ -5,6 +5,7 @@
 #define IS_DIR_MASK 0x40000000
 #define PARAMS IN_DELETE | IN_DELETE_SELF | IN_CREATE | IN_MOVED_FROM | IN_MOVED_TO | IN_MODIFY
 
+char *bk_path_client;
 
 
 /*IN_MODIFY*/
@@ -152,7 +153,7 @@ inotifyWatcher(process_t process)
 
     /*Agregar directorio y subdirectorios al vigilador.
     */
-    pathAux=Concat(BK_PATH_CLIENT,process.dir);
+    pathAux=Concat(bk_path_client,process.dir);
     serverPath = Concat(bk_path, process.dir);
     key = ftok(serverPath, __DEFAULT_PID__);
     ret=AddNewDir(fd,pathAux,list);
@@ -416,8 +417,46 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
 }
 
 
+void 
+ReadBkPathClient(FILE *fd)
+{
+	int c;
+	int pos;
+	char *path;
 
+	path = malloc(150);	
 
+	pos=0;
+	while(fgetc(fd) != '\n');
+	while((c=fgetc(fd)) != '#') {
+		path[pos] = c;
+		pos++;
+	}
+
+	bk_path_client = path;
+}
+
+	
+	
+
+int
+InitNotify(void)
+{
+	FILE *fd;
+	int ret;
+
+	if( (fd=fopen("config","r")) == NULL ) {
+		WritePrompt("El archivo config es inexistente");
+		ret = ERROR;
+	}
+	else {
+		ReadBkPathClient(fd);
+		ret = OK;
+	}
+
+	return ret;
+}
+	
 
 
 

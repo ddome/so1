@@ -225,12 +225,8 @@ ReqFile( fileT file )
 
 int
 UserAddDir( string userName, string dirName )
-{
-	string dir;
-	dir = Concat(SERVER_PATH,dirName);
-    
-    int ret = RegisterDirToUser(dirName,userName);
-	free(dir);
+{    
+   	int ret = RegisterDirToUser(dirName,userName);
 	return ret;
 }
 
