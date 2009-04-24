@@ -227,11 +227,11 @@ ReqDir( string userName, string dirName, fileT **files, byte ***databuffer )
 {
     int nfiles;
     int i;
+    int ret;
     string dir;
-    
     dir = Concat(SERVER_PATH,dirName);
     
-    RegisterDirToUser(dirName,userName);
+    ret=RegisterDirToUser(dirName,userName);
     nfiles = DirFilesList(dir,files);
 	    
     (*databuffer) = malloc(sizeof(byte**)*nfiles);
