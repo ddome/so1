@@ -92,7 +92,7 @@ SendDirConectionSignal(  pid_t pid, string dir )
 	aux.data = dir;
 	size = MakeSessionData(aux, &data);
 	
-	return WriteIPC(data, size);
+	return WriteIPC(data, size)>0?OK:ERROR;
 }	
 	
 int 
@@ -109,7 +109,7 @@ SendNewClientSignal( string userName, pid_t pid )
 	
 	size = MakeSessionData(aux, &data);
 	
-	return WriteIPC(data, size);
+	return WriteIPC(data, size)>0 ? OK: ERROR ;
 }
 
 int 
@@ -156,7 +156,7 @@ SendFileTransferSignal( string userName, fileT file, byte *dataBuffer )
 	pack.dataSize = 0;
 		
 	size = MakeSessionData(pack, &data);
-	return WriteIPC(data, size);
+	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
 
@@ -172,7 +172,7 @@ SendFileRemPack( string userName, fileT file, pid_t pid )
 	pack.dataSize = MakeFileRemPack( file, &pack.data );
 
 	size = MakeSessionData(pack, &data);
-	return WriteIPC(data, size);
+	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
 int 
@@ -190,7 +190,7 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 	pack.pid = pid;
 
 	size = MakeSessionData(pack, &data);
-	return WriteIPC(data, size);
+	return WriteIPC(data, size)>0?OK:ERROR;
 }	
 
 int
@@ -206,7 +206,7 @@ SendDirListReq( string userName )
 	
 	size = MakeSessionData(pack, &data);
 
-	return WriteIPC(data, size);
+	return WriteIPC(data, size)?OK:ERROR;
 }
 
 int 
@@ -241,7 +241,7 @@ SendDirRem( string userName, pid_t pid, string dirName )
 	size = MakeSessionData(pack, &data);
 	pack = GetSessionData(data);
 	
-	return WriteIPC(data, size);		
+	return WriteIPC(data, size)?OK:ERROR;		
 }
 
 /* Static Functions */

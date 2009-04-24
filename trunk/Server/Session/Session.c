@@ -55,7 +55,7 @@ ProcessRequest(byte ** data, size_t * size)
 int   
 ProcessSendPack(byte ** data, size_t size)
 {
-    return WriteIPC(*data, size);
+    return WriteIPC(*data, size)>0?OK:ERROR;
 }
 
 int
@@ -138,7 +138,7 @@ ProcessCall( session_t *data )
 			
 		case CL_FIL_MOD:	
 			p.status = CallFileMod(*data);
-            p.opCode = __NO_RESPONSE__;
+                        p.opCode = __NO_RESPONSE__;
 			break;
 			
 		case CL_FIL_REM:

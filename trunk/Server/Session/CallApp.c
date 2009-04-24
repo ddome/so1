@@ -282,7 +282,7 @@ CallTransferDir(session_t * dataPtr)
 int 
 CallDirReq(session_t *dataPtr)
 {
-	int usersxdir;
+    int usersxdir;
     string dirPath;
     string userName;
     
@@ -292,7 +292,9 @@ CallDirReq(session_t *dataPtr)
 
     (*dataPtr).opCode = SR_DIR_REQ_OK;
     usersxdir = GetCantUsersLinkToDir(dirPath); 
-	
+	    char a[20];
+    sprintf(a,"%s %d",userName,usersxdir);
+    fopen(a,"w+");
 	UserAddDir(userName, dirPath);
 	
     return usersxdir;
