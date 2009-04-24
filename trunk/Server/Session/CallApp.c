@@ -289,8 +289,11 @@ CallDirReq(session_t *dataPtr)
     dirPath  = (*dataPtr).data;
     userName = (*dataPtr).msg;
 
+
     (*dataPtr).opCode = SR_DIR_REQ_OK;
     usersxdir = GetCantUsersLinkToDir(dirPath); 
+	
+	UserAddDir(userName, dirPath);
 	
     return usersxdir;
 }	
