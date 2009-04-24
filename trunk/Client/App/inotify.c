@@ -329,6 +329,7 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 	while (i < len)
 	{
 	    printf("Proceso evento.\n");   
+	    event = (struct inotify_event *) &buf[i];
 	    mask=event->mask;
 	    if((mask&IS_DIR_MASK)==IS_DIR_MASK)
 	    {
