@@ -153,6 +153,8 @@ int * PIDsLinkToDir(char * pathName);
 
 char * ConvertPIDToUserName(int pid);
 
+int UserAddDir( string userName, string dirName );
+
 #endif
 
 
