@@ -311,7 +311,7 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
     key_t key;
     int cantUsersInDir, i;
     int * userPidArray;
-    
+    string aux;
     /* Se obtienen la cantidad de usuarios conectados al directorio.
     ** Si hay 1 solo, no se manda broadcast, pues el unico que hay
     ** es el que hizo la modificacion del archivo en primera instancia.
@@ -339,10 +339,8 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             /* Se genera el key correspondiente al usuario, y se switchea 
             *  la comunicacion a ese canal.
             */
-            key = ftok(process.dir, userPidArray[i]);
-            char a[20];
-            sprintf(a, "key%d %d", i, key);
-            fopen(a,"w+");
+            key = ftok(aux = Concat(bk_path,process.dir), userPidArray[i]);
+            free(aux);
             do
             {
                 status = InitCommunication(key);
@@ -350,17 +348,17 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             
             /* Se envia el mensaje
             */
-            fopen("mandandoarchivo","w+");
             status = ProcessSendPack(&data, size);
         }
     }
 
     /* Antes de finalizar se vuelve al canal default de comunicación
     */
-    key = ftok(process.dir, __DEFAULT_PID__);
+    key = ftok(aux = Concat(bk_path,process.dir), __DEFAULT_PID__);
+    free(aux);
     status = InitCommunication(key);
     
-    return status;
+    return OK;
     
 }
 

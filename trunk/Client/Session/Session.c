@@ -288,7 +288,7 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_REM:
-                        fopen("llegobroad","w+");
+            fopen("llegobroad","w+");
 			p.status = CallFileRem(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
