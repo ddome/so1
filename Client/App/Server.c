@@ -195,6 +195,7 @@ int StartDirSubServer(process_t reqProcess)
     free(aux);
     keyClient = ftok(aux = Concat(bk_path,reqProcess.dir), reqProcess.pid);
     free(aux);
+
     while(status<=ERROR)
     {
         status = InitCommunication(keyDefault);
