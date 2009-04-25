@@ -112,7 +112,6 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
                 break;
             case __SPAWN_DEMAND__:
                 status = SpawnSubProcess(process, size, data);
-                status = CHILD_RETURN;
                 break;
             case __NO_RESPONSE__:
                // free(data);
@@ -164,6 +163,7 @@ int StartSubProcess(process_t process)
 	        break;	
 	    case __SPAWN_DIR__:
 	        returnValue = StartDirSubServer(process);
+            returnValue = CHILD_RETURN;
 	        break;
 	    case __SPAWN_DEMAND__:
                 returnValue = StartDemandSubServer(process);
@@ -195,7 +195,9 @@ int StartDirSubServer(process_t reqProcess)
     free(aux);
     keyClient = ftok(aux = Concat(bk_path,reqProcess.dir), reqProcess.pid);
     free(aux);
-
+    char a[100];
+    sprintf(a, "key %d", keyClient);
+    fopen(a, "w+");
     while(status<=ERROR)
     {
         status = InitCommunication(keyDefault);
@@ -219,37 +221,36 @@ int StartDirSubServer(process_t reqProcess)
     status = SendDirConectionSignal(reqProcess.pid, reqProcess.dir);
     if(status != ERROR)
     {
-	do
-	{
-	    status = InitCommunication(keyClient);
-	}while(status <= ERROR);
-
-
-	while(status != __SHUT_DOWN__ && status != CHILD_RETURN)
-	{
-		data = ReadRequest();
-
-		if(data != NULL)
-		{
-		    /* se manda a que sea procesado en la capa de sesion 
-		    */
-		    process = ProcessRequest(&data, &size);
-		    status = InitCommunication(keyDefault);
-		    if(status > ERROR)
-			status = AnalyzeOperation(process, data, size);
-                    if(status != CHILD_RETURN)
+	    do
+	    {
+	        status = InitCommunication(keyClient);
+	    }while(status <= ERROR);
+    
+    
+	    while(status != __SHUT_DOWN__ && status != CHILD_RETURN)
+	    {
+		    data = ReadRequest();
+    
+		    if(data != NULL)
+		    {
+		        /* se manda a que sea procesado en la capa de sesion 
+		        */
+		        process = ProcessRequest(&data, &size);
+		        status = InitCommunication(keyDefault);
+			    status = AnalyzeOperation(process, data, size);
+                if(status != CHILD_RETURN)
+                {
+                    do
                     {
-                        do
-                        {
-                            status = InitCommunication(keyClient);
-                        } while (status <= ERROR);
-                    }
-		}
-		else
-		{
-		    status = ERROR;
-		}
-	}
+                        status = InitCommunication(keyClient);
+                    } while (status <= ERROR);
+                }
+		    }
+		    else
+		    {
+		        status = ERROR;
+		    }
+	    }
     }
 	return status;
 }
