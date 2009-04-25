@@ -105,7 +105,8 @@ GetDataSize( session_t data )
 static process_t
 ProcessCall( session_t *data )
 {
-        process_t p;
+    string aux;
+    process_t p;
 	switch( (*data).opCode ) {
 			
 		case CL_NEW_CON:
@@ -142,8 +143,9 @@ ProcessCall( session_t *data )
 			
 		case CL_FIL_REM:
             p.pid = (*data).pid;
-            strcpy(p.dir, ((fileT*)((*data).data))->path);
-            p.status = CallFileRem(*data);
+            aux = DirName(((fileT*)((*data).data))->path);
+            strcpy(p.dir, aux);
+            p.status = CallFileRem(data);
             p.opCode = __DIR_BROADCAST__;
 			break;
 				

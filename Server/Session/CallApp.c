@@ -185,15 +185,19 @@ CallFileMod(session_t data)
 }	
 
 int 
-CallFileRem(session_t data)
+CallFileRem(session_t * dataPtr)
 {
 	fileT file;
 	string user; //Usado solo para agregar a los Logs
-	
+	session_t data;
+    
+    data = *dataPtr;
+    
 	user = data.msg;	
 	GetFileRemData(data,&file);
 	LogAction(user, GetPath(file), "Del");
 	data.opCode = SR_FIL_REM;
+    *dataPtr = data;
 	return FileRem(file);	
 }
 
