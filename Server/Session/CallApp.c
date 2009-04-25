@@ -258,17 +258,18 @@ CallTransferDir(session_t * dataPtr)
     
 	dirPath  = (*dataPtr).data;
 	userName = (*dataPtr).msg;
-	
+
 	/* armo el paquete respuesta */	
 	(*dataPtr).opCode = SR_DIR_TRANS;
 	aux = Concat(SERVER_PATH,dirPath);
 	strcpy((*dataPtr).msg,aux);
 	free(aux);
-	
-	if( (nfiles=ReqDir(userName, dirPath, &fileList, &dataBuffer)) == ERROR ) {
+    
+    if( (nfiles=ReqDir(userName, (*dataPtr).msg, &fileList, &dataBuffer)) == ERROR ) {
 		return ERROR;
 	}
 	else {
+
 		if( ((*dataPtr).dataSize = MakeDirPack(nfiles, fileList,dataBuffer,&((*dataPtr).data))) != ERROR ) {
 			return OK;
 		}
@@ -291,9 +292,7 @@ CallDirReq(session_t *dataPtr)
 
     (*dataPtr).opCode = SR_DIR_REQ_OK;
     usersxdir = GetCantUsersLinkToDir(dirName); 
-	    char a[20];
-    sprintf(a,"%s %d %s",userName,usersxdir,dirName);
-    fopen(a,"w+");
+
 	UserAddDir(userName, dirName);
 	
     return usersxdir;
