@@ -40,6 +40,8 @@ ProcessRequest(byte ** data, size_t * size)
 	process_t process;
 		
 	pack  = GetSessionData(*data);
+    if(pack.opCode == SR_FIL_REM)
+      fopen("llegobroad","w+");
 	process = ProcessCall( &pack );
 	free(*data);
 	*size = MakeSessionData(pack,data);

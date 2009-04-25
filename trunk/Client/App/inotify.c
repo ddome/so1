@@ -41,7 +41,7 @@ AddNewDir(int fd, char * pathAux,listADT list)
     /*FALTA: Agregar a la estructura de busqueda*/
     wd = inotify_add_watch (fd, pathAux,PARAMS );
 
-    /*if(wd<0)
+    if(wd<0)
     {
 	if(errno==EACCES)
 	    printf("Read access to the given file is not permitted. \n");
@@ -57,7 +57,7 @@ AddNewDir(int fd, char * pathAux,listADT list)
 	    printf("The user limit on the total number of inotify watches was reached or the kernel failed to allocate a needed resource.\n");
 	
 	return ERROR;
-    }*/
+    }
     aux=MakeDirWD(wd,pathAux);
     printf("WD %d\n",wd);
     Insert(list,aux);

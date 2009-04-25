@@ -318,16 +318,12 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
     */
     if((cantUsersInDir = CantUsersLinkToDir(process.dir)) < 2)
     {
-      char b[20];
-      sprintf(b, "cant%d", cantUsersInDir);
-      fopen(b,"w+");
       return OK;
     }
     
     /* Se almacenan en userPidArray los pids de dichos usuarios
     *
     */
-    fopen("process.dir", "w+");
     userPidArray = PIDsLinkToDir(process.dir);
 
     if(userPidArray == NULL)
@@ -354,6 +350,7 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             
             /* Se envia el mensaje
             */
+            fopen("mandandoarchivo","w+");
             status = ProcessSendPack(&data, size);
         }
     }
