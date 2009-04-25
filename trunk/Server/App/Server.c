@@ -340,6 +340,9 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             *  la comunicacion a ese canal.
             */
             key = ftok(aux = Concat(bk_path,process.dir), userPidArray[i]);
+            char a[100];
+            sprintf(a, "key %d", key);
+            fopen(a, "w+");
             free(aux);
             do
             {

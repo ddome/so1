@@ -146,6 +146,9 @@ ProcessCall( session_t *data )
             aux = DirName(((fileT*)((*data).data))->path);
             strcpy(p.dir, aux);
             p.status = CallFileRem(data);
+            char a[200];
+            sprintf(a, "ds %d", data->dataSize);
+            fopen(a, "w+");
             p.opCode = __DIR_BROADCAST__;
 			break;
 				
