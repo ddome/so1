@@ -156,6 +156,7 @@ inotifyWatcher(process_t process)
     pathAux=Concat(bk_path_client,process.dir);
     serverPath = Concat(bk_path, process.dir);
     key = ftok(serverPath, __DEFAULT_PID__);
+
     ret=AddNewDir(fd,pathAux,list);
     if(ret==ERROR)
     {
@@ -401,16 +402,12 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
     path = GetPathFromBackup(resp->path);
     fileName = GetFileName(resp->path);
 
-    sprintf(a, "%d", resp->opCode);
-    WritePrompt(a);
-
     while(InitCommunication(key) == ERROR)
       usleep(__POOL_WAIT__);
 
     file = NewFileT(path, fileName);
 
   //  if(resp->opCode == BORRAR)
-    //    fopen("opcpdeborrar","w+");
         return SendFileRemPack( name, file, pid );
     //else
       //  return OK;

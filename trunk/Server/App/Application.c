@@ -235,9 +235,8 @@ ReqDir( string userName, string dirName, fileT **files, byte ***databuffer )
 {
     int nfiles;
     int i;
-    string dir;
 
-    nfiles = DirFilesList(dir,files);
+    nfiles = DirFilesList(dirName,files);
 	    
     (*databuffer) = malloc(sizeof(byte**)*nfiles);
 		    

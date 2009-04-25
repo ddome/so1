@@ -318,7 +318,8 @@ int
 GetCantUsersLinkToDir(char * pathName)
 {
     pqADT queue;
-    int cant=0;
+    int cant=0,i=0;
+    char * aux;
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
@@ -327,8 +328,16 @@ GetCantUsersLinkToDir(char * pathName)
     }
 
     ListUsersLinkToDir(db,pathName,queue);
+    
     cant=QueueDepth(queue);
-
+    printf("Cant= %d\n",cant);
+    while(!PQIsEmpty(queue))
+    {
+      aux=Dequeue(queue);
+      printf("%s\n",aux);
+      i++;
+    }
+    
     FreePQ(&queue);
     return cant;
 }
@@ -339,6 +348,9 @@ GetListPIDsLinkToDir(char * pathName,int ** pids)
     pqADT queue;
     int i=0,cant;
     int * aux;
+    if(db==NULL)
+      fopen("GARCAMOS","w+");
+    fopen(pathName,"w+");
     queue=NewPQ(NULL,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
@@ -347,6 +359,7 @@ GetListPIDsLinkToDir(char * pathName,int ** pids)
     }
 
     ListPIDsLinkToDir(db,pathName,queue);
+    
     cant=QueueDepth(queue);
     if( (*pids=calloc(cant+1,sizeof(int)))==NULL )
     {

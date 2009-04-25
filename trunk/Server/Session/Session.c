@@ -64,7 +64,7 @@ SendDirPack(process_t process)
     session_t session;
     size_t size;
     byte * data;
-
+    
     char * userName = ConvertPIDToUserName(process.pid);
 
     if(userName != NULL){
@@ -141,10 +141,10 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_FIL_REM:
-			p.pid = (*data).pid;
-                        strcpy(p.dir, (*data).data);
-                        p.status = CallFileRem(*data);
-                        p.opCode = __DIR_BROADCAST__;
+            p.pid = (*data).pid;
+            strcpy(p.dir, ((fileT*)((*data).data))->path);
+            p.status = CallFileRem(*data);
+            p.opCode = __DIR_BROADCAST__;
 			break;
 				
 		case CL_DIR_LST:
@@ -161,12 +161,11 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_DIR_CON:
-
-          		(*data).opCode = SR_DIR_CON_OK;
-           	 	p.opCode = __SPAWN_DEMAND__;  
-            		p.pid = (*data).pid; 
-            		sscanf((*data).senderID, "%d", &(p.status));        
-            		strcpy(p.dir, (*data).data);
+            (*data).opCode = SR_DIR_CON_OK;
+            p.opCode = __SPAWN_DEMAND__;  
+            p.pid = (*data).pid; 
+            sscanf((*data).senderID, "%d", &(p.status));        
+            strcpy(p.dir, (*data).data);
 			break;	
 			
 		case CL_EXT:	

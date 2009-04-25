@@ -105,7 +105,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __DIR_BROADCAST__:
                 status = DirBroadcastMsg(process, size, data);
                 break;
-	   case __KILL_DIR__:
+	        case __KILL_DIR__:
 				status = KillDirProcess(process);
 				break;
             case __NO_RESPONSE__:
@@ -167,6 +167,7 @@ int StartSubProcess(process_t process)
 	        break;	
 	    case __SPAWN_DIR__:
 	        returnValue = StartDirSubServer(process);
+            returnValue = CHILD_RETURN;
 	        break;
 	    case __SPAWN_DEMAND__:
                 returnValue = StartDemandSubServer(process);
@@ -305,6 +306,7 @@ int StartDemandRecieveSubServer(process_t process)
 int
 DirBroadcastMsg(process_t process, size_t size, byte * data)
 {
+
     int status = OK;
     key_t key;
     int cantUsersInDir, i;
@@ -315,12 +317,19 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
     ** es el que hizo la modificacion del archivo en primera instancia.
     */
     if((cantUsersInDir = CantUsersLinkToDir(process.dir)) < 2)
-        return OK;
+    {
+      char b[20];
+      sprintf(b, "cant%d", cantUsersInDir);
+      fopen(b,"w+");
+      return OK;
+    }
+    
     /* Se almacenan en userPidArray los pids de dichos usuarios
     *
     */
+    fopen("process.dir", "w+");
     userPidArray = PIDsLinkToDir(process.dir);
-    
+
     if(userPidArray == NULL)
       return ERROR;
     
@@ -335,6 +344,9 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             *  la comunicacion a ese canal.
             */
             key = ftok(process.dir, userPidArray[i]);
+            char a[20];
+            sprintf(a, "key%d %d", i, key);
+            fopen(a,"w+");
             do
             {
                 status = InitCommunication(key);

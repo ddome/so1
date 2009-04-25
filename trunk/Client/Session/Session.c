@@ -166,7 +166,7 @@ SendFileRemPack( string userName, fileT file, pid_t pid )
 	session_t pack;
 	byte *data;
 	size_t size;
-        pack.pid = pid;
+    pack.pid = pid;
 	pack.opCode = CL_FIL_REM;
 	strcpy(pack.msg,userName);
 	pack.dataSize = MakeFileRemPack( file, &pack.data );
