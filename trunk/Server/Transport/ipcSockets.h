@@ -1,5 +1,5 @@
-#ifndef __IPC_MQ_H__
-#define __IPC_MQ_H__
+#ifndef __IPC_FIFO_H__
+#define __IPC_FIFO_H__
 
 /* System Includes
 */
@@ -17,12 +17,14 @@
 #include <sys/un.h>
 #include "../Lib/defines.h"
 #include "Transport.h"
-
+#include "../Lib/Error.h"
 
 /* Defines de los Fifo's en particular
 */
 
-#define __DEFAULT_MQ_MODE__ 0777
+#define __DEFAULT_FIFO_MODE__ 0777
+
+#define PACKET_SIZE 1000
 
 /* Funciones
 */
@@ -38,6 +40,4 @@ byte * ReadIPC(void);
 void CloseIPC(void);
 
 #endif
-
-
 
