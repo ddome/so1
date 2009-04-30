@@ -1,198 +1,177 @@
 #include "ipcSockets.h"
 #include "ipcInterface.h"
 
-static int socketFD=0;
-struct sockaddr_in server = {AF_INET,7008};
-struct sockaddr_in client = {AF_INET,8008};
-static int recibidos=0;
-static int connected=0;
+char * clientPath = NULL;
+char * serverPath = NULL;
+int recibidos = 0;
+int socketFD;
 
+int IPCStarted = FALSE;
+int isChildProcess = FALSE;
 
-#define QUEUE_SIZE_MAX 5
+static byte * GetBlock(byte *org, size_t size, int index);
 
-int
-InitIPC(key_t key)
+static string
+MakeRDPath(key_t key)
 {
-    if( (socketFD=socket(AF_INET,SOCK_STREAM,0))==-1 )
-	return ERROR;
-    
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    string path;
+    if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
+	return NULL;
 
-    if( bind(socketFD,(struct sockaddr *)&server,sizeof(struct sockaddr))==-1 )
-	return ERROR;
-    
-    printf("Socket FD: %d\n",socketFD);
-    
-    if(listen(socketFD,QUEUE_SIZE_MAX)==-1)
-	return ERROR;
-    return OK; 
-    
+    sprintf(path,"%s%d_rd",COMM_DIR,(int)key);
+
+    return path;
 }
 
+static string
+MakeWRPath(key_t key)
+{
+    string path;
+    if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
+	return NULL;
+
+    sprintf(path,"%s%d_wr",COMM_DIR,(int)key);
+
+    return path;
+}
+
+int InitIPC(key_t key)
+{
+    int status = OK;
+
+    clientPath=MakeRDPath(key);
+    serverPath=MakeWRPath(key);
+
+    struct sockaddr_un server;
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, serverPath);
+    unlink(server.sun_path);
+    if( (socketFD=socket(AF_UNIX,SOCK_DGRAM,0))==-1 )
+    {
+	printf("A comerlaaaaaaa!!!\n");
+	return ERROR;
+    }
+    if (bind(socketFD, (struct sockaddr *)&server, sizeof(struct sockaddr_un)) == -1) 
+    {
+	printf("Murio\n");
+	return ERROR;
+    }
+
+    IPCStarted = TRUE;
+    isChildProcess = TRUE;
+    return status;
+}
+
+static int
+GetTotalPackets(size_t size)
+{
+	return (int)(size / PACKET_SIZE + 1) ;
+}
 
 int 
 WriteIPC(void * data, size_t size)
 {
     int status;
     headerIPC_t header;
-    server.sin_addr.s_addr=INADDR_ANY;
-    if( connect(socketFD,(struct sockaddr *)&server,sizeof(struct sockaddr))==-1 )
-	return ERROR;
-    header.nPacket = 1;
-    header.size = size;
+	byte *block;
+	int bytesLeft;	
+	
+	header.totalPackets = GetTotalPackets(size);
+	
+	int npacket   = 1;
+	bytesLeft = size;
+	int i;
 
-    status=send(socketFD,&header,sizeof(headerIPC_t),0);
-
-    status=send(socketFD,data,size,0);
-    return (status<0)?ERROR:OK;
+	struct sockaddr_un client;
+	client.sun_family = AF_UNIX;
+	strcpy(client.sun_path, clientPath);
+	
+	for( i=0; i < header.totalPackets; i++ ) {
+		header.nPacket = npacket;
+		header.size = PACKET_SIZE;
+		
+		status=sendto(socketFD,&header,sizeof(headerIPC_t),0,(struct sockaddr*)&client,sizeof(struct sockaddr_un));
+		if(status != ERROR)
+		{
+			block = GetBlock(data, header.size, npacket-1);
+			status=sendto(socketFD,block,header.size,0,(struct sockaddr*)&client,sizeof(struct sockaddr_un));
+			free(block);
+			
+			if( status == ERROR )
+				return ERROR;
+		}
+		
+		bytesLeft -= PACKET_SIZE;
+		npacket++;
+	}
+	
+    return status;
 }
-/*CAMBIAR PROTOTIPO*/
-byte*
+
+byte *
 ReadIPC(void)
 {
-    int status=OK;
-    int newsockFD;
-    headerIPC_t header;
-    byte *data;
-
-    /*if(!connected)
-    {*/
-    printf("hola 1\n");
-	if( (newsockFD=accept(socketFD,NULL,NULL))==-1)
-	{
-	    return NULL;
-	}
-	/*connected=1;
-    }*/
-    printf("hola 2\n");
-    status=recv(newsockFD,&header,sizeof(headerIPC_t),0);
-    if(status > 0)
-    {
-	printf("\n\npaquete numero: %d\n", header.nPacket);
-
-	if( (data = (byte *)malloc(header.size * sizeof(byte))) == NULL)
-	{
-	    close(newsockFD);
-	    connected=0;
-	    return NULL;
-	}   
-
-	status=recv(newsockFD,data,header.size,0);
-	if(status > 0)
-	{
-	    status = OK;
-	    printf("recibidos: %d\n", recibidos);
-	    recibidos++;
-	}
-	else
-	{
-	    status = ERROR;
-	}
-    }
-    else
-    {
-	status = ERROR;
-    }
-    close(newsockFD);
-    connected=0;
-    return status == ERROR ? NULL: data ;
+	int status = OK;
+	headerIPC_t header;
+	byte * data=NULL;
+	int nPacketsRead;
+	int pos;
+	byte *aux;
+	
+	printf("Descargando paquetes...");
+	
+	nPacketsRead=0;
+	pos=0;
+	do{
+		status=recvfrom(socketFD,&header,sizeof(headerIPC_t),0,NULL,0);
+		if(status > 0)
+		{	
+			data = realloc(data, pos + header.size );
+			aux = malloc(header.size);			
+			status=recvfrom(socketFD,aux,header.size,0,NULL,0);
+			
+			memmove(data+pos, aux, header.size);
+			pos += header.size;
+			nPacketsRead++;
+			
+			if(status > 0)
+			{
+				status = OK;
+				recibidos++;
+			}
+			else
+			{
+				status = ERROR;
+			}			  
+		}
+		else
+		{
+			status = ERROR;
+		}
+	}while( status != ERROR && nPacketsRead < header.totalPackets );
+	
+	printf("recibidos: %d\n", nPacketsRead);
+	
+	return status == ERROR ? NULL: data ;
 }
-
 
 void
 CloseIPC(void)
 {
+    /*Liberar recursos...*/
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+static byte *
+GetBlock(byte *org, size_t size, int index)
+{
+	byte *block;
+	
+	if( (block=malloc(size)) == NULL ) {
+		return NULL;
+	}
+	
+	return memcpy(block, org+index*size, size);
+}
 
 
 
