@@ -126,11 +126,23 @@ ProcessCall( session_t *data )
            		p.opCode = __NO_RESPONSE__;
 			break;
 			
-		case CL_FIL_TRANSFER:	
-			p.status = OK;
-			p.opCode = __NOT_SPAWN__; /* Aca tiene que crear el hijo para la transferencia */
+		case CL_FIL_ADD_TRANSFER:	
+            sscanf((*data).senderID, "%d", &(p.status ));
+            p.pid = (*data).pid; 
+            (*data).opCode = SR_READY_TO_RECIEVE_ADD;
+            fopen("llegoadd","w+");
+            p.opCode = __SPAWN_REC_DEMAND__;
 			break;
-			
+        case CL_FIL_MOD_TRANSFER:   
+            sscanf((*data).senderID, "%d", &(p.status ));
+            (*data).opCode = SR_READY_TO_RECIEVE_MOD;
+            aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
+            fopen("pasoextract","w+");
+            strcpy(p.dir, aux);
+            p.pid = (*data).pid; 
+            p.opCode = __SPAWN_REC_DEMAND__;                           
+            break;
+                    
 		case CL_FIL_ADD:	
 			p.status = CallFileAdd(*data);
 			p.opCode = __NO_RESPONSE__;
@@ -138,7 +150,7 @@ ProcessCall( session_t *data )
 			
 		case CL_FIL_MOD:	
 			p.status = CallFileMod(*data);
-                        p.opCode = __NO_RESPONSE__;
+            p.opCode = __NO_RESPONSE__;
 			break;
 			
 		case CL_FIL_REM:

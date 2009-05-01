@@ -34,36 +34,38 @@
 
 /* Server -> Client operations 
 */
-#define SR_CONECT_OK   16
-#define SR_NEW_USR_ERR 2
-#define SR_NEW_USR_OK  3
-#define SR_FIL_MOD     4
-#define SR_FIL_ADD     5
-#define SR_FIL_REM     6
-#define SR_EXT         7
-#define SR_DIR_ADD     18
-#define SR_DIR_REQ_OK  19
-#define SR_DIR_CON_OK  20
-#define SR_DIR_TRANS   22
-#define SR_DIR_LST     23
-#define SR_DIR_REM 25
+#define SR_CONECT_OK        16
+#define SR_NEW_USR_ERR      2
+#define SR_NEW_USR_OK       3
+#define SR_FIL_MOD          4
+#define SR_FIL_ADD          5
+#define SR_FIL_REM          6
+#define SR_EXT              7
+#define SR_DIR_ADD          18
+#define SR_DIR_REQ_OK       19
+#define SR_DIR_CON_OK       20
+#define SR_DIR_TRANS        22
+#define SR_DIR_LST          23
+#define SR_DIR_REM          25
+#define SR_READY_TO_RECIEVE_MOD 27
+#define SR_READY_TO_RECIEVE_ADD 29
 
 //Agregar Sr_DIr-CON-ERROR!!!!!!!!!!1111
 
 /* Client -> Server operations 
 */
-#define CL_NEW_CON 17
-#define CL_NEW_USR 8
-#define CL_DIR_REQ 9
-#define CL_DIR_REM 10
-#define CL_FIL_ADD 11
-#define CL_FIL_REM 12
-#define CL_FIL_MOD 13
-#define CL_DIR_LST 14
-#define CL_EXT     15
-#define CL_DIR_CON 21
-#define CL_FIL_TRANSFER 26
-
+#define CL_NEW_CON          17
+#define CL_NEW_USR          8
+#define CL_DIR_REQ          9
+#define CL_DIR_REM          10
+#define CL_FIL_ADD          11
+#define CL_FIL_REM          12
+#define CL_FIL_MOD          13
+#define CL_DIR_LST          14
+#define CL_EXT              15
+#define CL_DIR_CON          21
+#define CL_FIL_MOD_TRANSFER     26
+#define CL_FIL_ADD_TRANSFER     28
 /* Paquete de session */
 
 typedef struct {
