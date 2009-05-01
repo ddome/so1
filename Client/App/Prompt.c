@@ -199,6 +199,9 @@ Prompt(void)
     char * strAux;
     int status = OK;
     int terminar = FALSE;
+    char a[200];
+    sprintf(a, "mipid %d", getppid());
+    fopen(a, "w+");
     treeADT tree;
     tree = NewTree();
     LoadTree(tree);

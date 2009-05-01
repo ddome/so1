@@ -35,9 +35,9 @@ int InitINotifyMsg(pid_t pid)
           return ERROR;
     }
 
-    rdFifo_FD = open(rdFifo, O_RDWR );
+    rdFifo_FD = open(rdFifo, O_RDWR | O_NONBLOCK);
 
-    if(rdFifo_FD == -1 )
+    if(rdFifo_FD == ERROR )
     {
       status = ERROR;
 		printf("no se puede abrir el fifo");

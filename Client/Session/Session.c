@@ -258,6 +258,7 @@ GetDataSize( session_t data )
 static process_t
 ProcessCall( session_t *data )
 {	
+    int status;
 	process_t p;
 	switch ((*data).opCode) {
 		case SR_CONECT_OK:
@@ -288,9 +289,22 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_REM:
-            fopen("llegobroad","w+");
+            /* Le aviso al inotify que no avise mientras se
+            *  actualizan las carpetas */
+            do
+            {
+                status = InitINotifyMsg(getpid());
+                usleep(__POOL_WAIT__);
+            } while (status != OK);
+            
+            status = WriteINotifyMsg(__INOTIFY_DISABLE__);
 			p.status = CallFileRem(*data);
-			p.opCode = __NO_RESPONSE__;
+            usleep(200000);
+            /* Ya termine de modificar, vuelvo a habilitar
+            *  el inotify */
+            status = WriteINotifyMsg(__INOTIFY_ENABLE__);
+            
+            p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_EXT:
 			p.opCode = __SHUT_DOWN__;

@@ -16,6 +16,8 @@
 #define MAX_MSG		 255
 #define MAX_LOG_LEN	100
 
+#define __POOL_WAIT__ 50000
+
 enum  {ERROR = -1, OK = 1};
 
 typedef enum boolean{ FALSE = 0, TRUE = 1} boolean;
