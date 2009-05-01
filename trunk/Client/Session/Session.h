@@ -47,6 +47,8 @@
 #define SR_DIR_TRANS   22
 #define SR_DIR_LST 23
 #define SR_DIR_REM 25
+#define SR_READY_TO_RECIEVE_MOD 27
+#define SR_READY_TO_RECIEVE_ADD 29
 
 /* Client -> Server operations 
 */
@@ -60,7 +62,8 @@
 #define CL_DIR_LST 14
 #define CL_EXT     15
 #define CL_DIR_CON 21
-#define CL_FIL_TRANSFER 26
+#define CL_FIL_MOD_TRANSFER 26
+#define CL_FIL_ADD_TRANSFER 28
 
 
 /* Paquete de session */
@@ -89,14 +92,15 @@ int ProcessSendPack(byte ** data, size_t size);
 int SendConectionSignal(  pid_t pid );
 int SendDirConectionSignal(  pid_t pid, string dir );
 int SendNewClientSignal( string userName, pid_t pid );
-int SendFileAddPack(  string userName, fileT file, byte *data );
-int SendFileModPack(  string userName, fileT file, byte *data );
+int SendFileAddPack(byte *fileData );
+int SendFileModPack(byte *fileData );
 int SendFileRemPack( string userName, fileT file, pid_t pid );
 int SendDirReq( string userName, pid_t pid, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );
 int SendDirRem( string userName, pid_t pid, string dirName );
 
-int SendFileTransferSignal( string userName, fileT file, byte *dataBuffer );
+int SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid);
+int SendFileAddTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid);
 
 #endif

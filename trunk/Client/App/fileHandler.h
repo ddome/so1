@@ -85,6 +85,8 @@ string GetFileName(string path);
 
 string GetPathFromBackup(string path);
 
+string ExtractDirFromPath(string path);
+
 #endif
 
 

@@ -40,8 +40,6 @@ ProcessRequest(byte ** data, size_t * size)
 	process_t process;
 		
 	pack  = GetSessionData(*data);
-    if(pack.opCode == SR_FIL_REM)
-      fopen("llegobroad","w+");
 	process = ProcessCall( &pack );
 	free(*data);
 	*size = MakeSessionData(pack,data);
@@ -115,52 +113,86 @@ SendNewClientSignal( string userName, pid_t pid )
 }
 
 int 
-SendFileAddPack( string userName, fileT file, byte *dataBuffer )
+SendFileAddPack( byte * fileData )
 {
-	session_t pack;
+	/*session_t pack;
 	byte *data;
 	size_t size;
 	
 	pack.opCode = CL_FIL_ADD;
 	strcpy(pack.msg,userName);
 	/* Armo el paquete con la informacion del file a mandar */
-	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
+	/*pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
 	
 	size = MakeSessionData(pack, &data);
-	return WriteIPC(data, size);
+	return WriteIPC(data, size);*/
+  return OK;
 }
 
 int 
-SendFileModPack( string userName, fileT file, byte *dataBuffer )
+SendFileModPack( byte * fileData )
 {
+    fopen("mandandomod","w+");
+  /*
 	session_t pack;
 	byte *data;
 	size_t size;
 
 	pack.opCode = CL_FIL_MOD;
-	strcpy(pack.msg,userName);
+	strcpy(pack.msg,());
 	/* Armo el paquete con la informacion del file a mandar */
-	pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
+	/*pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
 	
 	size = MakeSessionData(pack, &data);
-	return WriteIPC(data, size);
+	return WriteIPC(data, size);*/
+    return OK;
 }
 
 int
-SendFileTransferSignal( string userName, fileT file, byte *dataBuffer )
+SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
 {
 	session_t pack;
 	byte *data;
 	size_t size;
-	
-	pack.opCode = CL_FIL_TRANSFER;
+	char a[30];
+    
+    pack.pid = pid;
+	pack.opCode = CL_FIL_MOD_TRANSFER;
+    
+    sprintf(a, "%d", dirPid);
+    strcpy(pack.senderID, a);
+    
 	strcpy(pack.msg,userName);
-	pack.dataSize = 0;
+	pack.dataSize = sizeof(fileT);
+    pack.data = malloc(pack.dataSize);
+    memmove(pack.data,&file,pack.dataSize); 
 		
 	size = MakeSessionData(pack, &data);
+    
 	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
+int
+SendFileAddTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
+{
+  session_t pack;
+  byte *data;
+  size_t size;
+  char a[30];
+    
+  pack.pid = pid;
+  pack.opCode = CL_FIL_ADD_TRANSFER;
+    
+  sprintf(a, "%d", dirPid);
+  strcpy(pack.senderID, a);
+    
+  strcpy(pack.msg,userName);
+  pack.dataSize = sizeof(fileT);
+  pack.data = (byte*)(&file);
+        
+  size = MakeSessionData(pack, &data);
+  return WriteIPC(data, size)>0?OK:ERROR;
+}
 
 int 
 SendFileRemPack( string userName, fileT file, pid_t pid )
@@ -260,6 +292,7 @@ ProcessCall( session_t *data )
 {	
     int status;
 	process_t p;
+    char * aux;
 	switch ((*data).opCode) {
 		case SR_CONECT_OK:
 			WritePrompt("Se ha conectado exitosamente\n");
@@ -330,6 +363,22 @@ ProcessCall( session_t *data )
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
+        case  SR_READY_TO_RECIEVE_ADD:
+            p.opCode = __SPAWN_SND_DEMAND__;
+            p.pid = (*data).pid;
+            sscanf((*data).senderID, "%d", &(p.status));
+            aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
+            strcpy(p.dir, aux);
+            (*data).opCode = CL_FIL_MOD;
+            break;
+        case  SR_READY_TO_RECIEVE_MOD:
+            p.opCode = __SPAWN_SND_DEMAND__;
+            p.pid = (*data).pid;
+            sscanf((*data).senderID, "%d", &(p.status));
+            aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
+            strcpy(p.dir, aux);
+            (*data).opCode = CL_FIL_MOD;
+            break;
 		default:
 			p.status = ERROR;
 			break;

@@ -118,12 +118,11 @@ inotifyWatcher(process_t process)
     int fd;
     int ret=0;
     int error=0;
-    int sentDisable = FALSE, sentEnable = TRUE;
-    int state = __INOTIFY_ENABLE__, moreSignalsExist = TRUE;
+
     key_t key;
     char * pathAux, * serverPath;
     char signal = __INOTIFY_NO_DATA__;
-    char prevSignal;
+
     resp_T * resp;
     listADT list;
     list=Newlist( (int (*)(void*,void*))Compare,(void (*)(void*))FreeElement);
@@ -412,14 +411,14 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
     path = GetPathFromBackup(resp->path);
     fileName = GetFileName(resp->path);
 
-    while(InitCommunication(key) == ERROR)
-      usleep(__POOL_WAIT__);
-
     file = NewFileT(path, fileName);
 
-    switch(resp->opCode == BORRAR)
+    while(InitCommunication(key) == ERROR)
+      usleep(__POOL_WAIT__);
+    
+     switch(resp->opCode)
     {
-        case BORRAR:
+       case BORRAR:
             status = SendFileRemPack( name, file, pid );
             break;
         case CREAR:
@@ -427,6 +426,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
         case RENAME:
             break;
         case MODIFICAR:
+            status = SendFileModTransferSignal(name, file, pid, getppid());
             break;
         default:
             status =  OK;

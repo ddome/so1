@@ -508,8 +508,25 @@ string GetPathFromBackup(string path)
     return ret;
 }
 
-	
-	
-	
+string ExtractDirFromPath(string path)
+{
+  int size;
+  string dir;
+  string aux;
+  FILE * f;
+  aux = strchr(path + 7,'/');
+  if(aux != NULL)
+  {
+    size = aux - path;
+    dir = calloc(size + 1,sizeof(char));
+    fopen("pasoextract2","w+");
+    strncpy(dir, path, size);
+    fopen("pasoextract3","w+");
+    return dir;
+  }
+
+  return path;
+}   
+   
 	
 

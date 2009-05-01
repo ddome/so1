@@ -81,6 +81,8 @@ string DirName(string dirPath);
 
 int RemoveDir( string dir );
 
+string ExtractDirFromPath(string path);
+
 #endif
 
 

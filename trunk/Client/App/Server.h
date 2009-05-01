@@ -64,7 +64,7 @@ int StartListening(void);
 
 byte * ReadRequest(void);
 
-int StartSubProcess(process_t process);
+int StartSubProcess(process_t process, size_t size, byte * data);
 
 int AnalyzeOperation(process_t process, byte * data, size_t size);
 
@@ -76,7 +76,7 @@ int StartInotifySubServer(process_t process);
 
 int StartDemandSubServer(process_t process);
 
-int StartDemandSndSubServer(process_t process);
+int StartDemandSndSubServer(process_t process, size_t size, byte * data);
 
 int SpawnSubProcess(process_t process, size_t size, byte * data);
 

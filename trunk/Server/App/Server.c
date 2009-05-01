@@ -176,6 +176,7 @@ int StartSubProcess(process_t process)
 	        break;
         case __SPAWN_REC_DEMAND__:
             returnValue = StartDemandRecieveSubServer(process);
+            returnValue = CHILD_RETURN;
                 break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */

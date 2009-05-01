@@ -116,6 +116,9 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __SPAWN_DEMAND__:
                 status = SpawnSubProcess(process, size, data);
                 break;
+            case __SPAWN_SND_DEMAND__:
+                status = SpawnSubProcess(process, size, data);
+                break;
             case __NO_RESPONSE__:
                // free(data);
                 //data = NULL;
@@ -141,7 +144,7 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             returnValue = ERROR;
             break;
         case __ISCHILD__:
-            returnValue = StartSubProcess(process);
+            returnValue = StartSubProcess(process, size, data);
             break;
 		default:
 			break;
@@ -151,7 +154,7 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
 }
 
 
-int StartSubProcess(process_t process)
+int StartSubProcess(process_t process, size_t size, byte * data)
 {
     int returnValue = OK;
     switch(process.opCode)
@@ -176,6 +179,9 @@ int StartSubProcess(process_t process)
 		    returnValue = StartInotifySubServer(process);
 		    returnValue = CHILD_RETURN;
 	        break;
+        case __SPAWN_SND_DEMAND__:
+            returnValue = StartDemandSndSubServer(process, size, data);
+            returnValue = CHILD_RETURN;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
 	    default:
@@ -198,9 +204,7 @@ int StartDirSubServer(process_t reqProcess)
     free(aux);
     keyClient = ftok(aux = Concat(bk_path,reqProcess.dir), reqProcess.pid);
     free(aux);
-    char a[100];
-    sprintf(a, "key %d", keyClient);
-    fopen(a, "w+");
+
     while(status<=ERROR)
     {
         status = InitCommunication(keyDefault);
@@ -311,7 +315,26 @@ int StartDemandSubServer(process_t process)
     return status;
 }
 
-
+int 
+StartDemandSndSubServer(process_t process, size_t size, byte * data)
+{
+    int status;
+    char * aux;
+    key_t key = ftok(aux = Concat(bk_path, process.dir), getppid());
+    fopen("demandsend", "w+");
+    do
+    {
+        status = InitCommunication(key);
+        usleep(__POOL_WAIT__);
+    } while(status <= ERROR);
+    
+    //if((*data).opCode == SR_READY_TO_RECIEVE_MOD)
+        SendFileModPack(data);
+    //else if((*data).opCode == SR_READY_TO_RECIEVE_ADD)
+      //  SendFileAddPack(data);
+    
+    return OK;
+}
 
 static char *
 ReadBkPath()
