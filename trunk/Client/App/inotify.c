@@ -118,9 +118,12 @@ inotifyWatcher(process_t process)
     int fd;
     int ret=0;
     int error=0;
+    int sentDisable = FALSE, sentEnable = TRUE;
+    int state = __INOTIFY_ENABLE__, moreSignalsExist = TRUE;
     key_t key;
     char * pathAux, * serverPath;
     char signal = __INOTIFY_NO_DATA__;
+    char prevSignal;
     resp_T * resp;
     listADT list;
     list=Newlist( (int (*)(void*,void*))Compare,(void (*)(void*))FreeElement);
@@ -141,7 +144,7 @@ inotifyWatcher(process_t process)
     }
     /* No reventemos el micro
     */
-    usleep(500000);
+   // usleep(500000);
     /* Se inicia inotify. 
     */
     fd = inotify_init();
@@ -181,7 +184,13 @@ inotifyWatcher(process_t process)
         /* Aviso al servidor de la modificacion
         */
 	if(!error)
-	    ret = NotifyServer(process.pid, key, resp, name);
+    {
+        signal = ReadINotifyMsg();
+        if(signal != __INOTIFY_DISABLE__)    
+            ret = NotifyServer(process.pid, key, resp, name);
+        
+    }
+	
         
 	if(!error)
 	    printf("%s - %s no se directorio\n",resp->path,resp->isDir?"SI":"NO");
@@ -398,7 +407,8 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
 {
     fileT file;
     char * path, * fileName;
-    char a[20];
+    int status;
+    
     path = GetPathFromBackup(resp->path);
     fileName = GetFileName(resp->path);
 
@@ -407,10 +417,22 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
 
     file = NewFileT(path, fileName);
 
-  //  if(resp->opCode == BORRAR)
-        return SendFileRemPack( name, file, pid );
-    //else
-      //  return OK;
+    switch(resp->opCode == BORRAR)
+    {
+        case BORRAR:
+            status = SendFileRemPack( name, file, pid );
+            break;
+        case CREAR:
+            break;
+        case RENAME:
+            break;
+        case MODIFICAR:
+            break;
+        default:
+            status =  OK;
+            break;
+    }
+    return status;
 }
 
 

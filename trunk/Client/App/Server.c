@@ -40,6 +40,7 @@ StartListening(void)
   do
   {
         status = InitCommunication(__DEFAULT_PID__);
+        usleep(__POOL_WAIT__);
   } while(status == ERROR);
 
   status = SpawnSubProcess(consoleProcess, size, data);
@@ -54,6 +55,7 @@ StartListening(void)
 
     do{
         status = InitCommunication(key);
+        usleep(__POOL_WAIT__);
     }while(status == ERROR);
 
     data = ReadRequest();
@@ -87,6 +89,7 @@ ReadRequest(void)
     {
       requestExists = TRUE;
     }
+    usleep(__POOL_WAIT__);
   }
     
   return data;
@@ -201,6 +204,7 @@ int StartDirSubServer(process_t reqProcess)
     while(status<=ERROR)
     {
         status = InitCommunication(keyDefault);
+        usleep(__POOL_WAIT__);
     }
     
     
@@ -224,6 +228,7 @@ int StartDirSubServer(process_t reqProcess)
 	    do
 	    {
 	        status = InitCommunication(keyClient);
+            usleep(__POOL_WAIT__);
 	    }while(status <= ERROR);
     
     
@@ -243,6 +248,7 @@ int StartDirSubServer(process_t reqProcess)
                     do
                     {
                         status = InitCommunication(keyClient);
+                        usleep(__POOL_WAIT__);
                     } while (status <= ERROR);
                 }
 		    }
@@ -284,7 +290,8 @@ int StartDemandSubServer(process_t process)
     free(aux);
     while(status<=ERROR)
     {
-	status = InitCommunication(key);
+	    status = InitCommunication(key);
+        usleep(__POOL_WAIT__);
     }
     if(status > ERROR)
     {

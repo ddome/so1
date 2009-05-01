@@ -76,6 +76,7 @@ ReadRequest(void)
         {
             requestExists = TRUE;
         }
+        usleep(__POOL_WAIT__);
     }
 	
     return data;
@@ -199,6 +200,7 @@ int StartDirSubServer(process_t reqProcess)
     free(aux);
     do{
         status = InitCommunication(keyClient);
+        usleep(__POOL_WAIT__);
     } while (status <= ERROR);
     if(status > ERROR)
     {
@@ -248,6 +250,7 @@ byte * ReadDirSubServerRequests(void)
         {
             requestExists = TRUE;
         }
+        usleep(__POOL_WAIT__);
     }
 	
     return data;
@@ -263,7 +266,9 @@ int StartDemandSubServer(process_t process)
     free(aux);
     do{
         status = InitCommunication(key);
+        usleep(__POOL_WAIT__);
     }while(status <= ERROR);
+    
     if(status > ERROR)
     { 
         status = SendDirPack(process);
@@ -287,6 +292,7 @@ int StartDemandRecieveSubServer(process_t process)
   while(status<=ERROR)
   {
     status = InitCommunication(key);
+    usleep(__POOL_WAIT__);
   }
   if(status > ERROR)
   {
@@ -297,6 +303,7 @@ int StartDemandRecieveSubServer(process_t process)
         p = ProcessRequest(&data, &size);
         requestExists=TRUE;
       }
+      usleep(__POOL_WAIT__);
     }
   }
     
@@ -306,7 +313,6 @@ int StartDemandRecieveSubServer(process_t process)
 int
 DirBroadcastMsg(process_t process, size_t size, byte * data)
 {
-
     int status = OK;
     key_t key;
     int cantUsersInDir, i;
@@ -328,7 +334,7 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
 
     if(userPidArray == NULL)
       return ERROR;
-    
+
     for(i = 0; i < cantUsersInDir; i++)
     {
         /* Se envia el mensaje a todos, excepto al cliente que
@@ -340,13 +346,12 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             *  la comunicacion a ese canal.
             */
             key = ftok(aux = Concat(bk_path,process.dir), userPidArray[i]);
-            char a[100];
-            sprintf(a, "key %d", key);
-            fopen(a, "w+");
+
             free(aux);
             do
             {
                 status = InitCommunication(key);
+                usleep(__POOL_WAIT__);
             } while(status <= ERROR);
             
             /* Se envia el mensaje
