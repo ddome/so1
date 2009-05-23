@@ -109,6 +109,9 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
 	        case __KILL_DIR__:
 				status = KillDirProcess(process);
 				break;
+          case __SPAWN_REC_DEMAND__:
+                status = SpawnSubProcess(process, size, data);
+                break;
             case __NO_RESPONSE__:
                // free(data);
                 //data = NULL;
@@ -139,9 +142,9 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
         default:
             if(size > 0)
             {
-             //   if(process.opCode == __SPAWN_DEMAND__)
-             //       wait(&aux);
-                if( process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__)
+             //   TODO ver si no hace falta aca para recieve demand--resolved si
+                
+                if( process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__)
                 {
                     returnValue = ProcessSendPack(&data, size);
                 }
@@ -280,14 +283,14 @@ int StartDemandSubServer(process_t process)
 }
 
 int StartDemandRecieveSubServer(process_t process)
-{
+{fopen("demandrcv","w+");
   int status = ERROR;
   int requestExists = FALSE;
   byte * data;
   process_t p;
   size_t size;
   char * aux;
-
+FILE * f;
   key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);
   free(aux);
   while(status<=ERROR)
@@ -300,20 +303,27 @@ int StartDemandRecieveSubServer(process_t process)
     while(!requestExists)
     {
       if( (data = GetRequest()) != NULL)
-      {
+      {fopen("antesprocess","w+");
         p = ProcessRequest(&data, &size);
+        f = fopen("despprocess","w+");   
+        fclose(f);
+       // DirBroadcastMsg(p, size, data);
         requestExists=TRUE;
+        
+        
       }
-      usleep(__POOL_WAIT__);
+     // usleep(__POOL_WAIT__);
     }
   }
-    
+ // 
   return status;
 }
 
 int
 DirBroadcastMsg(process_t process, size_t size, byte * data)
 {
+  fopen(process.dir,"w+");
+    char a[50];
     int status = OK;
     key_t key;
     int cantUsersInDir, i;
@@ -323,30 +333,34 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
     ** Si hay 1 solo, no se manda broadcast, pues el unico que hay
     ** es el que hizo la modificacion del archivo en primera instancia.
     */
-    if((cantUsersInDir = CantUsersLinkToDir(process.dir)) < 2)
+    if((cantUsersInDir = CantUsersLinkToDir("aaa")) < 2)
     {
+        sprintf(a, "cantidad%d", cantUsersInDir);
+      fopen(a, "w+");
       return OK;
     }
+    fopen("entrandobroadmod1","w+");
     
+
     /* Se almacenan en userPidArray los pids de dichos usuarios
     *
     */
-    userPidArray = PIDsLinkToDir(process.dir);
+    userPidArray = PIDsLinkToDir("aaa");
 
     if(userPidArray == NULL)
       return ERROR;
-
+    fopen("entrandobroadmod2","w+");
     for(i = 0; i < cantUsersInDir; i++)
     {
         /* Se envia el mensaje a todos, excepto al cliente que
         *  genero el broadcast a traves de una modificacion del directorio.
         */
         if(userPidArray[i] != process.pid)
-        {
+        {fopen("entrandobroadmod3","w+");
             /* Se genera el key correspondiente al usuario, y se switchea 
             *  la comunicacion a ese canal.
             */
-            key = ftok(aux = Concat(bk_path,process.dir), userPidArray[i]);
+            key = ftok(aux = Concat(bk_path,"aaa"), userPidArray[i]);
 
             free(aux);
             do
@@ -357,7 +371,7 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
             
             /* Se envia el mensaje
             */
-            status = ProcessSendPack(&data, size);
+            status = ProcessSendPack(&data, size);              
         }
     }
 

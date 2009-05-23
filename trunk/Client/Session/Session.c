@@ -115,37 +115,41 @@ SendNewClientSignal( string userName, pid_t pid )
 int 
 SendFileAddPack( byte * fileData )
 {
-	/*session_t pack;
-	byte *data;
-	size_t size;
-	
-	pack.opCode = CL_FIL_ADD;
-	strcpy(pack.msg,userName);
-	/* Armo el paquete con la informacion del file a mandar */
-	/*pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
-	
-	size = MakeSessionData(pack, &data);
-	return WriteIPC(data, size);*/
+/*  session_t pack;
+  byte *data;
+  size_t size;
+  fileT file;
+  pack = GetSessionData(prevData);
+  data = ReqFile(*((fileT*)(pack.data))); 
+  pack.opCode = CL_FIL_ADD;
+    //strcpy(pack.msg,());
+  pack.pid = getppid();
+  /* Armo el paquete con la informacion del file a mandar */
+//  pack.dataSize = MakeFilePack(*((fileT*)(pack.data)), data, &pack.data );
+    
+ // size = MakeSessionData(pack, &data);
+ // return WriteIPC(data, size)>0?OK:ERROR;*/
   return OK;
 }
 
 int 
-SendFileModPack( byte * fileData )
+SendFileModPack( byte * prevData )
 {
-    fopen("mandandomod","w+");
-  /*
+  
 	session_t pack;
 	byte *data;
 	size_t size;
-
+    fileT file;
+    pack = GetSessionData(prevData);
+    data = ReqFile(*((fileT*)(pack.data))); 
 	pack.opCode = CL_FIL_MOD;
-	strcpy(pack.msg,());
+	//strcpy(pack.msg,());
+    pack.pid = getppid();
 	/* Armo el paquete con la informacion del file a mandar */
-	/*pack.dataSize = MakeFilePack( file, dataBuffer, &pack.data );
-	
+	pack.dataSize = MakeFilePack(*((fileT*)(pack.data)), data, &pack.data );
+
 	size = MakeSessionData(pack, &data);
-	return WriteIPC(data, size);*/
-    return OK;
+	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
 int
@@ -168,7 +172,7 @@ SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
     memmove(pack.data,&file,pack.dataSize); 
 		
 	size = MakeSessionData(pack, &data);
-    
+
 	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
@@ -186,9 +190,11 @@ SendFileAddTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
   sprintf(a, "%d", dirPid);
   strcpy(pack.senderID, a);
     
+    
   strcpy(pack.msg,userName);
   pack.dataSize = sizeof(fileT);
-  pack.data = (byte*)(&file);
+  pack.data = malloc(pack.dataSize);
+  memmove(pack.data,&file,pack.dataSize); 
         
   size = MakeSessionData(pack, &data);
   return WriteIPC(data, size)>0?OK:ERROR;
@@ -305,7 +311,7 @@ ProcessCall( session_t *data )
 			p.status = OK;
 			break;
 		case SR_NEW_USR_ERR:
-			WritePrompt("El nombre usuario no se encuentra disponible o usted ya se encuantra conectado.\n");
+			WritePrompt("El nombre usuario no se encuentra disponible o usted ya se encuentra conectado.\n");
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			break;
@@ -318,7 +324,9 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_MOD:
+            fopen("broadmod", "w+");
 			p.status = CallFileMod(*data);
+            
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_REM:
@@ -375,7 +383,9 @@ ProcessCall( session_t *data )
             p.opCode = __SPAWN_SND_DEMAND__;
             p.pid = (*data).pid;
             sscanf((*data).senderID, "%d", &(p.status));
+            
             aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
+            fopen(aux,"w+");
             strcpy(p.dir, aux);
             (*data).opCode = CL_FIL_MOD;
             break;

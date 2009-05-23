@@ -122,7 +122,7 @@ DB_STAT GetLast10User(sqliteADT db, pqADT queue,const char *userName);
 
 DB_STAT AddLog(sqliteADT db, const char *userName,const char * fileName ,const char *action);
 
-
+DB_STAT UsersLinkToDirCant(sqliteADT db,const char * pathName,pqADT queue, int * resp);
 
 #endif
 
