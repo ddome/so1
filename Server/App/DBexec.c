@@ -326,7 +326,7 @@ GetCantUsersLinkToDir(char * pathName)
         fprintf(stderr,"Error al crear la cola en GetCantUsersLinkToDir.\n");
         return ERROR;
     }
-
+    printf("PATH: *%s*\n",pathName);
     ListUsersLinkToDir(db,pathName,queue);
     
     cant=QueueDepth(queue);

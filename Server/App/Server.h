@@ -46,7 +46,7 @@
 #define __DIR_BROADCAST__     7
 #define __SERVER_BROADCAST__  8
 #define __KILL_DIR__          9
-
+#define __DIR_BROADCAST_DEMAND__ 10
 /* Definiciones para creacion de procesos con fork()
 */
 

@@ -19,27 +19,27 @@
 int
 main(void)
 {
-    int status;
+  int status;
 
-    status = InitPromptCommunication();
-    status = InitTransport();
-    status = InitApplication();
-	status = InitServerPath();
-	
-    if(status != ERROR)
+  status = InitPromptCommunication();
+  status = InitTransport();
+  status = InitApplication();
+  status = InitServerPath();
+        
+  if(status != ERROR)
+  {
+    status = StartListening();
+    if(status == ERROR)
     {
-		status = StartListening();
-		if(status == ERROR)
-		{
-			printf("Se ha producido un error\n");
-		}
+      printf("Se ha producido un error\n");
     }
-    else
-    {
-		fprintf(stderr, "No es posible inicializar la aplicacion.\n");
-    }
+  }
+  else
+  {
+    fprintf(stderr, "No es posible inicializar la aplicacion.\n");
+  }
 
-    CloseApplication();
+  CloseApplication();
 
-    return 0;
-}	
+  return 0;
+}       

@@ -82,6 +82,22 @@ SendDirPack(process_t process)
     return ProcessSendPack(&data, size);
 }
 
+/*int
+SendFileSignal(process_t process, byte * prevData )
+{
+    size_t size;
+    byte * data;
+    session_t auxSession;
+    session_t session;
+    
+    session.pid = process.pid;
+    session.dataSize = strlen(process.dir) + 1;
+    session.data = malloc(session.dataSize);
+    strcpy(session.data, process.dir);  
+    session.opCode = SR_FIL_TRANS;
+    
+    
+}*/
 
 void
 GoodBye(void)
@@ -107,6 +123,8 @@ ProcessCall( session_t *data )
 {
     string aux;
     process_t p;
+    byte * d;
+    size_t size;
 	switch( (*data).opCode ) {
 			
 		case CL_NEW_CON:
@@ -137,7 +155,6 @@ ProcessCall( session_t *data )
             sscanf((*data).senderID, "%d", &(p.status ));
             (*data).opCode = SR_READY_TO_RECIEVE_MOD;
             aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
-            fopen("pasoextract","w+");
             strcpy(p.dir, aux);
             p.pid = (*data).pid; 
             p.opCode = __SPAWN_REC_DEMAND__;                           
@@ -150,7 +167,19 @@ ProcessCall( session_t *data )
 			
 		case CL_FIL_MOD:	
 			p.status = CallFileMod(*data);
-            p.opCode = __NO_RESPONSE__;
+            sscanf((*data).senderID, "%d", &(p.status));
+            p.status = 
+            p.pid = (*data).pid;
+            (*data).opCode = SR_FIL_MOD;
+         
+            aux = DirName(((fileT*)((*data).data))->path);
+            strcpy(p.dir, aux);
+            p.opCode = __DIR_BROADCAST__;
+            fopen("encallsession","w+");
+
+            size = MakeSessionData(*data, &d);
+            
+            DirBroadcastMsg(p, size, d);
 			break;
 			
 		case CL_FIL_REM:

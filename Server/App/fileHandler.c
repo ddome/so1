@@ -508,12 +508,12 @@ string ExtractDirFromPath(string path)
   {
     size = aux - path;
     dir = calloc(size + 1,sizeof(char));
-    fopen("pasoextract2","w+");
+
     strncpy(dir, path, size);
-    fopen("pasoextract3","w+");
+
     return dir;
   }
-
+    
   return path;
 }   
     

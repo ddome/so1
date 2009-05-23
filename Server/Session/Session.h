@@ -49,6 +49,7 @@
 #define SR_DIR_REM          25
 #define SR_READY_TO_RECIEVE_MOD 27
 #define SR_READY_TO_RECIEVE_ADD 29
+#define SR_FIL_TRANS 30
 
 //Agregar Sr_DIr-CON-ERROR!!!!!!!!!!1111
 
@@ -66,6 +67,8 @@
 #define CL_DIR_CON          21
 #define CL_FIL_MOD_TRANSFER     26
 #define CL_FIL_ADD_TRANSFER     28
+#define CL_READY_TO_REC 31
+
 /* Paquete de session */
 
 typedef struct {

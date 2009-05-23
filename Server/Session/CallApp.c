@@ -171,7 +171,7 @@ CallFileMod(session_t data)
 	string user; // Usado solo para agregar a los Logs
 	int ret;
 	
-	user = data.msg;
+    user = ConvertPIDToUserName(data.pid);
 	GetFileData(data,&file,fileData);	
 	LogAction(user, GetPath(file), "Mod");
 		

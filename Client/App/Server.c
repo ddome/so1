@@ -321,7 +321,7 @@ StartDemandSndSubServer(process_t process, size_t size, byte * data)
     int status;
     char * aux;
     key_t key = ftok(aux = Concat(bk_path, process.dir), getppid());
-    fopen("demandsend", "w+");
+
     do
     {
         status = InitCommunication(key);

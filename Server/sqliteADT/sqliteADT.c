@@ -981,6 +981,48 @@ ListUsersLinkToDir(sqliteADT db,const char * pathName,pqADT queue)
 }
 
 DB_STAT
+    UsersLinkToDirCant(sqliteADT db,const char * pathName,pqADT queue, int * resp)
+{
+  sqlite3_stmt *statement;
+  int ret;
+  char * dirP;
+  char auxPath[MAX_DIR_NAME]={0};
+  char *sqlSelect = "SELECT count(users.id) FROM users INNER JOIN users_dir ON users_dir.user_id = users.id INNER JOIN dirs ON users_dir.dir_id = dirs.id WHERE users.online = 1 AND dirs.dirname = '%s'";
+   
+
+  if ( db == NULL || queue == NULL )
+    return DB_INVALID_ARG;
+    
+  if ( ( dirP = EscapeString( db, pathName ) ) == NULL )
+    return DB_NO_MEMORY;
+
+  ret = QueryExecute( db, &statement, sqlSelect, 0, NULL, 1,dirP );
+
+  free(dirP);
+  while ( ret == SQLITE_ROW )
+  {
+    *resp=sqlite3_column_int(statement, 0);
+
+  /*  if ((Enqueue(queue, (void *)aux,1)) == 1)
+      ret = sqlite3_step( statement );
+    else
+    {
+      sqlite3_finalize( statement );
+      return DB_INTERNAL_ERROR;
+    }*/
+  }
+
+  sqlite3_finalize( statement );
+
+  if ( ret != SQLITE_DONE )
+  {
+    return DB_INTERNAL_ERROR;
+  }
+
+  return DB_SUCCESS;
+}
+
+DB_STAT
 ListPIDsLinkToDir(sqliteADT db,const char * pathName,pqADT queue)
 {
     sqlite3_stmt *statement;

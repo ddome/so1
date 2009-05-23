@@ -426,6 +426,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
         case RENAME:
             break;
         case MODIFICAR:
+            fopen("modifico", "w+");
             status = SendFileModTransferSignal(name, file, pid, getppid());
             break;
         default:
