@@ -1,6 +1,8 @@
 #include "Application.h"
 #include "../Transport/OutputPipe.h"
 
+extern char *bk_path_client;
+
 string *
 DirList(void)
 {
@@ -77,7 +79,7 @@ int
 DelDir( string dir )
 {   
 	string dest;
-	dest = Concat(SERVER_PATH,dir);
+    dest = Concat(bk_path_client,dir);
 	dest = Concat(dest,"/");
 	RemoveDir(dest);
 	free(dest);

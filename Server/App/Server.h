@@ -22,6 +22,7 @@
 #include "../Session/Session.h"
 #include "../Lib/Error.h"
 #include "../Transport/OutputPipe.h"
+#include "DBexec.h"
 /*
 *  Defines
 */

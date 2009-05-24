@@ -6,7 +6,7 @@
 #include "CallApp.h"
 #include "../Transport/OutputPipe.h"
 
-
+extern char *bk_path;
  
 /* Static Functions */
 
@@ -269,9 +269,13 @@ SendExitSignal( string userName )
 int
 SendDirRem( string userName, pid_t pid, string dirName )
 {
-	session_t pack;
+	char * serverPath;
+    key_t keyDir;
+    session_t pack;
 	size_t size;
 	byte *data;
+    int status;
+    
 	pack.pid = pid;
 	pack.opCode = CL_DIR_REM;
 	strcpy(pack.msg,userName);
@@ -281,7 +285,18 @@ SendDirRem( string userName, pid_t pid, string dirName )
 	size = MakeSessionData(pack, &data);
 	pack = GetSessionData(data);
 	
-	return WriteIPC(data, size)?OK:ERROR;		
+    keyDir = ftok(serverPath = Concat(bk_path,dirName), __DEFAULT_PID__);
+    free(serverPath);
+    
+    if(keyDir != -1 && InitIPC(keyDir) != ERROR){
+        status =  WriteIPC(data, size)?OK:ERROR;       
+        InitIPC(__DEFAULT_PID__);
+        return status;
+    }
+    else{
+        return ERROR;
+    }
+	    
 }
 
 /* Static Functions */
