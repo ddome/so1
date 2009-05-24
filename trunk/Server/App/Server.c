@@ -171,6 +171,8 @@ int StartSubProcess(process_t process)
 	        break;	
 	    case __SPAWN_DIR__:
 	        returnValue = StartDirSubServer(process);
+            if(returnValue == __SHUT_DOWN__)
+              fopen("seapago", "w+");
             returnValue = CHILD_RETURN;
 	        break;
 	    case __SPAWN_DEMAND__:
@@ -225,14 +227,18 @@ int StartDirSubServer(process_t reqProcess)
 	        /* se manda a que sea procesado en la capa de sesion 
 	        */
 	        process = ProcessRequest(&data, &size);
-            /*
-            *  Se switchea al key del cliente para escribir
-            */
-            keyClient = ftok(aux = Concat(bk_path, reqProcess.dir), process.pid);
-            free(aux);
-            if((status = InitCommunication(keyClient)) > ERROR)
-	            status = AnalyzeOperation(process, data, size);
-    
+            if(process.status != __SHUT_DOWN__){
+                /*
+                *  Se switchea al key del cliente para escribir
+                */
+                keyClient = ftok(aux = Concat(bk_path, reqProcess.dir), process.pid);
+                free(aux);
+                if((status = InitCommunication(keyClient)) > ERROR)
+	                status = AnalyzeOperation(process, data, size);
+            }
+            else{
+                status = __SHUT_DOWN__;
+            }
 	    }
 	    else
 	    {
@@ -283,7 +289,7 @@ int StartDemandSubServer(process_t process)
 }
 
 int StartDemandRecieveSubServer(process_t process)
-{fopen("demandrcv","w+");
+{
   int status = ERROR;
   int requestExists = FALSE;
   byte * data;
@@ -291,6 +297,7 @@ int StartDemandRecieveSubServer(process_t process)
   size_t size;
   char * aux;
 FILE * f;
+    InitBD();/*Mirar para threads!!!!*/
   key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);
   free(aux);
   while(status<=ERROR)
@@ -303,37 +310,36 @@ FILE * f;
     while(!requestExists)
     {
       if( (data = GetRequest()) != NULL)
-      {fopen("antesprocess","w+");
+      {
         p = ProcessRequest(&data, &size);
-        f = fopen("despprocess","w+");   
-        fclose(f);
-       // DirBroadcastMsg(p, size, data);
         requestExists=TRUE;
         
         
       }
-     // usleep(__POOL_WAIT__);
+      usleep(__POOL_WAIT__);
     }
   }
- // 
   return status;
 }
 
 int
 DirBroadcastMsg(process_t process, size_t size, byte * data)
 {
-  fopen(process.dir,"w+");
+  //fopen(process.dir,"w+");
     char a[50];
     int status = OK;
     key_t key;
     int cantUsersInDir, i;
     int * userPidArray;
     string aux;
+    
     /* Se obtienen la cantidad de usuarios conectados al directorio.
     ** Si hay 1 solo, no se manda broadcast, pues el unico que hay
     ** es el que hizo la modificacion del archivo en primera instancia.
     */
-    if((cantUsersInDir = CantUsersLinkToDir("aaa")) < 2)
+    cantUsersInDir = CantUsersLinkToDir("aaa");
+        
+    if(cantUsersInDir < 2)
     {
         sprintf(a, "cantidad%d", cantUsersInDir);
       fopen(a, "w+");

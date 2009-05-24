@@ -121,7 +121,7 @@ GetDataSize( session_t data )
 static process_t
 ProcessCall( session_t *data )
 {
-    string aux;
+    char *  aux;
     process_t p;
     byte * d;
     size_t size;
@@ -140,8 +140,13 @@ ProcessCall( session_t *data )
 			break;
 
 		case CL_DIR_REM:	
+            fopen("llegodirrem", "w+");
 			p.status = CallDirRem(*data);
-           		p.opCode = __NO_RESPONSE__;
+            if(p.status==__SHUT_DOWN__)
+              fopen("apagar","w+");
+            else
+              fopen("noapagar","w+");
+            p.opCode = __NO_RESPONSE__;
 			break;
 			
 		case CL_FIL_ADD_TRANSFER:	
@@ -166,19 +171,17 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_FIL_MOD:	
-			p.status = CallFileMod(*data);
-            sscanf((*data).senderID, "%d", &(p.status));
-            p.status = 
+            p.status = CallFileMod(*data);
+          //  sscanf((*data).senderID, "%d", &(p.status));
             p.pid = (*data).pid;
             (*data).opCode = SR_FIL_MOD;
          
             aux = DirName(((fileT*)((*data).data))->path);
             strcpy(p.dir, aux);
-            p.opCode = __DIR_BROADCAST__;
-            fopen("encallsession","w+");
+            p.opCode = __NO_RESPONSE__;
 
             size = MakeSessionData(*data, &d);
-            
+
             DirBroadcastMsg(p, size, d);
 			break;
 			

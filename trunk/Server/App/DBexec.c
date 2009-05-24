@@ -320,25 +320,27 @@ GetCantUsersLinkToDir(char * pathName)
     pqADT queue;
     int cant=0,i=0;
     char * aux;
+    printf("Conchudo2\n");
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {
         fprintf(stderr,"Error al crear la cola en GetCantUsersLinkToDir.\n");
         return ERROR;
     }
-    printf("PATH: *%s*\n",pathName);
-    ListUsersLinkToDir(db,pathName,queue);
-    
+    //printf("PATH: *%s*\n",pathName);
+   // cant=ListUsersLinkToDir(db,pathName,queue);
+    cant=ListUsersLinkToDir(db,pathName,queue);
+    printf("Ret: %d\n",cant);
     cant=QueueDepth(queue);
     printf("Cant= %d\n",cant);
-    while(!PQIsEmpty(queue))
+    /*while(!PQIsEmpty(queue))
     {
       aux=Dequeue(queue);
       printf("%s\n",aux);
       i++;
     }
     
-    FreePQ(&queue);
+    FreePQ(&queue);*/
     return cant;
 }
 

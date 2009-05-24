@@ -979,48 +979,51 @@ ListUsersLinkToDir(sqliteADT db,const char * pathName,pqADT queue)
 
     return DB_SUCCESS;
 }
-
+/*
 DB_STAT
-    UsersLinkToDirCant(sqliteADT db,const char * pathName,pqADT queue, int * resp)
+    UsersLinkToDirCant(sqliteADT db,char * pathName,int * resp)
 {
+  printf("puto0");
   sqlite3_stmt *statement;
   int ret;
   char * dirP;
   char auxPath[MAX_DIR_NAME]={0};
   char *sqlSelect = "SELECT count(users.id) FROM users INNER JOIN users_dir ON users_dir.user_id = users.id INNER JOIN dirs ON users_dir.dir_id = dirs.id WHERE users.online = 1 AND dirs.dirname = '%s'";
-   
+    printf("puto1");
 
-  if ( db == NULL || queue == NULL )
+  if ( db == NULL )
     return DB_INVALID_ARG;
     
   if ( ( dirP = EscapeString( db, pathName ) ) == NULL )
     return DB_NO_MEMORY;
-
+  
+     printf("puto2");
   ret = QueryExecute( db, &statement, sqlSelect, 0, NULL, 1,dirP );
-
+    printf("puto3");
   free(dirP);
   while ( ret == SQLITE_ROW )
   {
     *resp=sqlite3_column_int(statement, 0);
-
-  /*  if ((Enqueue(queue, (void *)aux,1)) == 1)
+        printf("puto4");
+    if ((Enqueue(queue, (void *)aux,1)) == 1)
       ret = sqlite3_step( statement );
     else
     {
       sqlite3_finalize( statement );
       return DB_INTERNAL_ERROR;
-    }*/
+    }
   }
 
+  printf("puto5");
   sqlite3_finalize( statement );
-
+    printf("puto6");
   if ( ret != SQLITE_DONE )
   {
     return DB_INTERNAL_ERROR;
   }
 
   return DB_SUCCESS;
-}
+}*/
 
 DB_STAT
 ListPIDsLinkToDir(sqliteADT db,const char * pathName,pqADT queue)

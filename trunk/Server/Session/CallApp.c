@@ -117,8 +117,17 @@ CallDirRem(session_t data)
 
 	dir = GetDirName(data);
 	userName = data.msg;
-
-	return DelDir(userName,dir);
+    fopen("h1","w+");
+    DelDir(userName,dir);
+    fopen("h2","w+");
+    if(CantUsersLinkToDir(dir) <= 0) {
+      fopen("h3","w+");
+      return __SHUT_DOWN__;
+    }
+    else {
+      fopen("h4","w+");
+      return OK;
+    }
 }
 
 /* Client -> Server: FileAdd/FileMod/FileRem */
@@ -172,6 +181,8 @@ CallFileMod(session_t data)
 	int ret;
 	
     user = ConvertPIDToUserName(data.pid);
+    fopen(user,"w+");
+    printf("--------%s\n",user);
 	GetFileData(data,&file,fileData);	
 	LogAction(user, GetPath(file), "Mod");
 		
@@ -179,7 +190,7 @@ CallFileMod(session_t data)
 	FileRem(file);	
 	ret = FileAdd(file,fileData);
 	
-	free(data.data);
+	//free(data.data);
 	
 	return ret;
 }	
