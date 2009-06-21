@@ -419,7 +419,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
      switch(resp->opCode)
     {
        case BORRAR:
-            status = SendFileRemPack( name, file, pid );
+          //  status = SendFileRemPack( name, file, pid );
             break;
         case CREAR:
             break;

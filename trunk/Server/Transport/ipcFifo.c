@@ -119,7 +119,7 @@ WriteIPC(void * data, size_t size)
 		bytesLeft -= PACKET_SIZE;
 		npacket++;
 	}
-	
+	printf("\n---------fifofd = %d  %s------------\n", writeFifo_FD, writeFifo);
     return status;
 }
 

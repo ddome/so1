@@ -156,22 +156,24 @@ ProcessCall( session_t *data )
             fopen("llegoadd","w+");
             p.opCode = __SPAWN_REC_DEMAND__;
 			break;
-        case CL_FIL_MOD_TRANSFER:   
+        case CL_FIL_MOD_TRANSFER:
             sscanf((*data).senderID, "%d", &(p.status ));
             (*data).opCode = SR_READY_TO_RECIEVE_MOD;
             aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
             strcpy(p.dir, aux);
             p.pid = (*data).pid; 
-            p.opCode = __SPAWN_REC_DEMAND__;                           
+            p.opCode = __NOT_SPAWN__;
             break;
-                    
+
 		case CL_FIL_ADD:	
 			p.status = CallFileAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
 			
-		case CL_FIL_MOD:	
+		case CL_FIL_MOD:
+	 fopen("llegomodfile","w+");
             p.status = CallFileMod(*data);
+fopen("llegomodfile2","w+");
           //  sscanf((*data).senderID, "%d", &(p.status));
             p.pid = (*data).pid;
             (*data).opCode = SR_FIL_MOD;
@@ -183,7 +185,7 @@ ProcessCall( session_t *data )
             size = MakeSessionData(*data, &d);
 
             DirBroadcastMsg(p, size, d);
-			break;
+	    break;
 			
 		case CL_FIL_REM:
             p.pid = (*data).pid;
