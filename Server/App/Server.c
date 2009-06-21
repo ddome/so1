@@ -21,7 +21,7 @@ StartListening(void)
     size_t size = 0;
     status = InitCommunication(__DEFAULT_PID__);
     consoleProcess.opCode = __SPAWN_PROMPT__;
-	outputProcess.opCode = __SPAWN_OUTPUT__;
+    outputProcess.opCode = __SPAWN_OUTPUT__;
 
     status = SpawnSubProcess(outputProcess, size,data);
     if(status == CHILD_RETURN)
@@ -332,13 +332,13 @@ DirBroadcastMsg(process_t process, size_t size, byte * data)
     int cantUsersInDir, i;
     int * userPidArray;
     string aux;
-    
+
     /* Se obtienen la cantidad de usuarios conectados al directorio.
     ** Si hay 1 solo, no se manda broadcast, pues el unico que hay
     ** es el que hizo la modificacion del archivo en primera instancia.
     */
     cantUsersInDir = CantUsersLinkToDir("aaa");
-        
+
     if(cantUsersInDir < 2)
     {
         sprintf(a, "cantidad%d", cantUsersInDir);

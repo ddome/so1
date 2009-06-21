@@ -102,5 +102,6 @@ int SendDirRem( string userName, pid_t pid, string dirName );
 
 int SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid);
 int SendFileAddTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid);
-
+int 
+SendFileModPacket( session_t pack);
 #endif

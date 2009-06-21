@@ -139,19 +139,27 @@ SendFileModPack( byte * prevData )
 	session_t pack;
 	byte *data;
 	size_t size;
-    fileT file;
-    pack = GetSessionData(prevData);
-    data = ReqFile(*((fileT*)(pack.data))); 
+        fileT file;
+        pack = GetSessionData(prevData);
+        data = ReqFile(*((fileT*)(pack.data))); 
 	pack.opCode = CL_FIL_MOD;
 	//strcpy(pack.msg,());
-    pack.pid = getppid();
+      //  pack.pid = getppid();
 	/* Armo el paquete con la informacion del file a mandar */
 	pack.dataSize = MakeFilePack(*((fileT*)(pack.data)), data, &pack.data );
-
 	size = MakeSessionData(pack, &data);
 	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
+int 
+SendFileModPacket( session_t pack)
+{
+    byte * data;
+    size_t size;
+    size = MakeSessionData(pack, &data);
+    fopen("mandandomodfile2","w+");
+    return SendFileModPack(data);
+}
 int
 SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
 {
@@ -159,20 +167,16 @@ SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
 	byte *data;
 	size_t size;
 	char a[30];
-    
-    pack.pid = pid;
-	pack.opCode = CL_FIL_MOD_TRANSFER;
-    
-    sprintf(a, "%d", dirPid);
-    strcpy(pack.senderID, a);
-    
+        sprintf(a, "%d", dirPid);
+        strcpy(pack.senderID, a);
 	strcpy(pack.msg,userName);
-	pack.dataSize = sizeof(fileT);
-    pack.data = malloc(pack.dataSize);
-    memmove(pack.data,&file,pack.dataSize); 
-		
+        data = ReqFile(file);
+	pack.opCode = CL_FIL_MOD;
+        pack.pid = pid;
+	/* Armo el paquete con la informacion del file a mandar */
+	pack.dataSize = MakeFilePack(file, data, &pack.data );
+        printf("\nfilet : %d   file  %d\n", sizeof(fileT), pack.dataSize);
 	size = MakeSessionData(pack, &data);
-
 	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
@@ -395,14 +399,15 @@ ProcessCall( session_t *data )
             (*data).opCode = CL_FIL_MOD;
             break;
         case  SR_READY_TO_RECIEVE_MOD:
-            p.opCode = __SPAWN_SND_DEMAND__;
+            p.opCode =  __NO_RESPONSE__;
             p.pid = (*data).pid;
             sscanf((*data).senderID, "%d", &(p.status));
             
             aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
-            fopen(aux,"w+");
+            fopen("mandandomodfile","w+");
             strcpy(p.dir, aux);
             (*data).opCode = CL_FIL_MOD;
+ SendFileModPacket(*data);
             break;
 		default:
 			p.status = ERROR;

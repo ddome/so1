@@ -163,7 +163,7 @@ CallFileAdd(session_t data)
 	user = data.msg;
 
 	GetFileData(data,&file,fileData);	
-	LogAction(user, GetPath(file), "Add");
+	//LogAction(user, GetPath(file), "Add");
 	
 	ret = FileAdd(file,fileData);	
 	
@@ -182,14 +182,15 @@ CallFileMod(session_t data)
 	
     user = ConvertPIDToUserName(data.pid);
     fopen(user,"w+");
-    printf("--------%s\n",user);
-	GetFileData(data,&file,fileData);	
-	LogAction(user, GetPath(file), "Mod");
-		
+    printf("--------%s   %s\n",user, file.path);
+	GetFileData(data,&file,fileData);
+	//LogAction(user, GetPath(file), "Mod");
+    fopen("enmod1","w+");		
 	/*Lo saco y vuelvo a insertar */
 	FileRem(file);	
+fopen("enmod2","w+");		
 	ret = FileAdd(file,fileData);
-	
+	fopen("enmod3","w+");		
 	//free(data.data);
 	
 	return ret;
@@ -206,7 +207,7 @@ CallFileRem(session_t * dataPtr)
     
 	user = data.msg;	
 	GetFileRemData(data,&file);
-	LogAction(user, GetPath(file), "Del");
+	//LogAction(user, GetPath(file), "Del");
 	data.opCode = SR_FIL_REM;
     *dataPtr = data;
 	return FileRem(file);	
