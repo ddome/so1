@@ -136,6 +136,10 @@ inotifyWatcher(process_t process)
     *  a vigilar.
     */
 
+    printf("Voy a vigilar --%s--\n",process.dir);
+	fflush(stdout);
+    
+    
     while(signal == __INOTIFY_NO_DATA__)
     {
       usleep(__POOL_WAIT__);
@@ -156,9 +160,12 @@ inotifyWatcher(process_t process)
     /*Agregar directorio y subdirectorios al vigilador.
     */
     pathAux=Concat(bk_path_client,process.dir);
-    serverPath = Concat(bk_path, process.dir);
-    key = ftok(serverPath, __DEFAULT_PID__);
+    //serverPath = Concat(bk_path, process.dir);//DEPRECATED
+    //key = ftok(serverPath, __DEFAULT_PID__);//DEPRECATED
 
+    printf("Voy a vigilar --%s--\n",pathAux);
+	fflush(stdout);
+	
     ret=AddNewDir(fd,pathAux,list);
     if(ret==ERROR)
     {
@@ -167,33 +174,39 @@ inotifyWatcher(process_t process)
     }
     while (1)
     {
-        printf("Leo evento.\n");
-        printf("===========\n");
-        resp=read_events(fd,list,&lastCookie,&lastMask);
+            printf("Leo evento.\n");
+            printf("===========\n");
+            resp=read_events(fd,list,&lastCookie,&lastMask);
 
-	    if( resp->opCode==BORRAR )
-	        WritePrompt("Borrar");
-	    else if( resp->opCode==CREAR )
-	        WritePrompt("Crear");
-	    else if( resp->opCode==MODIFICAR )
-	        WritePrompt("Modificar");
-	    else
-	        error=1;
-        
-        /* Aviso al servidor de la modificacion
-        */
-	if(!error)
-    {
-        signal = ReadINotifyMsg();
-        if(signal != __INOTIFY_DISABLE__)    
-            ret = NotifyServer(process.pid, key, resp, name);
-        
-    }
+	        if( resp->opCode==BORRAR ) {
+	            printf("Borrar");
+	            fflush(stdout);
+	        }
+	        else if( resp->opCode==CREAR ) {
+	            printf("Crear");
+	            fflush(stdout);
+	        }
+	        else if( resp->opCode==MODIFICAR ) {
+	            printf("Modificar");
+	            fflush(stdout);
+	        }
+	        else
+	            error=1;
+            
+            /* Aviso al servidor de la modificacion
+            */
+	    if(!error)
+        {
+            signal = ReadINotifyMsg();
+            if(signal != __INOTIFY_DISABLE__)    
+                ret = NotifyServer(process.pid, key, resp, name);
+            
+        }
 	
-        
-	if(!error)
-	    printf("%s - %s no se directorio\n",resp->path,resp->isDir?"SI":"NO");
-	error=0;
+            
+	    if(!error)
+	        printf("%s - %s es directorio?\n",resp->path,resp->isDir?"SI":"NO");
+	    error=0;
     }
     if(pathAux != NULL)
         free(pathAux);
@@ -413,7 +426,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
 
     file = NewFileT(path, fileName);
 
-    while(InitCommunication(key) == ERROR)
+    while(InitCommunication(__DEFAULT_PID__) == ERROR)
       usleep(__POOL_WAIT__);
     
      switch(resp->opCode)
@@ -466,7 +479,7 @@ InitNotify(void)
 	int ret;
 
 	if( (fd=fopen("config","r")) == NULL ) {
-		WritePrompt("El archivo config es inexistente");
+		printf("El archivo config es inexistente");
 		ret = ERROR;
 	}
 	else {
