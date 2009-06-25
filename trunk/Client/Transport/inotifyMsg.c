@@ -26,22 +26,26 @@ int InitINotifyMsg(pid_t pid)
     /* Se arman los nombres de los fifos para el inotify que se pidio, 
     *  y luego se crean los fifo's propiamente.
     */
+    
+    printf("Recibi un pedido para crear un fifo con el pid %d\n",pid);
+    fflush(stdout); 
 
     rdFifo=MakeRD(pid);
 
     if ( mkfifo(rdFifo, __DEFAULT_FIFO_MODE__) == ERROR )
     {
+        printf("Hubo un error al crearlo\n");
+        fflush(stdout);
         if(errno != EEXIST)
-          return ERROR;
+          status = ERROR;
     }
+    
+    fflush(stdout);
 
-    rdFifo_FD = open(rdFifo, O_RDWR | O_NONBLOCK);
-
-    if(rdFifo_FD == ERROR )
-    {
-      status = ERROR;
-		printf("no se puede abrir el fifo");
-    }
+    rdFifo_FD = open(rdFifo, O_RDWR | O_NONBLOCK);   
+    
+    printf("Cree el fifo con nombre %s\n",rdFifo);
+    fflush(stdout);
 	
 
     return status;
@@ -53,6 +57,9 @@ WriteINotifyMsg(char msg)
     int status;
 
     status = write(rdFifo_FD, &msg, sizeof(char));
+    
+    printf("Mande 1 paquete al Inotify por %s \n", rdFifo);
+    fflush(stdout);
 
     return status == ERROR ? ERROR: OK ;
 }
@@ -64,6 +71,9 @@ ReadINotifyMsg(void)
     char msg = __INOTIFY_NO_DATA__;
 
     status = read(rdFifo_FD, &msg, sizeof(char));
+    
+    //printf("Lei un Inotify por %s \n",rdFifo);
+    //fflush(stdout);
    
     return (status == ERROR || status == 0) ? __INOTIFY_NO_DATA__ : msg ;
 }

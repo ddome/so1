@@ -282,18 +282,45 @@ int StartDemandSubServer(process_t process)
     size_t size;
     char * aux;
     process_t inotifyProcess;
-    
-    inotifyProcess.pid = getppid();
-    strcpy(inotifyProcess.dir,process.dir);
-    inotifyProcess.opCode=__SPAWN_INOTIFY__;
-    SpawnSubProcess(inotifyProcess,0,NULL);
-    
+        
     /* Me conecto al servidor de transferencia */
+    status = ERROR;
     while(status<=ERROR)
     {
 	    status = InitCommunication(process.pid);
         usleep(__POOL_WAIT__);
     }
+    
+    printf("Inicie la comunicacion con el proceso demanda servidor\n");
+    fflush(stdout);
+    
+    /* Comunicacion con el inotify */
+    status = ERROR;
+    while(status<=ERROR)
+    {
+        /* Lo identifico con el pid del proceso principal */
+	    status = InitINotifyMsg(getppid());
+        usleep(__POOL_WAIT__);
+    }
+    
+    printf("Inicie la comunicacion con el proceso inotify\n");
+    fflush(stdout); 
+    
+    /* Deshabilito el inotify */
+    /*while(WriteINotifyMsg(__INOTIFY_NO_DATA__) == ERROR) {
+        usleep(__POOL_WAIT__);
+    }*/
+    
+    /* Creo el proceso inotify */
+    inotifyProcess.pid = getppid();
+    strcpy(inotifyProcess.dir,process.dir);
+    inotifyProcess.opCode=__SPAWN_INOTIFY__;
+    SpawnSubProcess(inotifyProcess,0,NULL);
+    
+    printf("Creado el proceso inotify\n");
+    fflush(stdout);
+    
+    
     if(status > ERROR)
     {
 		while(!requestExists)
@@ -302,16 +329,12 @@ int StartDemandSubServer(process_t process)
 			{
 				p = ProcessRequest(&data, &size);
                 if(p.status != ERROR) {
-                   while(status<=ERROR)
-                    {
-	                    status = InitINotifyMsg(getppid());
-                        usleep(__POOL_WAIT__);
-                    }
+    
                     printf("Le voy a mandar el mensaje\n");
                     fflush(stdout);
-                    while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
+                   /* while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
                        usleep(__POOL_WAIT__);
-                    }
+                    }*/
                     printf("Le mande el mensaje\n");
                     fflush(stdout);
                 }
@@ -411,18 +434,8 @@ StartInotifySubServer(process_t process)
 {
     printf("Llego aca che\n");
     fflush(stdout);
-    /* Creo la comunicacion con el proceso de inotify */
-    int status = InitINotifyMsg(process.pid);
-    if(status == ERROR)
-    {
-	    return ERROR;
-    }
-    
-    printf("Inicie el InitNotify\n");
-    fflush(stdout);
-    
-    process.pid = getpid();
-    status = inotifyWatcher(process);
+   
+    int status = inotifyWatcher(process);
 
     return status;
 }
