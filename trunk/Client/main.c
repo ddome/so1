@@ -23,18 +23,20 @@ main(void)
     status[1] =  InitApplication();
     status[2] =  InitServerPath();
     status[3] =  InitNotify();
-    status[4] =  InitPromptCommunication(getpid());
+    //status[4] =  InitPromptCommunication(getpid());
 
     for( i=0; i<5; i++ ) {
 	if( status[i] == ERROR ) {
-		WritePrompt("No se a podido inicializar la aplicacion");
+		printf("No se a podido inicializar la aplicacion\n");
+		fflush(stdout);
 		return 0;
 	}
     }
 
     status[5] = StartListening();
     if(status[5] == ERROR) {
-	WritePrompt("No se a podido inicializar la comunicacion");
+	printf("No se a podido inicializar la comunicacion\n");
+	fflush(stdout);
     }
    
     return 0;

@@ -55,8 +55,29 @@ ProcessRequest(byte ** data, size_t * size)
 int   
 ProcessSendPack(byte ** data, size_t size)
 {
-    return WriteIPC(*data, size)>0?OK:ERROR;
+    return WriteIPC(*data, size)>0?OK:ERROR; //liberar data
 }
+
+int
+SendStartTransfer(process_t process)
+{
+    session_t session;
+    size_t size;
+    byte * data;
+    /* Codigo de la operacion */
+    session.opCode = SR_DIR_REQ_OK;
+    /* Direccion en donde se va a transmitir */
+    session.pid    = process.pid;
+    /* Directorio a transmitir */
+    session.dataSize = strlen(process.dir) + 1;
+    strcpy(session.data, process.dir);
+    
+    size = MakeSessionData(session, &data);
+    /* Mando el aviso */
+    return ProcessSendPack(&data, size);
+
+}
+
 
 int
 SendDirPack(process_t process)
@@ -65,13 +86,13 @@ SendDirPack(process_t process)
     size_t size;
     byte * data;
     
-    char * userName = ConvertPIDToUserName(process.pid);
+    //char * userName = ConvertPIDToUserName(process.pid);
 
-    if(userName != NULL){
-      strcpy(session.msg, userName);
-      free(userName);
-    }
-	
+    //if(userName != NULL){
+      //strcpy(session.msg, userName);
+      //free(userName);
+    //}
+		
     session.dataSize = strlen(process.dir) + 1;
     session.data = malloc(session.dataSize);
     strcpy(session.data, process.dir);	
@@ -107,6 +128,16 @@ GoodBye(void)
 
 void ShutDown(void)
 {
+	/* AVISO A CLIENTES */
+
+	/* BORRO CANALES DE COMUNICACION */
+	RemoveDir(COMM_DIR);	
+
+    /* DESLOGUEO USUARIOS */	
+    CloseApplication();
+
+	/* MATO PROCESOS */	
+	kill(getppid(),SIGINT);
 }
 	
 /* Static Functions */
@@ -128,42 +159,48 @@ ProcessCall( session_t *data )
 	switch( (*data).opCode ) {
 			
 		case CL_NEW_CON:
+			printf("Llego un pedido de nueva conexion\n");
+			fflush(stdout);
 			p.status = CallNewConection(data);
 			p.opCode = __NOT_SPAWN__;
+			/* contesto a esta direccion */
 			p.pid = (*data).pid;
 			break;
 			
 		case CL_NEW_USR:
+			printf("Llego un pedido de nueva usuario\n");
+			fflush(stdout);
 			p.pid = (*data).pid;
 			p.status = CallNewClient(data);
 			p.opCode = __NOT_SPAWN__;
 			break;
 
-		case CL_DIR_REM:	
-            fopen("llegodirrem", "w+");
-			p.status = CallDirRem(*data);
-            if(p.status==__SHUT_DOWN__)
-              fopen("apagar","w+");
-            else
-              fopen("noapagar","w+");
-            p.opCode = __NO_RESPONSE__;
-			break;
+		case CL_DIR_REM:
+		    printf("Llego un pedido de remover directorio\n");
+		    fflush(stdout);	 
+		    p.status = CallDirRem(*data);
+		    if(p.status==__SHUT_DOWN__)
+		      fopen("apagar","w+");
+		    else
+		      fopen("noapagar","w+");
+		    p.opCode = __NO_RESPONSE__;
+		break;
 			
 		case CL_FIL_ADD_TRANSFER:	
-            sscanf((*data).senderID, "%d", &(p.status ));
-            p.pid = (*data).pid; 
-            (*data).opCode = SR_READY_TO_RECIEVE_ADD;
-            fopen("llegoadd","w+");
-            p.opCode = __SPAWN_REC_DEMAND__;
-			break;
-        case CL_FIL_MOD_TRANSFER:
-            sscanf((*data).senderID, "%d", &(p.status ));
-            (*data).opCode = SR_READY_TO_RECIEVE_MOD;
-            aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
-            strcpy(p.dir, aux);
-            p.pid = (*data).pid; 
-            p.opCode = __NOT_SPAWN__;
-            break;
+		    sscanf((*data).senderID, "%d", &(p.status ));
+		    p.pid = (*data).pid; 
+		    (*data).opCode = SR_READY_TO_RECIEVE_ADD;
+		    fopen("llegoadd","w+");
+		    p.opCode = __SPAWN_REC_DEMAND__;
+		    break;
+		case CL_FIL_MOD_TRANSFER:
+		    sscanf((*data).senderID, "%d", &(p.status ));
+		    (*data).opCode = SR_READY_TO_RECIEVE_MOD;
+		    aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
+		    strcpy(p.dir, aux);
+		    p.pid = (*data).pid; 
+		    p.opCode = __NOT_SPAWN__;
+		    break;
 
 		case CL_FIL_ADD:	
 			p.status = CallFileAdd(*data);
@@ -171,54 +208,64 @@ ProcessCall( session_t *data )
 			break;
 			
 		case CL_FIL_MOD:
-	 fopen("llegomodfile","w+");
-            p.status = CallFileMod(*data);
-fopen("llegomodfile2","w+");
-          //  sscanf((*data).senderID, "%d", &(p.status));
-            p.pid = (*data).pid;
-            (*data).opCode = SR_FIL_MOD;
-         
-            aux = DirName(((fileT*)((*data).data))->path);
-            strcpy(p.dir, aux);
-            p.opCode = __NO_RESPONSE__;
+		    fopen("llegomodfile","w+");
+		    p.status = CallFileMod(*data);
+		    fopen("llegomodfile2","w+");
+		    //  sscanf((*data).senderID, "%d", &(p.status));
+		    p.pid = (*data).pid;
+		    (*data).opCode = SR_FIL_MOD;
+		 
+		    aux = DirName(((fileT*)((*data).data))->path);
+		    strcpy(p.dir, aux);
+		    p.opCode = __NO_RESPONSE__;
 
-            size = MakeSessionData(*data, &d);
+		    size = MakeSessionData(*data, &d);
 
-            DirBroadcastMsg(p, size, d);
-	    break;
+		    DirBroadcastMsg(p, size, d);
+		    break;
 			
 		case CL_FIL_REM:
-            p.pid = (*data).pid;
-            aux = DirName(((fileT*)((*data).data))->path);
-            strcpy(p.dir, aux);
-            p.status = CallFileRem(data);
-            p.opCode = __DIR_BROADCAST__;
-			break;
+	            p.pid = (*data).pid;
+       		    aux = DirName(((fileT*)((*data).data))->path);
+        	    strcpy(p.dir, aux);
+        	    p.status = CallFileRem(data);
+        	    p.opCode = __DIR_BROADCAST__;
+		    break;
 				
 		case CL_DIR_LST:
+			printf("Llego un pedido de listar directorios\n");
+			fflush(stdout);
 			p.pid = (*data).pid;	
 			p.status = CallDirList(data);
 			p.opCode = __NOT_SPAWN__;
 			break;
 			
 		case CL_DIR_REQ:
+			printf("Llego un pedido de agregar directorio\n");
+			fflush(stdout);
 			p.status = CallDirReq(data);
-			p.opCode = (p.status == 0) ? __SPAWN_DIR__ : __NOT_SPAWN__ ;
+			fflush(stdout);
+			/* Creo un proceso para pasar los archivos */
+			p.opCode = __SPAWN_DEMAND__;
+			/* Copio el path del directorio a sincronizar */
 			strcpy(p.dir, (*data).data);
+		    /* Copio la direccion del cliente al cual avisar sobre el comienzo de descarga */
 			p.pid = (*data).pid;
 			break;
 			
 		case CL_DIR_CON:
-            (*data).opCode = SR_DIR_CON_OK;
-            p.opCode = __SPAWN_DEMAND__;  
-            p.pid = (*data).pid; 
-            sscanf((*data).senderID, "%d", &(p.status));        
-            strcpy(p.dir, (*data).data);
+		    (*data).opCode = SR_DIR_CON_OK;
+		    p.opCode = __SPAWN_DEMAND__;  
+		    p.pid = (*data).pid; 
+		    sscanf((*data).senderID, "%d", &(p.status));        
+		    strcpy(p.dir, (*data).data);
 			break;	
 			
-		case CL_EXT:	
+		case CL_EXT:
+			printf("Llego un pedido de desloguear usuario\n");
+			fflush(stdout);	
 			p.status = CallClientExit(*data);
-			p.opCode = __NOT_SPAWN__;
+			p.opCode = __NO_RESPONSE__;
 			break;	
 		
 		case PR_EXT:

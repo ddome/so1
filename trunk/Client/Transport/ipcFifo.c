@@ -112,7 +112,10 @@ WriteIPC(void * data, size_t size)
 	    bytesLeft -= PACKET_SIZE;
 	    npacket++;
     }
-	printf("\n---------fifofd = %d  %s------------\n", writeFifo_FD, writeFifo);
+		
+    printf("Mande %d paquetes por %s \n", header.totalPackets, writeFifo);
+    fflush(stdout);
+
     return status;
 }
 
@@ -126,7 +129,8 @@ ReadIPC(void)
 	int pos;
 	byte *aux;
 	
-	printf("Descargando paquetes...");
+	printf("\nEscuchando pedidos...\n");
+	fflush(stdout);
 	
 	nPacketsRead=0;
 	pos=0;
@@ -158,7 +162,8 @@ ReadIPC(void)
 		}
 	}while( status != ERROR && nPacketsRead < header.totalPackets );
 	
-	printf("recibidos: %d\n", recibidos);
+	printf("Recibidos: %d\n", nPacketsRead);
+	fflush(stdout);
 	
 	return status == ERROR ? NULL: data ;
 }

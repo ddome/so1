@@ -185,10 +185,14 @@ CallDirList(session_t data)
 	int i;
 	
 	GetDirList(data,&ndirs,&dirList);
+	printf("==========================\n");
+	printf("Directorios disponibles\n");
+	printf("==========================\n");
 	for(i=0; i<ndirs; i++) {
 		printf("%s\n", dirList[i]);
 	}
-	getchar();
+	printf("\n");
+	fflush(stdout);
 
 	return OK;
 }

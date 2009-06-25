@@ -20,8 +20,7 @@ int
 main(void)
 {
   int status;
-
-  status = InitPromptCommunication();
+  
   status = InitTransport();
   status = InitApplication();
   status = InitServerPath();
@@ -42,4 +41,5 @@ main(void)
   CloseApplication();
 
   return 0;
-}       
+}
+       

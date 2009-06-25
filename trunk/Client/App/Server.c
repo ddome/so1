@@ -10,6 +10,8 @@
 
 #include "Server.h"
 
+#include <signal.h>
+
 
 
 char *bk_path;
@@ -29,20 +31,8 @@ StartListening(void)
   key = ftok("/", getpid());
 
   consoleProcess.opCode = __SPAWN_PROMPT__;
-  outputProcess.opCode = __SPAWN_OUTPUT__;
-
-  status = SpawnSubProcess(outputProcess, size, data);
-  if(status == CHILD_RETURN)
-  {
-    return OK;
-  }
-
-  do
-  {
-        status = InitCommunication(__DEFAULT_PID__);
-        usleep(__POOL_WAIT__);
-  } while(status == ERROR);
-
+ 
+  /* Creo el proceso del prompt */
   status = SpawnSubProcess(consoleProcess, size, data);
 
   if(status == CHILD_RETURN)
@@ -54,7 +44,8 @@ StartListening(void)
   {
 
     do{
-        status = InitCommunication(key);
+	/* Inicio la comunicacion escuchando pedidos en un canal de lectura propio */
+        status = InitCommunication(getpid());
         usleep(__POOL_WAIT__);
     }while(status == ERROR);
 
@@ -145,9 +136,10 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             break;
         case __ISCHILD__:
             returnValue = StartSubProcess(process, size, data);
+	        exit(EXIT_SUCCESS);
             break;
-		default:
-			break;
+	default:
+		break;
     }
 
     return returnValue;
@@ -161,16 +153,13 @@ int StartSubProcess(process_t process, size_t size, byte * data)
     {
 	    case __SPAWN_PROMPT__:
 	        Prompt();
+		kill(getppid(),SIGINT);
                 returnValue = CHILD_RETURN;
 	        break;			
 		case __SPAWN_OUTPUT__:
 	        PromptReader();
                 returnValue = CHILD_RETURN;
 	        break;	
-	    case __SPAWN_DIR__:
-	        returnValue = StartDirSubServer(process);
-            returnValue = CHILD_RETURN;
-	        break;
 	    case __SPAWN_DEMAND__:
                 returnValue = StartDemandSubServer(process);
                 returnValue = CHILD_RETURN;
@@ -192,6 +181,7 @@ int StartSubProcess(process_t process, size_t size, byte * data)
     return returnValue;
 }
 
+//DEPRECATED
 int StartDirSubServer(process_t reqProcess)
 {
     process_t process,inotifyProcess;
@@ -281,6 +271,8 @@ byte * ReadDirSubServerRequests(void)
     return data;
 }
 
+
+
 int StartDemandSubServer(process_t process)
 {
     int status = ERROR;
@@ -289,12 +281,12 @@ int StartDemandSubServer(process_t process)
     process_t p;
     size_t size;
     char * aux;
-
-    key_t key = ftok(aux = Concat(bk_path, process.dir), getppid());
-    free(aux);
+    process_t inotifyProcess;
+    
+    /* Me conecto al servidor de transferencia */
     while(status<=ERROR)
     {
-	    status = InitCommunication(key);
+	    status = InitCommunication(process.pid);
         usleep(__POOL_WAIT__);
     }
     if(status > ERROR)
@@ -304,9 +296,10 @@ int StartDemandSubServer(process_t process)
 			if( (data = GetRequest()) != NULL)
 			{
 				p = ProcessRequest(&data, &size);
-                                if(p.status != ERROR)
-                                while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR)
-                                    usleep(__POOL_WAIT__);
+                if(p.status != ERROR)
+                    while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR)
+                       usleep(__POOL_WAIT__);
+                       
 				requestExists=TRUE;
 			}
 		}
@@ -362,7 +355,8 @@ int
 InitServerPath()
 {
 	if( (bk_path = ReadBkPath()) == NULL ) {
-		WritePrompt("El archivo config esta dañado");
+		printf("El archivo config esta dañado");
+		fflush(stdout);
 		return ERROR;
 	}	
 		
@@ -402,6 +396,8 @@ StartInotifySubServer(process_t process)
     char * aux;
     int status;
     aux = Concat(BK_PATH,process.dir);
+    
+    process.pid = getpid();
 
     status = inotifyWatcher(process);
 

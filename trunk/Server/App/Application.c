@@ -160,13 +160,12 @@ FileAdd( fileT file, byte *data )
     {
         fopen("ERRORARCH", "w+");
       return __ERROR_APPLICATION__;
-    }
-        fopen("filead1", "w+");
+    };
     //Armo el archivo con la informacion que llego
     fwrite(data,sizeof(byte),GetSize(file),fptr);
-        fopen("filead2", "w+");
+
     fclose(fptr);
-fopen("filead3", "w+");
+
     return OK;
 }
 
