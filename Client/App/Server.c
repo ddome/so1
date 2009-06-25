@@ -283,6 +283,11 @@ int StartDemandSubServer(process_t process)
     char * aux;
     process_t inotifyProcess;
     
+    inotifyProcess.pid = getppid();
+    strcpy(inotifyProcess.dir,process.dir);
+    inotifyProcess.opCode=__SPAWN_INOTIFY__;
+    SpawnSubProcess(inotifyProcess,0,NULL);
+    
     /* Me conecto al servidor de transferencia */
     while(status<=ERROR)
     {
@@ -296,9 +301,20 @@ int StartDemandSubServer(process_t process)
 			if( (data = GetRequest()) != NULL)
 			{
 				p = ProcessRequest(&data, &size);
-                if(p.status != ERROR)
-                    while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR)
+                if(p.status != ERROR) {
+                   while(status<=ERROR)
+                    {
+	                    status = InitINotifyMsg(getppid());
+                        usleep(__POOL_WAIT__);
+                    }
+                    printf("Le voy a mandar el mensaje\n");
+                    fflush(stdout);
+                    while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
                        usleep(__POOL_WAIT__);
+                    }
+                    printf("Le mande el mensaje\n");
+                    fflush(stdout);
+                }
                        
 				requestExists=TRUE;
 			}
@@ -393,14 +409,20 @@ int StartPingServer(pid_t pid, char msg[MAX_MSG])
 int
 StartInotifySubServer(process_t process)
 {
-    char * aux;
-    int status;
-    aux = Concat(BK_PATH,process.dir);
+    printf("Llego aca che\n");
+    fflush(stdout);
+    /* Creo la comunicacion con el proceso de inotify */
+    int status = InitINotifyMsg(process.pid);
+    if(status == ERROR)
+    {
+	    return ERROR;
+    }
+    
+    printf("Inicie el InitNotify\n");
+    fflush(stdout);
     
     process.pid = getpid();
-
     status = inotifyWatcher(process);
 
-    free(aux);
     return status;
 }
