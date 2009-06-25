@@ -61,6 +61,7 @@
 #define CL_DIR_REM          10
 #define CL_FIL_ADD          11
 #define CL_FIL_REM          12
+#define CL_FIL_MOD_SIGNAL   50
 #define CL_FIL_MOD          13
 #define CL_DIR_LST          14
 #define CL_EXT              15

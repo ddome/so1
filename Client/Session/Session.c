@@ -173,18 +173,39 @@ SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
 	session_t pack;
 	byte *data;
 	size_t size;
-	char a[30];
-        sprintf(a, "%d", dirPid);
-        strcpy(pack.senderID, a);
+
 	strcpy(pack.msg,userName);
-        data = ReqFile(file);
-	pack.opCode = CL_FIL_MOD;
-        pack.pid = pid;
+	pack.opCode = CL_FIL_MOD_SIGNAL;
+    pack.pid = pid;
+    pack.dataSize = 0;
+    pack.data = NULL;
+    
+    
 	/* Armo el paquete con la informacion del file a mandar */
-	pack.dataSize = MakeFilePack(file, data, &pack.data );
-        printf("\nfilet : %d   file  %d\n", sizeof(fileT), pack.dataSize);
+	//pack.dataSize = MakeFilePack(file, data, &pack.data );
+
 	size = MakeSessionData(pack, &data);
 	return WriteIPC(data, size)>0?OK:ERROR;
+}
+
+int 
+SendFileMod( fileT file, pid_t parent_pid )
+{
+   	session_t pack;
+	byte *data;
+	size_t size;
+
+	strcpy(pack.msg,userName);
+	pack.opCode = CL_FIL_MOD;
+    pack.pid = parent_pid;
+    pack.data = FileReq(file);
+
+	/* Armo el paquete con la informacion del file a mandar */
+	pack.dataSize = MakeFilePack(file, data, &pack.data );
+
+	size = MakeSessionData(pack, &data);
+	return WriteIPC(data, size)>0?OK:ERROR; 
+
 }
 
 int

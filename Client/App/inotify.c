@@ -361,9 +361,7 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 	    }
 	    aux=GetNewPath(event,list);
 	    printf("(%s)\n",aux);
-	    WritePrompt("4");
 	    ret=print_mask_info ( mask , isDir,event,fd,aux,list);
-	    WritePrompt("5");
 	    /*free(aux);*/
 	    pathAux=Concat(aux,"/");
 	    pathAux=Concat(pathAux,event->name);
@@ -425,6 +423,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
     fileName = GetFileName(resp->path);
 
     file = NewFileT(path, fileName);
+    
 
     while(InitCommunication(__DEFAULT_PID__) == ERROR)
       usleep(__POOL_WAIT__);
