@@ -332,9 +332,9 @@ int StartDemandSubServer(process_t process)
     
                     printf("Le voy a mandar el mensaje\n");
                     fflush(stdout);
-                   /* while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
+                       while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
                        usleep(__POOL_WAIT__);
-                    }*/
+                    }
                     printf("Le mande el mensaje\n");
                     fflush(stdout);
                 }

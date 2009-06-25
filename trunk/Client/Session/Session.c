@@ -176,13 +176,10 @@ SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
 
 	strcpy(pack.msg,userName);
 	pack.opCode = CL_FIL_MOD_SIGNAL;
-    pack.pid = pid;
+	/* Aca le voy a mandar la info */
+    pack.pid = dirPid;
     pack.dataSize = 0;
     pack.data = NULL;
-    
-    
-	/* Armo el paquete con la informacion del file a mandar */
-	//pack.dataSize = MakeFilePack(file, data, &pack.data );
 
 	size = MakeSessionData(pack, &data);
 	return WriteIPC(data, size)>0?OK:ERROR;
@@ -195,7 +192,6 @@ SendFileMod( fileT file, pid_t parent_pid )
 	byte *data;
 	size_t size;
 
-	strcpy(pack.msg,userName);
 	pack.opCode = CL_FIL_MOD;
     pack.pid = parent_pid;
     pack.data = FileReq(file);

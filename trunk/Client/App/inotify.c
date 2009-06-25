@@ -438,8 +438,13 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
         case RENAME:
             break;
         case MODIFICAR:
-            fopen("modifico", "w+");
-            status = SendFileModTransferSignal(name, file, pid, getppid());
+            status = SendFileModTransferSignal(name, file, pid, getpid());
+            /* Me conecto al servidor de demanda */
+            while(InitCommunication(getpid()) == ERROR)
+                usleep(__POOL_WAIT__);
+            /* Le mando el archivo */
+            //status = SendFile(file, pid);   
+            
             break;
         default:
             status =  OK;
