@@ -125,20 +125,20 @@ static int ListLast10(scannerADT scanner, void * data)
 
 static int ExitPrompt(scannerADT scanner, void * data)
 {
-    int retValue = OK;
-    
+    int retValue = -3;
+   
+    ShutDown();
+	
     return retValue;
 }
 
 static int ShowCommands(scannerADT scanner, void * data)
 {
-    printf("\nBombSync - Server\n");
-    printf("==================\n");
-    printf("Inicializando Aplicacion...\n");
-    printf("Inicializando Sesion...\n");
-    printf("Inicializando Aplicacion...\n");
-    printf("==================\n");
     printf("Comandos disponibles:\n");
+    printf("Registrar <directorio>\n");
+    printf("Dir <user>\n");
+    printf("Last10\n");
+    printf("Salir\n");
 
     return OK;
 }
@@ -177,7 +177,11 @@ Prompt(void)
             status = ReadExpression( tree, strAux, NULL );
         else
             status = 0;
-        if(status < 0)
+
+       if(status == -3)
+            terminar = TRUE;
+
+        else if(status < 0)
             fprintf(stderr, "Comando invalido.\n");
 
         free(strAux);

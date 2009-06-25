@@ -73,6 +73,13 @@ SendConectionSignal(  pid_t pid )
 	aux.dataSize = 0;
 	
 	size = MakeSessionData(aux, &data);
+	int status;
+	/* Me conecto al servidor */
+	do
+	{
+		status = InitCommunication(__DEFAULT_PID__);
+		usleep(__POOL_WAIT__);
+	} while(status == ERROR);
 	
 	return WriteIPC(data, size);
 }	
@@ -210,10 +217,10 @@ SendFileRemPack( string userName, fileT file, pid_t pid )
 	session_t pack;
 	byte *data;
 	size_t size;
-    pack.pid = pid;
+   	pack.pid = pid;
 	pack.opCode = CL_FIL_REM;
 	strcpy(pack.msg,userName);
-	pack.dataSize = MakeFileRemPack( file, &pack.data );
+	pack.dataSize = MakeFileRemPack(file, &pack.data);
 
 	size = MakeSessionData(pack, &data);
 	return WriteIPC(data, size)>0?OK:ERROR;
@@ -274,11 +281,11 @@ int
 SendDirRem( string userName, pid_t pid, string dirName )
 {
 	char * serverPath;
-    key_t keyDir;
-    session_t pack;
+    	key_t keyDir;
+    	session_t pack;
 	size_t size;
 	byte *data;
-    int status;
+    	int status;
     
 	pack.pid = pid;
 	pack.opCode = CL_DIR_REM;
@@ -288,19 +295,12 @@ SendDirRem( string userName, pid_t pid, string dirName )
 	
 	size = MakeSessionData(pack, &data);
 	pack = GetSessionData(data);
-	
-    keyDir = ftok(serverPath = Concat(bk_path,dirName), __DEFAULT_PID__);
-    free(serverPath);
-    
-    if(keyDir != -1 && InitIPC(keyDir) != ERROR){
-        status =  WriteIPC(data, size)?OK:ERROR;       
-        InitIPC(__DEFAULT_PID__);
-        return status;
-    }
-    else{
-        return ERROR;
-    }
+
+	printf("acabo de armar un pack %s pidiendo que borren %s\n", pack.opCode==CL_DIR_REM?"CL_DIR_REM":"BASURA",pack.data);
 	    
+	InitIPC(__DEFAULT_PID__);
+	status =  WriteIPC(data, size)?OK:ERROR;
+	return status;	
 }
 
 /* Static Functions */
@@ -320,17 +320,20 @@ ProcessCall( session_t *data )
     char * aux;
 	switch ((*data).opCode) {
 		case SR_CONECT_OK:
-			WritePrompt("Se ha conectado exitosamente\n");
+			printf("Se ha conectado exitosamente\n");
+			fflush(stdout);
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			break;
 		case SR_NEW_USR_OK:
-			WritePrompt("Ha registrado el nombre de usuario exitosamente\n");
+			printf("Ha registrado el nombre de usuario exitosamente\n");
+			fflush(stdout);
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			break;
 		case SR_NEW_USR_ERR:
-			WritePrompt("El nombre usuario no se encuentra disponible o usted ya se encuentra conectado.\n");
+			printf("El nombre usuario no se encuentra disponible o usted ya se encuentra conectado.\n");
+			fflush(stdout);
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			break;
@@ -349,22 +352,22 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_FIL_REM:
-            /* Le aviso al inotify que no avise mientras se
-            *  actualizan las carpetas */
-            do
-            {
-                status = InitINotifyMsg(getpid());
-                usleep(__POOL_WAIT__);
-            } while (status != OK);
-            
-            status = WriteINotifyMsg(__INOTIFY_DISABLE__);
-			p.status = CallFileRem(*data);
-            usleep(200000);
-            /* Ya termine de modificar, vuelvo a habilitar
-            *  el inotify */
-            status = WriteINotifyMsg(__INOTIFY_ENABLE__);
-            
-            p.opCode = __NO_RESPONSE__;
+		    /* Le aviso al inotify que no avise mientras se
+		    *  actualizan las carpetas */
+		    do
+		    {
+		        status = InitINotifyMsg(getpid());
+		        usleep(__POOL_WAIT__);
+		    } while (status != OK);
+		    
+		    status = WriteINotifyMsg(__INOTIFY_DISABLE__);
+				p.status = CallFileRem(*data);
+		    usleep(200000);
+		    /* Ya termine de modificar, vuelvo a habilitar
+		    *  el inotify */
+		    status = WriteINotifyMsg(__INOTIFY_ENABLE__);
+		    
+		    p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_EXT:
 			p.opCode = __SHUT_DOWN__;
@@ -375,18 +378,16 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			break;
 		case SR_DIR_REQ_OK:
+		    fflush(stdout);
 			p.status = OK;
-			p.opCode = __SPAWN_DIR__;
-			strcpy(p.dir, (*data).data);
-			p.pid = (*data).pid;
-			break;
-		case SR_DIR_CON_OK:
-			p.status = OK;
-			strcpy(p.dir, (*data).data);
-			p.pid = (*data).pid;
 			p.opCode = __SPAWN_DEMAND__;
+			/* Directorio */
+			strcpy(p.dir, (*data).data);
+			/* Pid en el que recibiria */
+			p.pid = (*data).pid;
 			break;
 		case SR_DIR_TRANS:
+		    fflush(stdout);
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
@@ -407,7 +408,7 @@ ProcessCall( session_t *data )
             fopen("mandandomodfile","w+");
             strcpy(p.dir, aux);
             (*data).opCode = CL_FIL_MOD;
- SendFileModPacket(*data);
+ 	        SendFileModPacket(*data);
             break;
 		default:
 			p.status = ERROR;

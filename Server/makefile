@@ -9,7 +9,7 @@ SQLITE = SQLite
 SQLITEADT = sqliteADT
 
 CC = gcc
-CC_OP = -g -Wall -c -o
+CC_OP = -g -c -o
 LD = gcc
 LD_OP = -Wall -lpthread -ldl -o
 

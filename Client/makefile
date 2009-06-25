@@ -7,7 +7,7 @@ LIB = Lib
 SESSION = Session
 
 CC = gcc
-CC_OP = -g -Wall -c -o
+CC_OP = -g -c -o
 LD = gcc
 LD_OP = -Wall -lpthread -ldl -o
 

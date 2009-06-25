@@ -20,7 +20,7 @@ FileAdd( fileT file, byte *data )
 	}
 
 	if( (fptr = CreateFile(file)) == NULL ) {
-		WritePrompt("No se pudo crear el archivo");
+		printf("No se pudo crear el archivo");
 		return ERROR;
 	}
 
@@ -36,7 +36,7 @@ int
 FileRem( fileT file )
 {
 	if( !FileExists(file) ) {
-		WritePrompt("El archivo no existe");
+		printf("El archivo no existe");
 		return ERROR;
 	}
 	else {
@@ -55,7 +55,7 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 
 	if( !DirExists(dirName) ) {
 		if( CreateDir(dirName) == ERROR ){
-			WritePrompt("Error al crear un directorio");
+			printf("Error al crear un directorio");
 			return ERROR;
 		}
 	}	
@@ -64,7 +64,7 @@ DirAdd( string dirName, fileT *files, byte **data, int nfiles  )
 		
 		if( !DirExists(files[i].path) ) {
 			if( CreateDir(files[i].path) == ERROR ){
-				WritePrompt("Error al crear un directorio");
+				printf("Error al crear un directorio");
 				return ERROR;
 			}
 		}
@@ -95,12 +95,12 @@ FileReq( fileT file )
 	int a;
 	
 	if( (fptr = OpenReadFile(file)) == NULL ) {
-		WritePrompt("El archivo es inexistente");
+		printf("El archivo es inexistente");
 		return NULL;
 	}
 	
 	if( (data=malloc(a=GetSize(file))) == NULL ) {
-		WritePrompt("Error de memoria");
+		printf("Error de memoria");
 		return NULL;
 	}
 		

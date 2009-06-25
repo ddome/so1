@@ -273,7 +273,7 @@ CallTransferDir(session_t * dataPtr)
 	string aux;
     
 	dirPath  = (*dataPtr).data;
-	userName = (*dataPtr).msg;
+	//userName = (*dataPtr).msg;
 
 	/* armo el paquete respuesta */	
 	(*dataPtr).opCode = SR_DIR_TRANS;
@@ -307,11 +307,11 @@ CallDirReq(session_t *dataPtr)
     userName = (*dataPtr).msg;
 
     (*dataPtr).opCode = SR_DIR_REQ_OK;
-    usersxdir = GetCantUsersLinkToDir(dirName); 
 
-	UserAddDir(userName, dirName);
+    /* Agrego el directorio a la lista de directorios sincronizables para el usuario */
+    UserAddDir(userName, dirName);
 	
-    return usersxdir;
+    return OK;
 }	
 
 

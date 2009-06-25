@@ -23,15 +23,11 @@ StartListening(void)
     consoleProcess.opCode = __SPAWN_PROMPT__;
     outputProcess.opCode = __SPAWN_OUTPUT__;
 
-    status = SpawnSubProcess(outputProcess, size,data);
-    if(status == CHILD_RETURN)
-	return OK;
-
     if((status = InitCommunication(__DEFAULT_PID__)) <= ERROR)
     {
         return ERROR;
     }
-
+    /*prompt*/
     status = SpawnSubProcess(consoleProcess, size,data);
     if(status == CHILD_RETURN)
 	return OK;
@@ -40,6 +36,7 @@ StartListening(void)
     {
         if((status = InitCommunication(__DEFAULT_PID__)) > ERROR)
         {
+	    /* lee pedidos  bloquea */
             data = ReadRequest();
     
             if(data != NULL)
@@ -47,9 +44,8 @@ StartListening(void)
                 /* se manda a que sea procesado en la capa de sesion 
                 */
                 process = ProcessRequest(&data, &size);
-                key = ftok("/", process.pid);
-
-                status = InitCommunication(key);
+		        /* Contesto a esta direccion */
+                status = InitCommunication(process.pid);
                 if(status > ERROR)                    
                     status = AnalyzeOperation(process, data, size);
             }
@@ -58,7 +54,7 @@ StartListening(void)
                 status = ERROR;
             }
             if(status <= ERROR)
-                WritePrompt("Se ha producido un error interno");
+                printf("Se ha producido un error interno");
         }
     }
     return status;
@@ -97,16 +93,16 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __NOT_SPAWN__:
                 status = ProcessSendPack(&data, size);
                 break;
-            case __SPAWN_DIR__:
+            case __SPAWN_DIR__://deprecated
                 status = SpawnSubProcess(process, size, data);
                 break;
             case __SPAWN_DEMAND__:
               status = SpawnSubProcess(process, size, data);
                 break;
-            case __DIR_BROADCAST__:
+            case __DIR_BROADCAST__://deprecated
                 status = DirBroadcastMsg(process, size, data);
                 break;
-	        case __KILL_DIR__:
+	        case __KILL_DIR__://deprecated
 				status = KillDirProcess(process);
 				break;
           case __SPAWN_REC_DEMAND__:
@@ -138,14 +134,16 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             break;
         case __ISCHILD__:
             returnValue = StartSubProcess(process);
+	        exit(EXIT_SUCCESS);
             break;
         default:
-            if(size > 0)
+            if(size > 0 )
             {
              //   TODO ver si no hace falta aca para recieve demand--resolved si
                 
-                if( process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__)
+                if( process.opCode!=__SPAWN_DEMAND__ && process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__)
                 {
+				/* child pid*/
                     returnValue = ProcessSendPack(&data, size);
                 }
             }
@@ -268,24 +266,52 @@ byte * ReadDirSubServerRequests(void)
 
 int StartDemandSubServer(process_t process)
 {
-    int status=OK;
-    char * aux;
+	    int status=OK;
+	    char * aux;
+	    pid_t client_pid;
 
-    key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);
+	    //key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);//DEPRECATED
+	    //free(aux);
+        /* Guardo el pid del cliente a quien avisar */
+        client_pid = process.pid;
+        /* Voy a transmitir usando el pid del proceso hijo creado */
+	    process.pid = getpid();
+		fflush(stdout);
+	    /* Inicio el canal de comunicacion para la transferencia */
+	    do{
+		    status = InitCommunication(getpid());
+		    usleep(__POOL_WAIT__);
+	    }while(status <= ERROR);
+	    
+		fflush(stdout);
+		
+		sleep(1);
+		
+	    /* Le aviso al cliente que empiezo a transmitir y por donde */
+	    
+	    fflush(stdout);
+	    do{
+		    status = InitCommunication(client_pid);
+		    usleep(__POOL_WAIT__);
+	    }while(status <= ERROR);
+	    
+	    fflush(stdout);  
+	       
+	    SendStartTransfer(process);
+		fflush(stdout);
 
-    free(aux);
-    do{
-        status = InitCommunication(key);
-        usleep(__POOL_WAIT__);
-    }while(status <= ERROR);
-    
-    if(status > ERROR)
-    { 
-        status = SendDirPack(process);
-    }
-    
-    
-    return status;
+        sleep(1);
+	   /* Compienzo a transmitir */
+	   
+	   fflush(stdout);
+	    do{
+		    status = InitCommunication(process.pid);
+		    usleep(__POOL_WAIT__);
+	    }while(status <= ERROR);	   
+	   
+	   SendDirPack(process);		
+	    
+   return status;
 }
 
 int StartDemandRecieveSubServer(process_t process)
@@ -296,8 +322,8 @@ int StartDemandRecieveSubServer(process_t process)
   process_t p;
   size_t size;
   char * aux;
-FILE * f;
-    InitBD();/*Mirar para threads!!!!*/
+  FILE * f;
+  InitBD();/*Mirar para threads!!!!*/
   key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);
   free(aux);
   while(status<=ERROR)
@@ -425,7 +451,7 @@ int
 InitServerPath()
 {
 	if( (bk_path = ReadBkPath()) == NULL ) {
-		WritePrompt("El archivo config esta dañado");
+		printf("El archivo config esta dañado");
 		return ERROR;
 	}
 	else

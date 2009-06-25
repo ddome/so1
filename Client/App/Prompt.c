@@ -137,7 +137,7 @@ static int RemDir(scannerADT scanner, void * data)
 	char * aux;
 	
 	if( hab == FALSE ) {
-		printf("Debe elegir un nombre de usuario para agregar directorios\n");
+		printf("Debe elegir un nombre de usuario para borrar directorios\n");
 	}
 	else {
 		if(MoreTokensExist(scanner))
@@ -171,7 +171,12 @@ static int Exit(scannerADT scanner, void * data)
 
 static int Help(scannerADT scanner, void * data)
 {
-
+    printf("Comandos disponibles:\n");
+    printf("Servidor\n");
+    printf("Lista\n");
+    printf("Agregar <directorio>\n");
+    printf("Remover <directorio>\n");
+    printf("Salir\n");
 
   return OK;
 }
@@ -205,7 +210,8 @@ Prompt(void)
     treeADT tree;
     tree = NewTree();
     LoadTree(tree);
-	strcpy(name, "");
+    strcpy(name, "");
+
     while ( !terminar )
     {
         printf("user@client:~ $ ");
