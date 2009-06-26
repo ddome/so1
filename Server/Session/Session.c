@@ -70,6 +70,7 @@ SendStartTransfer(process_t process)
     session.pid    = process.pid;
     /* Directorio a transmitir */
     session.dataSize = strlen(process.dir) + 1;
+    session.data = malloc(strlen(process.dir)+1);
     strcpy(session.data, process.dir);
     
     size = MakeSessionData(session, &data);
@@ -202,9 +203,14 @@ ProcessCall( session_t *data )
 		    p.opCode = __NOT_SPAWN__;
 		    break;
 
-		case CL_FIL_ADD:	
-			p.status = CallFileAdd(*data);
+		case CL_FIL_TRANSFER:
+		    // Recibo un archivo
+		    printf("Recibi el archivo!!!\n");
+			fflush(stdout);	
+			p.status = CallFileTransfer(*data);
 			p.opCode = __NO_RESPONSE__;
+			p.status = OK;
+			p.pid = (*data).pid;
 			break;
 			
 		case CL_FIL_MOD:
@@ -219,11 +225,32 @@ ProcessCall( session_t *data )
 		    strcpy(p.dir, aux);
 		    p.opCode = __NO_RESPONSE__;
 
+
 		    size = MakeSessionData(*data, &d);
 
 		    DirBroadcastMsg(p, size, d);
 		    break;
-			
+		case CL_FIL_MOD_SIGNAL:
+			printf("Llego un pedido de modificar directorio\n");
+		    fflush(stdout);
+		    /* Aca voy a escuchar */	 
+		    p.pid = (*data).pid;
+	        p.status = OK;
+	        p.opCode = __SPAWN_REC_DEMAND__;
+	        strcpy(p.dir,DirName((*data).senderID) );
+	        p.aux_pid = atoi(data->msg);
+	        
+	        
+	        /* Registro la accion */
+	        CallFileMod((*data));
+	        
+		    //aux = DirName(((fileT*)((*data).data))->path);
+		    //strcpy(p.dir, aux);
+
+		    size = MakeSessionData(*data, &d);
+
+		    DirBroadcastMsg(p, size, d);
+		    break;
 		case CL_FIL_REM:
 	            p.pid = (*data).pid;
        		    aux = DirName(((fileT*)((*data).data))->path);

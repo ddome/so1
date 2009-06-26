@@ -70,6 +70,8 @@
 #define CL_FIL_ADD_TRANSFER     28
 #define CL_READY_TO_REC 31
 
+#define CL_FIL_TRANSFER 51
+
 /* Paquete de session */
 
 typedef struct {
@@ -86,6 +88,7 @@ typedef struct
     int opCode;
     char dir[MAX_MSG];
     pid_t pid;
+    pid_t aux_pid;
     int status;
 } process_t;
 

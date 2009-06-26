@@ -96,15 +96,18 @@ FileReq( fileT file )
 	
 	if( (fptr = OpenReadFile(file)) == NULL ) {
 		printf("El archivo es inexistente");
+		fflush(stdout);
 		return NULL;
 	}
 	
 	if( (data=malloc(a=GetSize(file))) == NULL ) {
 		printf("Error de memoria");
+		fflush(stdout);
 		return NULL;
 	}
 		
-	fread( data, 1, GetSize(file), fptr );
+	printf("Lei %d bytes y tendria que haber leido %d bytes\n",fread( data, 1, GetSize(file), fptr ),GetSize(file));
+	fflush(stdout);
 	
 	return data;
 }

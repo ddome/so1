@@ -188,6 +188,7 @@ inotifyWatcher(process_t process)
 	        }
 	        else if( resp->opCode==MODIFICAR ) {
 	            printf("Modificar");
+	            printf("senial: %s\n",signal==__INOTIFY_DISABLE__?"DESHABITILITADA":"HABILITADA");
 	            fflush(stdout);
 	        }
 	        else
@@ -198,8 +199,12 @@ inotifyWatcher(process_t process)
 	    if(!error)
         {
             signal = ReadINotifyMsg();
-            if(signal != __INOTIFY_DISABLE__)    
+
+            if(signal != __INOTIFY_DISABLE__) {
+                printf("Mando el pedido de modificacion\n");
+                fflush(stdout);   
                 ret = NotifyServer(process.pid, key, resp, name);
+            }
             
         }
 	
@@ -386,13 +391,13 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
 	    else
 	    {*/
 	    if(ret==IN_MODIFY)
-		resp->opCode=MODIFICAR;
+		    resp->opCode=MODIFICAR;
 	    else if(ret==IN_CREATE || ret==IN_MOVED_TO)
-		resp->opCode=CREAR;
+		    resp->opCode=CREAR;
 	    else if(ret==IN_DELETE || ret==IN_DELETE_SELF || ret==IN_MOVED_FROM)
-		resp->opCode=BORRAR;
+		    resp->opCode=BORRAR;
 	    else
-		resp->opCode=ERROR;
+		    resp->opCode=ERROR;
 	    
 	    resp->isDir=isDir;
 	    strcpy(resp->path,pathAux);
@@ -407,8 +412,7 @@ read_events (int fd,listADT list,int * lastCookie,int* lastMask)
     }
     else
 	resp->opCode=ERROR;
-
-    WritePrompt("6");
+	
     return resp;
 }
 
@@ -428,6 +432,8 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
     while(InitCommunication(__DEFAULT_PID__) == ERROR)
       usleep(__POOL_WAIT__);
     
+    printf("Comunicacion con el servidor OK\n");
+    fflush(stdout);
      switch(resp->opCode)
     {
        case BORRAR:
@@ -438,12 +444,20 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
         case RENAME:
             break;
         case MODIFICAR:
-            status = SendFileModTransferSignal(name, file, pid, getpid());
+            printf("Mando pedido de modificacion\n");
+            fflush(stdout);
+            SendFileModTransferSignal(pid, file,getpid());
+            printf("OK\n");
+            fflush(stdout);            
+            printf("Le voy a tratar de mandar los datos usando el pid %d\n",getpid());
+            fflush(stdout);
             /* Me conecto al servidor de demanda */
             while(InitCommunication(getpid()) == ERROR)
                 usleep(__POOL_WAIT__);
+            printf("Le mando el archivo!!!\n"); 
+            fflush(stdout);   
             /* Le mando el archivo */
-            //status = SendFile(file, pid);   
+            SendFile(file, pid);   
             
             break;
         default:
