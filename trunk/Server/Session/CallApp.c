@@ -133,17 +133,24 @@ CallDirRem(session_t data)
 /* Client -> Server: FileAdd/FileMod/FileRem */
 
 void
-GetFileData(session_t data,fileT *filePtr, byte *fileData)
+GetFileData(session_t data,fileT *filePtr, byte **fileData_ptr)
 {
 	int pos;
+	byte *fileData;
 	
+	printf("Leo la info\n");
+    fflush(stdout);
+      
 	pos=0;
 	memmove(filePtr, data.data + pos, sizeof(fileT) );
 	
+	fileData = malloc(GetSize(*filePtr));
+	
 	pos += sizeof(fileT);
-	if( (data.dataSize - sizeof(fileT) ) > 0 && fileData != NULL ) {
-		memmove(fileData, data.data + pos, (data.dataSize - sizeof(fileT)) );	
-	}	
+	memmove(fileData, data.data + pos, GetSize(*filePtr) );
+	
+	*fileData_ptr = fileData;	
+		
 }	
 
 void
@@ -162,7 +169,7 @@ CallFileAdd(session_t data)
 	
 	user = data.msg;
 
-	GetFileData(data,&file,fileData);	
+	GetFileData(data,&file,&fileData);	
 	//LogAction(user, GetPath(file), "Add");
 	
 	ret = FileAdd(file,fileData);	
@@ -176,22 +183,46 @@ int
 CallFileMod(session_t data)
 {
 	fileT file;
-	byte *fileData;
 	string user; // Usado solo para agregar a los Logs
 	int ret;
+	pid_t pid;
 	
-    user = ConvertPIDToUserName(data.pid);
-    fopen(user,"w+");
-    printf("--------%s   %s\n",user, file.path);
-	GetFileData(data,&file,fileData);
-	//LogAction(user, GetPath(file), "Mod");
-    fopen("enmod1","w+");		
-	/*Lo saco y vuelvo a insertar */
-	FileRem(file);	
-fopen("enmod2","w+");		
+	pid = atoi(data.msg);
+    user = GetPIDToUserName(pid);
+    
+    printf("--------user:%s  dir:%s\n",user, data.data);
+	LogAction(user, data.data, "Mod");
+    	
+	return ret;
+}	
+
+int 
+CallFileTransfer(session_t data)
+{
+	fileT file;
+	byte *fileData;
+	int ret;
+	
+	printf("Leo la informacion del archivo que pesa %d\n",data.dataSize);
+    fflush(stdout);
+	
+	GetFileData(data,&file,&fileData);
+
+    printf("Voy a agregar un archivo %s %s \n",file.path,file.fName);
+    fflush(stdout);
+
+    if( FileExists(file) ) {
+	    FileRem(file);
+	    printf("Lo borro\n");
+        fflush(stdout);	    	
+    }
 	ret = FileAdd(file,fileData);
-	fopen("enmod3","w+");		
+
+    printf("TODO OK\n");
+    fflush(stdout);
+
 	//free(data.data);
+	//free(fileData);
 	
 	return ret;
 }	
@@ -307,6 +338,8 @@ CallDirReq(session_t *dataPtr)
     userName = (*dataPtr).msg;
 
     (*dataPtr).opCode = SR_DIR_REQ_OK;
+
+    printf("Registro %s para %s\n",dirName,userName);
 
     /* Agrego el directorio a la lista de directorios sincronizables para el usuario */
     UserAddDir(userName, dirName);

@@ -34,4 +34,6 @@ int CallDirList(session_t *data);
 
 int CallTransferDir(session_t * dataPtr);
 
+int CallFileTransfer(session_t data);
+
 #endif

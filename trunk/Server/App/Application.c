@@ -135,10 +135,10 @@ UserList( void )
     printf("================================================\n");
     while( out[i] != NULL )
     {
-	aux=out[i];
-	printf("%s\n",aux);
-	free(aux);
-	i++;
+	    aux=out[i];
+	    printf("%s\n",aux);
+	    free(aux);
+	    i++;
     }
     free(out);
     
@@ -158,11 +158,13 @@ FileAdd( fileT file, byte *data )
 
     if( (fptr = CreateFile(file)) == NULL )
     {
-        fopen("ERRORARCH", "w+");
+      printf("Error al crear el archivo\n");
+      fflush(stdout); 
       return __ERROR_APPLICATION__;
-    };
+    }
     //Armo el archivo con la informacion que llego
-    fwrite(data,sizeof(byte),GetSize(file),fptr);
+    printf("Escribi %d en el archivo nuevo\n",fwrite(data,sizeof(byte),GetSize(file),fptr));
+    fflush(stdout);
 
     fclose(fptr);
 

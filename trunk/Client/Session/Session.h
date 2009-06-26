@@ -66,6 +66,8 @@
 #define CL_FIL_MOD_TRANSFER 26
 #define CL_FIL_ADD_TRANSFER 28
 
+#define CL_FIL_TRANSFER 51
+
 
 /* Paquete de session */
 
@@ -101,7 +103,9 @@ int SendDirListReq( string userName );
 int SendExitSignal( string userName );
 int SendDirRem( string userName, pid_t pid, string dirName );
 
-int SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid);
+int SendFile( fileT file, pid_t parent_pid );
+
+int SendFileModTransferSignal( pid_t user_pid, fileT file, pid_t pid);
 int SendFileAddTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid);
 int 
 SendFileModPacket( session_t pack);

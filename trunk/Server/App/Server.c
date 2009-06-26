@@ -99,8 +99,8 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __SPAWN_DEMAND__:
               status = SpawnSubProcess(process, size, data);
                 break;
-            case __DIR_BROADCAST__://deprecated
-                status = DirBroadcastMsg(process, size, data);
+            case __DIR_BROADCAST__:
+//                status = StartTransferSubprocess(process);
                 break;
 	        case __KILL_DIR__://deprecated
 				status = KillDirProcess(process);
@@ -141,11 +141,11 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             {
              //   TODO ver si no hace falta aca para recieve demand--resolved si
                 
-                if( process.opCode!=__SPAWN_DEMAND__ && process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__)
+                if( process.opCode!=__SPAWN_REC_DEMAND__  && process.opCode!=__SPAWN_DEMAND__ && process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__)
                 {
 				/* child pid*/
                     returnValue = ProcessSendPack(&data, size);
-                }
+                }   
             }
             break;
     }
@@ -314,6 +314,57 @@ int StartDemandSubServer(process_t process)
    return status;
 }
 
+int StartTransferSubServer(process_t process)
+{
+	    int status=OK;
+	    char * aux;
+	    pid_t client_pid;
+
+	    //key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);//DEPRECATED
+	    //free(aux);
+        /* Guardo el pid del cliente a quien avisar */
+        client_pid = process.pid;
+        /* Voy a transmitir usando el pid del proceso hijo creado */
+	    process.pid = getpid();
+		fflush(stdout);
+	    /* Inicio el canal de comunicacion para la transferencia */
+	    do{
+		    status = InitCommunication(getpid());
+		    usleep(__POOL_WAIT__);
+	    }while(status <= ERROR);
+	    
+		fflush(stdout);
+		
+		sleep(1);
+		
+	    /* Le aviso al cliente que empiezo a transmitir y por donde */
+	    
+	    fflush(stdout);
+	    do{
+		    status = InitCommunication(client_pid);
+		    usleep(__POOL_WAIT__);
+	    }while(status <= ERROR);
+	    
+	    fflush(stdout);  
+	       
+	    //SendStartFileTransfer(process);
+		fflush(stdout);
+
+        sleep(1);
+	   /* Compienzo a transmitir */
+	   
+	   fflush(stdout);
+	    do{
+		    status = InitCommunication(process.pid);
+		    usleep(__POOL_WAIT__);
+	    }while(status <= ERROR);	   
+	   
+	  // SendFilePack(process);		
+	    
+   return status;
+}
+
+
 int StartDemandRecieveSubServer(process_t process)
 {
   int status = ERROR;
@@ -324,27 +375,69 @@ int StartDemandRecieveSubServer(process_t process)
   char * aux;
   FILE * f;
   InitBD();/*Mirar para threads!!!!*/
-  key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);
-  free(aux);
+  char *user;
+  int *userPidArray;
+  int i;
+
+  printf("Voy a crear la comunicacion\n");
+  fflush(stdout);
+
+   /* Se obtienen la cantidad de usuarios conectados al directorio.
+    ** Si hay 1 solo, no se manda broadcast, pues el unico que hay
+    ** es el que hizo la modificacion del archivo en primera instancia.
+    */
+  int cantUsersInDir = CantUsersLinkToDir(process.dir);
+  printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
+  fflush(stdout);
+
+
+   /* Se almacenan en userPidArray los pids de dichos usuarios
+   *
+   */
+   userPidArray = PIDsLinkToDir(process.dir);
+
   while(status<=ERROR)
   {
-    status = InitCommunication(key);
+    status = InitCommunication(process.pid);
     usleep(__POOL_WAIT__);
   }
+  
+  printf("Cree la comunicacion con el pid %d y espero por los datos\n",process.pid);
+  fflush(stdout);
+  
   if(status > ERROR)
   {
+  /* Recibo el archivo nuevo */
     while(!requestExists)
     {
       if( (data = GetRequest()) != NULL)
       {
+        printf("Proceso lo recibido\n");
+        fflush(stdout);
         p = ProcessRequest(&data, &size);
         requestExists=TRUE;
+        user = GetPIDToUserName(process.aux_pid);
+        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
         
-        
+        for(i=0;i<cantUsersInDir;i++){
+            /* Si es distinto del pid del usuario que me lo mando */
+            if( userPidArray[i] != process.aux_pid ) {
+                printf("Se lo mando a %d\n",userPidArray[i]);                
+                fflush(stdout);
+                
+              //  p.opCode = SR_FIL_ADD_SIGNAL;
+                p.status = OK;
+            }            
+        }
+           
       }
       usleep(__POOL_WAIT__);
     }
   }
+  
+  printf("Salio todo re joya\n");
+  fflush(stdout);
+  
   return status;
 }
 

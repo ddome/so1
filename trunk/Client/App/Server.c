@@ -12,8 +12,6 @@
 
 #include <signal.h>
 
-
-
 char *bk_path;
 
 /*
@@ -89,6 +87,9 @@ ReadRequest(void)
 int
 AnalyzeOperation(process_t process, byte * data, size_t size)
 {
+
+    process_t inotifyProcess;
+    
     int status; 
     if(process.status == ERROR)
     {
@@ -104,7 +105,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __SPAWN_DIR__:
                 status = SpawnSubProcess(process, size, data);
                 break;
-            case __SPAWN_DEMAND__:
+            case __SPAWN_DEMAND__:            
                 status = SpawnSubProcess(process, size, data);
                 break;
             case __SPAWN_SND_DEMAND__:
@@ -138,7 +139,7 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             returnValue = StartSubProcess(process, size, data);
 	        exit(EXIT_SUCCESS);
             break;
-	default:
+	default:	        
 		break;
     }
 
@@ -162,6 +163,7 @@ int StartSubProcess(process_t process, size_t size, byte * data)
 	        break;	
 	    case __SPAWN_DEMAND__:
                 returnValue = StartDemandSubServer(process);
+                printf("Murio el hijo demanda\n");
                 returnValue = CHILD_RETURN;
 	        break;
 	    case __SPAWN_INOTIFY__:
@@ -293,7 +295,7 @@ int StartDemandSubServer(process_t process)
     
     printf("Inicie la comunicacion con el proceso demanda servidor\n");
     fflush(stdout);
-    
+      
     /* Comunicacion con el inotify */
     status = ERROR;
     while(status<=ERROR)
@@ -306,21 +308,19 @@ int StartDemandSubServer(process_t process)
     printf("Inicie la comunicacion con el proceso inotify\n");
     fflush(stdout); 
     
+     /* Creo el proceso inotify */
+    inotifyProcess.pid = getppid();
+    strcpy(inotifyProcess.dir,process.dir);
+    inotifyProcess.opCode=__SPAWN_INOTIFY__;
+    SpawnSubProcess(inotifyProcess,0,NULL);                
+    printf("Creado el proceso inotify\n");
+    fflush(stdout);  
+    
     /* Deshabilito el inotify */
     /*while(WriteINotifyMsg(__INOTIFY_NO_DATA__) == ERROR) {
         usleep(__POOL_WAIT__);
     }*/
-    
-    /* Creo el proceso inotify */
-    inotifyProcess.pid = getppid();
-    strcpy(inotifyProcess.dir,process.dir);
-    inotifyProcess.opCode=__SPAWN_INOTIFY__;
-    SpawnSubProcess(inotifyProcess,0,NULL);
-    
-    printf("Creado el proceso inotify\n");
-    fflush(stdout);
-    
-    
+      
     if(status > ERROR)
     {
 		while(!requestExists)

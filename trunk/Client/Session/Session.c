@@ -168,38 +168,71 @@ SendFileModPacket( session_t pack)
     return SendFileModPack(data);
 }
 int
-SendFileModTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
+SendFileModTransferSignal( pid_t user_pid, fileT file, pid_t pid)
 {
 	session_t pack;
 	byte *data;
 	size_t size;
-
-	strcpy(pack.msg,userName);
-	pack.opCode = CL_FIL_MOD_SIGNAL;
+    char aux_pid[15];
+    
+    sprintf(aux_pid,"%d",user_pid);
+    
+    printf("Le voy a mandar %s\n",aux_pid);
+    fflush(stdout);
+      
+    pack.opCode = CL_FIL_MOD_SIGNAL;
+    /* Usuario solicitante */
+	strcpy(pack.msg,aux_pid);
 	/* Aca le voy a mandar la info */
-    pack.pid = dirPid;
-    pack.dataSize = 0;
-    pack.data = NULL;
+    pack.pid = pid;
+
+    printf("Aca llegue bien\n");
+    fflush(stdout);
+
+    pack.dataSize = strlen(file.fName)+1;
+    pack.data= malloc(strlen(file.fName)+1);
+    strcpy(pack.data,file.fName);
+    strcpy(pack.senderID,file.path);
+    
+    printf("Copie el nombre del archivo %s y pesa %d\n",pack.data,pack.dataSize);
+    fflush(stdout);
 
 	size = MakeSessionData(pack, &data);
+	
+	printf("El paquete pesa %d\n",size);
+    fflush(stdout);
 	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
 int 
-SendFileMod( fileT file, pid_t parent_pid )
+SendFile( fileT file, pid_t pid )
 {
+
+    printf("Entre a la funcion\n");
+    fflush(stdout);
+
    	session_t pack;
 	byte *data;
 	size_t size;
 
-	pack.opCode = CL_FIL_MOD;
-    pack.pid = parent_pid;
-    pack.data = FileReq(file);
+	pack.opCode = CL_FIL_TRANSFER;
+    pack.pid = pid;
+    
+    printf(" 1 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+    fflush(stdout);
+    
+    data = FileReq(file);
+    
+    printf("LEI TODO JOYA\n");
+    fflush(stdout);
 
 	/* Armo el paquete con la informacion del file a mandar */
 	pack.dataSize = MakeFilePack(file, data, &pack.data );
 
 	size = MakeSessionData(pack, &data);
+	
+	printf("2 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+	
 	return WriteIPC(data, size)>0?OK:ERROR; 
 
 }
@@ -250,6 +283,10 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 	byte *data;
 	size_t size;
 	
+	printf("Le mando el pedido de %s del usuario %s\n",dirPath,userName);
+	fflush(stdout);
+	
+	
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
 
@@ -290,6 +327,8 @@ SendExitSignal( string userName )
 	
 	size = MakeSessionData(pack, &data);
 	pack = GetSessionData(data);
+	
+	kill(getppid(),SIGINT);
 	
 	return WriteIPC(data, size);
 }
