@@ -118,7 +118,7 @@ inotifyWatcher(process_t process)
     int fd;
     int ret=0;
     int error=0;
-
+    int status = __INOTIFY_DISABLE__;
     key_t key;
     char * pathAux, * serverPath;
     char signal = __INOTIFY_NO_DATA__;
@@ -145,6 +145,7 @@ inotifyWatcher(process_t process)
       usleep(__POOL_WAIT__);
       signal = ReadINotifyMsg();
     }
+    status = __INOTIFY_ENABLE__;
     /* No reventemos el micro
     */
    // usleep(500000);
@@ -197,14 +198,22 @@ inotifyWatcher(process_t process)
             /* Aviso al servidor de la modificacion
             */
 	    if(!error)
-        {
-            signal = ReadINotifyMsg();
-
-            if(signal != __INOTIFY_DISABLE__) {
-                printf("Mando el pedido de modificacion\n");
-                fflush(stdout);   
-                ret = NotifyServer(process.pid, key, resp, name);
-            }
+	    {
+		signal = ReadINotifyMsg();
+		if(signal == __INOTIFY_DISABLE__ || signal == __INOTIFY_ENABLE__)
+		{
+		    status = signal;
+		}
+		if(signal == __INOTIFY_EXIT__)
+		{
+		    exit(EXIT_SUCCESS);
+		}
+		printf("Recibi la senial %c", signal);
+		if(status != __INOTIFY_DISABLE__) {
+		    printf("Mando el pedido de modificacion\n");
+		    fflush(stdout);   
+		    ret = NotifyServer(process.pid, key, resp, name);
+	    }
             
         }
 	
