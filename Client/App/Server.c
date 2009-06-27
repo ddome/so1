@@ -154,8 +154,8 @@ int StartSubProcess(process_t process, size_t size, byte * data)
     {
 	    case __SPAWN_PROMPT__:
 	        Prompt();
-		kill(getppid(),SIGINT);
-                returnValue = CHILD_RETURN;
+		    kill(getppid(),SIGINT);
+            returnValue = CHILD_RETURN;
 	        break;			
 		case __SPAWN_OUTPUT__:
 	        PromptReader();
@@ -171,7 +171,7 @@ int StartSubProcess(process_t process, size_t size, byte * data)
 		    returnValue = CHILD_RETURN;
 	        break;
         case __SPAWN_SND_DEMAND__:
-            returnValue = StartDemandSndSubServer(process, size, data);
+            returnValue = StartDemandSndSubServer(process);
             returnValue = CHILD_RETURN;
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
@@ -347,23 +347,69 @@ int StartDemandSubServer(process_t process)
     return status;
 }
 
+/* Recibe el archivo broadcast */
 int 
-StartDemandSndSubServer(process_t process, size_t size, byte * data)
+StartDemandSndSubServer(process_t process)
 {
     int status;
     char * aux;
-    key_t key = ftok(aux = Concat(bk_path, process.dir), getppid());
+    pid_t pid;
+    boolean requestExists = FALSE;
+    byte *data;
+    size_t size;
+    process_t p;
+ 
+    status = ERROR;
+    /* Deshabilito el inotify */
+   while(status<=ERROR)
+    {
+        /* Lo identifico con el pid del proceso principal */
+	    status = InitINotifyMsg(getppid());
+        usleep(__POOL_WAIT__);
+    }
+    
+    status = ERROR;
+    while(WriteINotifyMsg(__INOTIFY_DISABLE__) == ERROR) {
+        usleep(__POOL_WAIT__);
+    }
 
+     printf("Me conecto y leo por el pid %d\n",process.pid);
+     fflush(stdout);
+
+    pid = process.pid;
+    status = ERROR;
     do
     {
-        status = InitCommunication(key);
+        status = InitCommunication(process.pid);
         usleep(__POOL_WAIT__);
     } while(status <= ERROR);
     
-    //if((*data).opCode == SR_READY_TO_RECIEVE_MOD)
-        SendFileModPack(data);
-    //else if((*data).opCode == SR_READY_TO_RECIEVE_ADD)
-      //  SendFileAddPack(data);
+   /* Recibo el pedido */
+  if(status > ERROR)
+    {
+		while(!requestExists)
+		{
+			if( (data = GetRequest()) != NULL)
+			{
+				p = ProcessRequest(&data, &size);
+                if(p.status != ERROR) {
+                    
+                    /* Habilito nuevamente el inotify */
+                    printf("Le voy a mandar el mensaje\n");
+                    fflush(stdout);
+                     while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
+                       usleep(__POOL_WAIT__);
+                    }
+                    printf("Le mande el mensaje\n");
+                    fflush(stdout);
+                }
+                       
+				requestExists=TRUE;
+			}
+		}
+    }    
+    
+   
     
     return OK;
 }

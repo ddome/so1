@@ -100,7 +100,7 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
               status = SpawnSubProcess(process, size, data);
                 break;
             case __DIR_BROADCAST__:
-//                status = StartTransferSubprocess(process);
+                status = StartSubProcess(process);
                 break;
 	        case __KILL_DIR__://deprecated
 				status = KillDirProcess(process);
@@ -167,10 +167,8 @@ int StartSubProcess(process_t process)
 	        PromptReader();
 		returnValue = CHILD_RETURN;
 	        break;	
-	    case __SPAWN_DIR__:
-	        returnValue = StartDirSubServer(process);
-            if(returnValue == __SHUT_DOWN__)
-              fopen("seapago", "w+");
+	    case __DIR_BROADCAST__:
+	        StartTransferSubServer(process);
             returnValue = CHILD_RETURN;
 	        break;
 	    case __SPAWN_DEMAND__:
@@ -178,7 +176,7 @@ int StartSubProcess(process_t process)
                 returnValue = CHILD_RETURN;
 	        break;
         case __SPAWN_REC_DEMAND__:
-            returnValue = StartDemandRecieveSubServer(process);
+            StartDemandRecieveSubServer(process);
             returnValue = CHILD_RETURN;
                 break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
@@ -314,11 +312,15 @@ int StartDemandSubServer(process_t process)
    return status;
 }
 
+/* Manda un archivo broadcast */
 int StartTransferSubServer(process_t process)
 {
 	    int status=OK;
 	    char * aux;
 	    pid_t client_pid;
+	    fileT file;
+	    char *path;
+	    char *fileName;
 
 	    //key_t key = ftok(aux = Concat(bk_path, process.dir), process.status);//DEPRECATED
 	    //free(aux);
@@ -333,6 +335,7 @@ int StartTransferSubServer(process_t process)
 		    usleep(__POOL_WAIT__);
 	    }while(status <= ERROR);
 	    
+	    printf("Iniciada la comunicacion para la transferencia en %d\n",getpid());
 		fflush(stdout);
 		
 		sleep(1);
@@ -345,10 +348,14 @@ int StartTransferSubServer(process_t process)
 		    usleep(__POOL_WAIT__);
 	    }while(status <= ERROR);
 	    
+	    printf("Iniciada la comunicacion con el cliente %d\n",client_pid);	    
 	    fflush(stdout);  
 	       
-	    //SendStartFileTransfer(process);
+	    SendStartFileTransfer(process);
+	    
+	    printf("Le avise al cliente que puede empezar a escuchar en %d\n",process.pid);
 		fflush(stdout);
+
 
         sleep(1);
 	   /* Compienzo a transmitir */
@@ -359,7 +366,18 @@ int StartTransferSubServer(process_t process)
 		    usleep(__POOL_WAIT__);
 	    }while(status <= ERROR);	   
 	   
-	  // SendFilePack(process);		
+	    path = GetPathFromBackup(process.dir);
+        fileName = GetFileName(process.dir);
+        
+        file = NewFileT(path,fileName);
+        
+	   	printf("Mandando el archivo %s %s....",path,fileName);
+		fflush(stdout);
+	   
+	    SendFile(process,file);
+	   
+	   	printf("OK\n");
+		fflush(stdout);		
 	    
    return status;
 }
@@ -422,11 +440,12 @@ int StartDemandRecieveSubServer(process_t process)
         for(i=0;i<cantUsersInDir;i++){
             /* Si es distinto del pid del usuario que me lo mando */
             if( userPidArray[i] != process.aux_pid ) {
-                printf("Se lo mando a %d\n",userPidArray[i]);                
+                user = GetPIDToUserName(userPidArray[i]);
+                printf("Se lo mando a %s\n",user);                
                 fflush(stdout);
-                
-              //  p.opCode = SR_FIL_ADD_SIGNAL;
-                p.status = OK;
+                p.opCode = __DIR_BROADCAST__;
+                p.pid = userPidArray[i];
+                SpawnSubProcess(p, 0,NULL);
             }            
         }
            

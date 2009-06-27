@@ -42,48 +42,58 @@ FillPack(string senderID, string msg, uInt opCode,
 /* Server -> Client: FileAdd/FileMod/FileRem */
 
 void
-GetFileData(session_t data,fileT *filePtr, byte *fileData)
+GetFileData(session_t data,fileT *filePtr, byte **fileData_ptr)
 {
 	int pos;
+	byte *fileData;
 	
+	printf("Leo la info\n");
+    fflush(stdout);
+      
 	pos=0;
 	memmove(filePtr, data.data + pos, sizeof(fileT) );
 	
+	fileData = malloc(GetSize(*filePtr));
+	
 	pos += sizeof(fileT);
-	if( (data.dataSize - sizeof(fileT) ) > 0 && fileData != NULL ) {
-		memmove(fileData, data.data + pos, (data.dataSize - sizeof(fileT)) );	
-	}	
+	memmove(fileData, data.data + pos, GetSize(*filePtr) );
+	
+	*fileData_ptr = fileData;	
+		
 }	
 
 int 
-CallFileAdd(session_t data)
+CallFileTransfer(session_t data)
 {
 	fileT file;
 	byte *fileData;
 	int ret;
-
-	GetFileData(data,&file,fileData);		
-	ret = FileAdd(file,fileData);	
 	
-	free(data.data);
+	printf("Leo la informacion del archivo que pesa %d\n",data.dataSize);
+    fflush(stdout);
+	
+	GetFileData(data,&file,&fileData);
+
+    printf("Voy a agregar un archivo %s %s \n",file.path,file.fName);
+    fflush(stdout);
+
+    if( FileExists(file) ) {
+	    FileRem(file);
+	    printf("Lo borro\n");
+        fflush(stdout);	    	
+    }
+	ret = FileAdd(file,fileData);
+
+    printf("TODO OK\n");
+    fflush(stdout);
+
+	//free(data.data);
+	//free(fileData);
+	
 	return ret;
 }	
 
-int 
-CallFileMod(session_t data)
-{
-	fileT file;
-	byte *fileData;
-	int ret;
 
-	GetFileData(data,&file,fileData);	
-	
-	/*Lo saco y vuelvo a insertar */
-	FileRem(file);	
-	ret = FileAdd(file,fileData);	
-	
-	return ret;	
-}	
 
 int 
 CallFileRem(session_t data)

@@ -76,7 +76,7 @@ int StartInotifySubServer(process_t process);
 
 int StartDemandSubServer(process_t process);
 
-int StartDemandSndSubServer(process_t process, size_t size, byte * data);
+int StartDemandSndSubServer(process_t process);
 
 int SpawnSubProcess(process_t process, size_t size, byte * data);
 

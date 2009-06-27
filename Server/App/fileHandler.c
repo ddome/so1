@@ -496,7 +496,28 @@ RemoveDir( string dir )
 	return ret;
 }	
 	
-	
+
+string GetPathFromBackup(string path)
+{
+    int offset;
+    string pathFromBk, aux1, aux, ret;
+    pathFromBk = strstr(path, "backup");
+    aux1 = CreateString(pathFromBk);
+    aux = strrchr(aux1, '/');
+    offset = aux - aux1;
+    ret = malloc(offset);
+    strncpy(ret, aux1, offset);
+    return ret;
+}
+
+string
+GetFileName(string path) 
+{
+  string fileName;
+  fileName = strrchr(path, '/');
+  return fileName+1;   
+}   
+
 string ExtractDirFromPath(string path)
 {
   int size;
@@ -508,15 +529,13 @@ string ExtractDirFromPath(string path)
   {
     size = aux - path;
     dir = calloc(size + 1,sizeof(char));
-
+    fopen("pasoextract2","w+");
     strncpy(dir, path, size);
-
+    fopen("pasoextract3","w+");
     return dir;
   }
-    
-  return path;
-}   
-    
-    
-    
+  
+}
+	
+
 

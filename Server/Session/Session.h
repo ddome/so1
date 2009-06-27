@@ -49,7 +49,8 @@
 #define SR_DIR_REM          25
 #define SR_READY_TO_RECIEVE_MOD 27
 #define SR_READY_TO_RECIEVE_ADD 29
-#define SR_FIL_TRANS 30
+#define SR_FIL_TRAN 30
+#define SR_FIL_TRAN_REQ 52
 
 //Agregar Sr_DIr-CON-ERROR!!!!!!!!!!1111
 
@@ -70,7 +71,7 @@
 #define CL_FIL_ADD_TRANSFER     28
 #define CL_READY_TO_REC 31
 
-#define CL_FIL_TRANSFER 51
+#define CL_FIL_TRAN 51
 
 /* Paquete de session */
 
@@ -108,6 +109,11 @@ int ProcessSendPack(byte ** data, size_t size);
 int  SendConectionSignal(  pid_t pid );
 
 int SendFileAddPack( string userName, fileT file, byte *data );
+
+int SendFile(process_t process,fileT file);
+
+
+int SendStartTransfer(process_t process);
 
 #endif
 

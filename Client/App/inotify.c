@@ -440,6 +440,21 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
           //  status = SendFileRemPack( name, file, pid );
             break;
         case CREAR:
+        
+            printf("Mando pedido de modificacion\n");
+            fflush(stdout);
+            SendFileModTransferSignal(pid, file,getpid());
+            printf("OK\n");
+            fflush(stdout);            
+            printf("Le voy a tratar de mandar los datos usando el pid %d\n",getpid());
+            fflush(stdout);
+            /* Me conecto al servidor de demanda */
+            while(InitCommunication(getpid()) == ERROR)
+                usleep(__POOL_WAIT__);
+            printf("Le mando el archivo!!!\n"); 
+            fflush(stdout);   
+            /* Le mando el archivo */
+            SendFile(file, pid);   
             break;
         case RENAME:
             break;
