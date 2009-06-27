@@ -37,8 +37,10 @@ int InitINotifyMsg(pid_t pid)
         printf("Hubo un error al crearlo\n");
         fflush(stdout);
         if(errno != EEXIST)
-          status = ERROR;
-        return status;
+	{
+	    status = ERROR;
+	    return status;
+	}
     }
     
     fflush(stdout);
@@ -59,7 +61,7 @@ WriteINotifyMsg(char msg)
 
     status = write(rdFifo_FD, &msg, sizeof(char));
     
-    printf("Mande 1 paquete al Inotify por %s \n", rdFifo);
+    printf("Mande 1 paquete al Inotify por %s **%c**\n", rdFifo, msg);
     fflush(stdout);
 
     return status == ERROR ? ERROR: OK ;
