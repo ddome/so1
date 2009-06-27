@@ -38,6 +38,7 @@ int InitINotifyMsg(pid_t pid)
         fflush(stdout);
         if(errno != EEXIST)
           status = ERROR;
+        return status;
     }
     
     fflush(stdout);

@@ -20,4 +20,6 @@ int CallDirAdd(session_t data);
 
 int CallDirList(session_t data);
 
+int CallFileTransfer(session_t data);
+
 #endif

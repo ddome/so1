@@ -215,7 +215,7 @@ SendFile( fileT file, pid_t pid )
 	byte *data;
 	size_t size;
 
-	pack.opCode = CL_FIL_TRANSFER;
+	pack.opCode = CL_FIL_TRAN;
     pack.pid = pid;
     
     printf(" 1 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
@@ -228,6 +228,8 @@ SendFile( fileT file, pid_t pid )
 
 	/* Armo el paquete con la informacion del file a mandar */
 	pack.dataSize = MakeFilePack(file, data, &pack.data );
+	
+	strcpy(pack.senderID,Concat(file.path,Concat("/",file.fName)));
 
 	size = MakeSessionData(pack, &data);
 	
@@ -397,16 +399,6 @@ ProcessCall( session_t *data )
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;			*/
-		case SR_FIL_ADD:
-			p.status = CallFileAdd(*data);
-			p.opCode = __NO_RESPONSE__;
-			break;
-		case SR_FIL_MOD:
-            fopen("broadmod", "w+");
-			p.status = CallFileMod(*data);
-            
-			p.opCode = __NO_RESPONSE__;
-			break;
 		case SR_FIL_REM:
 		    /* Le aviso al inotify que no avise mientras se
 		    *  actualizan las carpetas */
@@ -441,7 +433,30 @@ ProcessCall( session_t *data )
 			strcpy(p.dir, (*data).data);
 			/* Pid en el que recibiria */
 			p.pid = (*data).pid;
+			break;			
+		case SR_FIL_TRAN_REQ:
+		    printf("Recibi un pedido para iniciar transferencia\n");
+		    fflush(stdout);
+			p.status = OK;
+			p.opCode = __SPAWN_SND_DEMAND__;
+			/* Directorio */
+			strcpy(p.dir, (*data).data);
+			/* Pid en el que recibiria */
+			p.pid = (*data).pid;
+			
+			printf("El nombre del directorio seria %s y el pid por el cual escuchar\n",p.dir,p.pid);
+		    fflush(stdout);
+			
 			break;
+	    case SR_FIL_TRAN:
+	        printf("Recibi el archivo!!! :)\n");
+		    fflush(stdout);
+			p.status = OK;
+			p.opCode =  __NO_RESPONSE__;
+			CallFileTransfer(*data);
+			
+			break;	
+			
 		case SR_DIR_TRANS:
 		    fflush(stdout);
 			p.status = CallDirAdd(*data);

@@ -79,6 +79,76 @@ SendStartTransfer(process_t process)
 
 }
 
+int
+SendStartFileTransfer(process_t process)
+{
+    session_t session;
+    size_t size;
+    byte * data;
+    /* Codigo de la operacion */
+    session.opCode = SR_FIL_TRAN_REQ;
+    /* Direccion en donde se va a transmitir */
+    session.pid    = process.pid;
+    /* Directorio a transmitir */
+    session.dataSize = strlen(process.dir) + 1;
+    session.data = malloc(strlen(process.dir)+1);
+    strcpy(session.data, process.dir);
+    
+    printf("El nombre del directorio perteneciente es %s\n",process.dir);
+	fflush(stdout);
+    
+    size = MakeSessionData(session, &data);
+    /* Mando el aviso */
+    return ProcessSendPack(&data, size);
+
+}
+
+static int
+MakeFilePack( fileT file, byte *data, byte **dataBuffer )
+{
+	if( (*dataBuffer=malloc(GetSize(file)+sizeof(fileT))) == NULL ) {
+		return ERROR;
+	}
+	
+	memmove(*dataBuffer, &file, sizeof(fileT));
+	if( data != NULL ) {
+		memmove(*dataBuffer+sizeof(fileT), data, GetSize(file));
+	}
+	
+	return (GetSize(file) + sizeof(fileT));
+}
+
+
+int
+SendFile(process_t process,fileT file)
+{
+    printf("Entre a la funcion\n");
+    fflush(stdout);
+
+   	session_t pack;
+	byte *data;
+	size_t size;
+
+	pack.opCode = SR_FIL_TRAN;
+    pack.pid = getpid();
+    
+    printf(" 1 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+    fflush(stdout);
+    
+    data = ReqFile(file);
+    
+    printf("LEI TODO JOYA\n");
+    fflush(stdout);
+
+	/* Armo el paquete con la informacion del file a mandar */
+	pack.dataSize = MakeFilePack(file, data, &pack.data );
+
+	size = MakeSessionData(pack, &data);
+	
+	printf("2 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+	
+	return WriteIPC(data, size)>0?OK:ERROR; 
+}
 
 int
 SendDirPack(process_t process)
@@ -203,7 +273,7 @@ ProcessCall( session_t *data )
 		    p.opCode = __NOT_SPAWN__;
 		    break;
 
-		case CL_FIL_TRANSFER:
+		case CL_FIL_TRAN:
 		    // Recibo un archivo
 		    printf("Recibi el archivo!!!\n");
 			fflush(stdout);	
@@ -211,6 +281,7 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			p.pid = (*data).pid;
+			strcpy(p.dir,(*data).senderID);
 			break;
 			
 		case CL_FIL_MOD:
