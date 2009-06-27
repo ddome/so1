@@ -98,12 +98,15 @@ CallFileTransfer(session_t data)
 int 
 CallFileRem(session_t data)
 {
-	fileT file;
+	fileT *file;
 	int ret;
 	
-	GetFileData(data,&file,NULL);	
+	file = (fileT *)(data.data);
 	
-	ret = FileRem(file);	
+	printf("Voy a borrar %s %s\n",file->path,file->fName);	
+	fflush(stdout);
+	
+	ret = FileRem(*file);	
 	
 	return ret;
 }

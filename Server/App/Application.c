@@ -174,13 +174,16 @@ FileAdd( fileT file, byte *data )
 int
 FileRem(  fileT file )
 {
+    printf("Voy a borrar %s %s\n",file.path,file.fName);
+    fflush(stdout);
+
     if( !FileExists(file) )
     {
       return __ERROR_APPLICATION__;
     }
     else
     {
-	DeleteFile(file);
+	    DeleteFile(file);
     }
     
     return OK;
@@ -256,6 +259,7 @@ int
 DelDir( string userName, string dir )
 {   
 
+    printf("Voy a desloguear a %s de %s\n",userName, dir);
     UnRegisterDirFromUser(dir,userName);
 	
     return OK;

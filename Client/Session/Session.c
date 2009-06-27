@@ -146,9 +146,9 @@ SendFileModPack( byte * prevData )
 	session_t pack;
 	byte *data;
 	size_t size;
-        fileT file;
-        pack = GetSessionData(prevData);
-        data = ReqFile(*((fileT*)(pack.data))); 
+    fileT file;
+    pack = GetSessionData(prevData);
+    data = ReqFile(*((fileT*)(pack.data))); 
 	pack.opCode = CL_FIL_MOD;
 	//strcpy(pack.msg,());
       //  pack.pid = getppid();
@@ -164,9 +164,9 @@ SendFileModPacket( session_t pack)
     byte * data;
     size_t size;
     size = MakeSessionData(pack, &data);
-    fopen("mandandomodfile2","w+");
     return SendFileModPack(data);
 }
+
 int
 SendFileModTransferSignal( pid_t user_pid, fileT file, pid_t pid)
 {
@@ -186,12 +186,79 @@ SendFileModTransferSignal( pid_t user_pid, fileT file, pid_t pid)
 	/* Aca le voy a mandar la info */
     pack.pid = pid;
 
-    printf("Aca llegue bien\n");
     fflush(stdout);
 
     pack.dataSize = strlen(file.fName)+1;
     pack.data= malloc(strlen(file.fName)+1);
     strcpy(pack.data,file.fName);
+    strcpy(pack.senderID,file.path);
+    
+    printf("Copie el nombre del archivo %s y pesa %d\n",pack.data,pack.dataSize);
+    fflush(stdout);
+
+	size = MakeSessionData(pack, &data);
+	
+	printf("El paquete pesa %d\n",size);
+    fflush(stdout);
+	return WriteIPC(data, size)>0?OK:ERROR;
+}
+
+int
+SendFileAddTransferSignal( pid_t user_pid, fileT file, pid_t pid)
+{
+	session_t pack;
+	byte *data;
+	size_t size;
+    char aux_pid[15];
+    
+    sprintf(aux_pid,"%d",user_pid);
+    
+    printf("Le voy a mandar %s\n",aux_pid);
+    fflush(stdout);
+      
+    pack.opCode = CL_FIL_ADD_SIGNAL;
+    /* Usuario solicitante */
+	strcpy(pack.msg,aux_pid);
+	/* Aca le voy a mandar la info */
+    pack.pid = pid;
+
+    pack.dataSize = strlen(file.fName)+1;
+    pack.data= malloc(strlen(file.fName)+1);
+    strcpy(pack.data,file.fName);
+    strcpy(pack.senderID,file.path);
+    
+    printf("Copie el nombre del archivo %s y pesa %d\n",pack.data,pack.dataSize);
+    fflush(stdout);
+
+	size = MakeSessionData(pack, &data);
+	
+	printf("El paquete pesa %d\n",size);
+    fflush(stdout);
+	return WriteIPC(data, size)>0?OK:ERROR;
+}
+
+int
+SendFileDelTransferSignal( pid_t user_pid, fileT file, pid_t pid)
+{
+	session_t pack;
+	byte *data;
+	size_t size;
+    char aux_pid[15];
+    
+    sprintf(aux_pid,"%d",user_pid);
+    
+    printf("Le voy a mandar %s\n",aux_pid);
+    fflush(stdout);
+      
+    pack.opCode = CL_FIL_DEL_SIGNAL;
+    /* Usuario solicitante */
+	strcpy(pack.msg,aux_pid);
+	/* Aca le voy a mandar la info */
+    pack.pid = pid;
+
+    pack.dataSize = sizeof(fileT);
+    pack.data= malloc(sizeof(fileT));
+    *(fileT *)(pack.data) = file;
     strcpy(pack.senderID,file.path);
     
     printf("Copie el nombre del archivo %s y pesa %d\n",pack.data,pack.dataSize);
@@ -218,12 +285,8 @@ SendFile( fileT file, pid_t pid )
 	pack.opCode = CL_FIL_TRAN;
     pack.pid = pid;
     
-    printf(" 1 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
-    fflush(stdout);
-    
     data = FileReq(file);
-    
-    printf("LEI TODO JOYA\n");
+
     fflush(stdout);
 
 	/* Armo el paquete con la informacion del file a mandar */
@@ -233,34 +296,35 @@ SendFile( fileT file, pid_t pid )
 
 	size = MakeSessionData(pack, &data);
 	
-	printf("2 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+	printf("Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
 	
 	return WriteIPC(data, size)>0?OK:ERROR; 
 
 }
 
 int
-SendFileAddTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid)
+SendDirRemoveSignal( string userName, string dir, pid_t pid )
 {
   session_t pack;
   byte *data;
   size_t size;
-  char a[30];
+   
+    
+  printf("LLEGUE\n");
+  fflush(stdout); 
     
   pack.pid = pid;
-  pack.opCode = CL_FIL_ADD_TRANSFER;
-    
-  sprintf(a, "%d", dirPid);
-  strcpy(pack.senderID, a);
-    
-    
+  pack.opCode = CL_DIR_REM;           
   strcpy(pack.msg,userName);
-  pack.dataSize = sizeof(fileT);
-  pack.data = malloc(pack.dataSize);
-  memmove(pack.data,&file,pack.dataSize); 
-        
+  pack.dataSize = strlen(dir)+1;
+  pack.data = malloc(strlen(dir)+1);
+  strcpy(pack.data,dir); 
+  
+  printf("%s %s %d\n",pack.data, pack.msg, pack.dataSize);
+  fflush(stdout);
+         
   size = MakeSessionData(pack, &data);
-  return WriteIPC(data, size)>0?OK:ERROR;
+  return WriteIPC(data, size)>0?OK:ERROR;   
 }
 
 int 
@@ -287,8 +351,7 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 	
 	printf("Le mando el pedido de %s del usuario %s\n",dirPath,userName);
 	fflush(stdout);
-	
-	
+		
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
 
@@ -395,11 +458,9 @@ ProcessCall( session_t *data )
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			break;
-	/*	case SR_DIR_ADD:
-			p.status = CallDirAdd(*data);
-			p.opCode = __NO_RESPONSE__;
-			break;			*/
 		case SR_FIL_REM:
+			printf("Recibi la borrada!!!! :)\n");
+		    fflush(stdout);
 		    /* Le aviso al inotify que no avise mientras se
 		    *  actualizan las carpetas */
 		    do
@@ -409,7 +470,8 @@ ProcessCall( session_t *data )
 		    } while (status != OK);
 		    
 		    status = WriteINotifyMsg(__INOTIFY_DISABLE__);
-				p.status = CallFileRem(*data);
+			p.status = CallFileRem(*data);
+			
 		    usleep(200000);
 		    /* Ya termine de modificar, vuelvo a habilitar
 		    *  el inotify */
@@ -455,7 +517,7 @@ ProcessCall( session_t *data )
 			p.opCode =  __NO_RESPONSE__;
 			CallFileTransfer(*data);
 			
-			break;	
+			break;
 			
 		case SR_DIR_TRANS:
 		    fflush(stdout);
@@ -476,7 +538,6 @@ ProcessCall( session_t *data )
             sscanf((*data).senderID, "%d", &(p.status));
             
             aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
-            fopen("mandandomodfile","w+");
             strcpy(p.dir, aux);
             (*data).opCode = CL_FIL_MOD;
  	        SendFileModPacket(*data);

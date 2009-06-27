@@ -62,7 +62,6 @@
 #define CL_DIR_REM          10
 #define CL_FIL_ADD          11
 #define CL_FIL_REM          12
-#define CL_FIL_MOD_SIGNAL   50
 #define CL_FIL_MOD          13
 #define CL_DIR_LST          14
 #define CL_EXT              15
@@ -71,6 +70,9 @@
 #define CL_FIL_ADD_TRANSFER     28
 #define CL_READY_TO_REC 31
 #define CL_FIL_TRAN 51
+#define CL_FIL_MOD_SIGNAL 60
+#define CL_FIL_ADD_SIGNAL 61
+#define CL_FIL_DEL_SIGNAL 62
 
 /* Paquete de session */
 
@@ -105,11 +107,12 @@ int SendDirReq( string userName, pid_t pid, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );
 int SendDirRem( string userName, pid_t pid, string dirName );
-
+int SendDirRemoveSignal( string userName, string dir, pid_t pid );
 int SendFile( fileT file, pid_t parent_pid );
-
 int SendFileModTransferSignal( pid_t user_pid, fileT file, pid_t pid);
-int SendFileAddTransferSignal( string userName, fileT file, pid_t pid, pid_t dirPid);
-int 
-SendFileModPacket( session_t pack);
+int SendFileAddTransferSignal( pid_t user_pid, fileT file, pid_t pid);
+int SendFileModPacket( session_t pack);
+int SendFileAddTransferSignal( pid_t user_pid, fileT file, pid_t pid);
+int SendFileDelTransferSignal( pid_t user_pid, fileT file, pid_t pid);
+
 #endif

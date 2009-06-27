@@ -876,6 +876,7 @@ UnlinkUserToDir(sqliteADT db,const char * pathName,const char * userName)
     sqlite3_stmt *statement;
     int ret;
     char *userN;
+    char *pathAux;
     char *sqlSelect =   "DELETE FROM users_dir WHERE user_id = (SELECT id FROM users WHERE user = '%s') AND dir_id=(SELECT id FROM dirs WHERE dirname = '%s')";
 
     if (db == NULL || userName == NULL)
@@ -883,8 +884,11 @@ UnlinkUserToDir(sqliteADT db,const char * pathName,const char * userName)
 
     if ( ( userN = EscapeString( db, userName ) ) == NULL )
         return DB_NO_MEMORY;
+        
+    if ( ( pathAux = EscapeString( db, pathName ) ) == NULL )
+        return DB_NO_MEMORY;
 
-    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 1, userN);
+    ret = QueryExecute(db, &statement, sqlSelect, 0, NULL, 2, userN,pathAux);
 
     free(userN);
 

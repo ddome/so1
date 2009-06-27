@@ -117,17 +117,12 @@ CallDirRem(session_t data)
 
 	dir = GetDirName(data);
 	userName = data.msg;
-    fopen("h1","w+");
+	
+	printf("directorio: %s usuario: %s\n",dir,userName);
+	fflush(stdout);
+	
     DelDir(userName,dir);
-    fopen("h2","w+");
-    if(CantUsersLinkToDir(dir) <= 0) {
-      fopen("h3","w+");
-      return __SHUT_DOWN__;
-    }
-    else {
-      fopen("h4","w+");
-      return OK;
-    }
+    return OK;
 }
 
 /* Client -> Server: FileAdd/FileMod/FileRem */
@@ -163,19 +158,16 @@ int
 CallFileAdd(session_t data)
 {
 	fileT file;
-	byte *fileData;
-	string user;  // Usado solo para agregar a los Logs
+	string user; // Usado solo para agregar a los Logs
 	int ret;
+	pid_t pid;
 	
-	user = data.msg;
-
-	GetFileData(data,&file,&fileData);	
-	//LogAction(user, GetPath(file), "Add");
-	
-	ret = FileAdd(file,fileData);	
-	
-	free(data.data);
-	
+	pid = atoi(data.msg);
+    user = GetPIDToUserName(pid);
+    
+    printf("--------user:%s  dir:%s\n",user, data.data);
+	LogAction(user, data.data, "Add");
+    	
 	return ret;
 }	
 
@@ -227,21 +219,26 @@ CallFileTransfer(session_t data)
 	return ret;
 }	
 
-int 
+fileT * 
 CallFileRem(session_t * dataPtr)
 {
-	fileT file;
-	string user; //Usado solo para agregar a los Logs
-	session_t data;
+	fileT *file=malloc(sizeof(fileT));
+	string user; // Usado solo para agregar a los Logs
+	int ret;
+	pid_t pid;
+	
+	pid = atoi(dataPtr->msg);
+    user = GetPIDToUserName(pid);
     
-    data = *dataPtr;
+    file = (fileT *)(dataPtr->data);
     
-	user = data.msg;	
-	GetFileRemData(data,&file);
-	//LogAction(user, GetPath(file), "Del");
-	data.opCode = SR_FIL_REM;
-    *dataPtr = data;
-	return FileRem(file);	
+    /* Lo borro del sistema */
+    FileRem(*file);
+   
+    printf("--------user:%s  dir:%s\n",user,file->fName);
+	LogAction(user, file->fName, "Del");
+	
+	return file;
 }
 
 /* Client -> Server: Client Exit */

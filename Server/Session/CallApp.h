@@ -22,7 +22,7 @@ int CallFileAdd(session_t data);
 
 int CallFileMod(session_t data);
 
-int CallFileRem(session_t *data);
+fileT *  CallFileRem(session_t * dataPtr);
 
 int CallDirReg(session_t data);
 
