@@ -48,6 +48,7 @@
 #define __SERVER_BROADCAST__  8
 #define __KILL_DIR__          9
 #define __DIR_BROADCAST_DEMAND__ 10
+#define __SPAWN_DEL_SEND__ 11
 /* Definiciones para creacion de procesos con fork()
 */
 
@@ -78,6 +79,8 @@ int StartDemandRecieveSubServer(process_t process);
 int SpawnSubProcess(process_t process, size_t size, byte * data);
 
 int DirBroadcastMsg(process_t process, size_t size, byte * data);
+
+int StartSendDelSignal(process_t process);
 
 int KillDirProcess(process_t p);
 

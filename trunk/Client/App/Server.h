@@ -84,4 +84,6 @@ int StartPingServer(pid_t pid, char msg[MAX_MSG]);
 
 int InitServerPath(void);
 
+int DirRemoveSync(string user, string dir);
+
 #endif

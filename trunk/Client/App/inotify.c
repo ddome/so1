@@ -446,13 +446,16 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
      switch(resp->opCode)
     {
        case BORRAR:
-          //  status = SendFileRemPack( name, file, pid );
-            break;
-        case CREAR:
-        
-            printf("Mando pedido de modificacion\n");
+            printf("Mando pedido de borrar archivo\n");
             fflush(stdout);
-            SendFileModTransferSignal(pid, file,getpid());
+            SendFileDelTransferSignal(pid, file,getpid());
+            printf("OK\n");
+            fflush(stdout);            
+            break;
+        case CREAR:       
+            printf("Mando pedido de agregar archivo\n");
+            fflush(stdout);
+            SendFileAddTransferSignal(pid, file,getpid());
             printf("OK\n");
             fflush(stdout);            
             printf("Le voy a tratar de mandar los datos usando el pid %d\n",getpid());

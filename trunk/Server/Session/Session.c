@@ -80,6 +80,12 @@ SendStartTransfer(process_t process)
 }
 
 int
+SendStartFileDel(process_t process)
+{
+    
+}
+
+int
 SendStartFileTransfer(process_t process)
 {
     session_t session;
@@ -148,6 +154,29 @@ SendFile(process_t process,fileT file)
 	printf("2 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
 	
 	return WriteIPC(data, size)>0?OK:ERROR; 
+}
+
+int
+SendFileRemTransferSignal(process_t p,fileT file)
+{
+	session_t pack;
+	byte *data;
+	size_t size;
+
+      
+    pack.opCode = SR_FIL_REM;
+    /* Usuario solicitante */
+	strcpy(pack.msg,p.dir);
+
+    pack.dataSize = sizeof(fileT);
+    pack.data= malloc(sizeof(fileT));
+    *(fileT *)(pack.data) = file;
+
+	size = MakeSessionData(pack, &data);
+	
+	printf("El paquete pesa %d\n",size);
+    fflush(stdout);
+	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
 int
@@ -247,15 +276,15 @@ ProcessCall( session_t *data )
 			break;
 
 		case CL_DIR_REM:
-		    printf("Llego un pedido de remover directorio\n");
+		    printf("Llego un pedido de remover directoriooooo\n");
 		    fflush(stdout);	 
+		    
+		    //printf("directorio: %d %d usuario:\n",data->opCode,data->pid);
+	        fflush(stdout);
+		    
 		    p.status = CallDirRem(*data);
-		    if(p.status==__SHUT_DOWN__)
-		      fopen("apagar","w+");
-		    else
-		      fopen("noapagar","w+");
 		    p.opCode = __NO_RESPONSE__;
-		break;
+		    break;
 			
 		case CL_FIL_ADD_TRANSFER:	
 		    sscanf((*data).senderID, "%d", &(p.status ));
@@ -296,13 +325,28 @@ ProcessCall( session_t *data )
 		    strcpy(p.dir, aux);
 		    p.opCode = __NO_RESPONSE__;
 
-
 		    size = MakeSessionData(*data, &d);
 
 		    DirBroadcastMsg(p, size, d);
 		    break;
 		case CL_FIL_MOD_SIGNAL:
-			printf("Llego un pedido de modificar directorio\n");
+			printf("Llego un pedido de modificar archivo\n");
+		    fflush(stdout);
+		    /* Aca voy a escuchar */	 
+		    p.pid = (*data).pid;
+	        p.status = OK;
+	        p.opCode = __SPAWN_REC_DEMAND__;
+	        strcpy(p.dir,DirName((*data).senderID) );
+	        p.aux_pid = atoi(data->msg);	        
+	        
+	        /* Registro la accion */
+	        CallFileMod((*data));
+
+		    //size = MakeSessionData(*data, &d);
+
+		    break;
+		case CL_FIL_ADD_SIGNAL:
+			printf("Llego un pedido de agregar archivo\n");
 		    fflush(stdout);
 		    /* Aca voy a escuchar */	 
 		    p.pid = (*data).pid;
@@ -313,22 +357,28 @@ ProcessCall( session_t *data )
 	        
 	        
 	        /* Registro la accion */
-	        CallFileMod((*data));
-	        
-		    //aux = DirName(((fileT*)((*data).data))->path);
-		    //strcpy(p.dir, aux);
+	        CallFileAdd((*data));
 
-		    size = MakeSessionData(*data, &d);
+		    //size = MakeSessionData(*data, &d);
 
-		    DirBroadcastMsg(p, size, d);
 		    break;
-		case CL_FIL_REM:
-	            p.pid = (*data).pid;
-       		    aux = DirName(((fileT*)((*data).data))->path);
-        	    strcpy(p.dir, aux);
-        	    p.status = CallFileRem(data);
-        	    p.opCode = __DIR_BROADCAST__;
-		    break;
+		    
+		  case CL_FIL_DEL_SIGNAL:
+			printf("Llego un pedido de borrar archivo\n");
+		    fflush(stdout);
+		    /* Aca voy a escuchar */	 
+		    p.pid = (*data).pid;
+	        p.status = OK;
+	        p.opCode = __SPAWN_DEL_SEND__;
+	        strcpy(p.dir,DirName((*data).senderID) );
+	        p.aux_pid = atoi(data->msg);
+	        	 
+	        fileT *aux;	        
+	        /* Registro la accion */
+	        aux = CallFileRem(data);
+            p.file = *aux;
+           
+		    break;       
 				
 		case CL_DIR_LST:
 			printf("Llego un pedido de listar directorios\n");
@@ -360,7 +410,7 @@ ProcessCall( session_t *data )
 			break;	
 			
 		case CL_EXT:
-			printf("Llego un pedido de desloguear usuario\n");
+			printf("Llego un pedido de desloguear usuarioo\n");
 			fflush(stdout);	
 			p.status = CallClientExit(*data);
 			p.opCode = __NO_RESPONSE__;

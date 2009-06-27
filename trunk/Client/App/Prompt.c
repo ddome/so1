@@ -143,9 +143,9 @@ static int RemDir(scannerADT scanner, void * data)
 		if(MoreTokensExist(scanner))
 		{
 			aux = ReadToken(scanner);
-			if(!MoreTokensExist(scanner) && SendDirRem(name, getppid(), aux) == OK)
+			if(!MoreTokensExist(scanner))
 			{
-				DelDir(aux);
+				DirRemoveSync(name,aux);
 				retValue = OK;
 			}
 			free(aux);
@@ -204,9 +204,7 @@ Prompt(void)
     char * strAux;
     int status = OK;
     int terminar = FALSE;
-    char a[200];
-    sprintf(a, "mipid %d", getppid());
-    fopen(a, "w+");
+       
     treeADT tree;
     tree = NewTree();
     LoadTree(tree);

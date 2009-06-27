@@ -62,7 +62,7 @@
 #define CL_DIR_REM          10
 #define CL_FIL_ADD          11
 #define CL_FIL_REM          12
-#define CL_FIL_MOD_SIGNAL   50
+
 #define CL_FIL_MOD          13
 #define CL_DIR_LST          14
 #define CL_EXT              15
@@ -70,8 +70,10 @@
 #define CL_FIL_MOD_TRANSFER     26
 #define CL_FIL_ADD_TRANSFER     28
 #define CL_READY_TO_REC 31
-
 #define CL_FIL_TRAN 51
+#define CL_FIL_MOD_SIGNAL 60
+#define CL_FIL_ADD_SIGNAL 61
+#define CL_FIL_DEL_SIGNAL 62
 
 /* Paquete de session */
 
@@ -91,6 +93,7 @@ typedef struct
     pid_t pid;
     pid_t aux_pid;
     int status;
+    fileT file;
 } process_t;
 
 
@@ -112,6 +115,7 @@ int SendFileAddPack( string userName, fileT file, byte *data );
 
 int SendFile(process_t process,fileT file);
 
+int SendFileRemTransferSignal(process_t p,fileT file);
 
 int SendStartTransfer(process_t process);
 

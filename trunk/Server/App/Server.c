@@ -99,6 +99,9 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
             case __SPAWN_DEMAND__:
               status = SpawnSubProcess(process, size, data);
                 break;
+            case __SPAWN_DEL_SEND__:
+              status = SpawnSubProcess(process, size, data);
+                break;
             case __DIR_BROADCAST__:
                 status = StartSubProcess(process);
                 break;
@@ -141,7 +144,7 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             {
              //   TODO ver si no hace falta aca para recieve demand--resolved si
                 
-                if( process.opCode!=__SPAWN_REC_DEMAND__  && process.opCode!=__SPAWN_DEMAND__ && process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__)
+                if( process.opCode!=__SPAWN_REC_DEMAND__  && process.opCode!=__SPAWN_DEMAND__ && process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__ && process.opCode != __SPAWN_DEL_SEND__)
                 {
 				/* child pid*/
                     returnValue = ProcessSendPack(&data, size);
@@ -177,6 +180,10 @@ int StartSubProcess(process_t process)
 	        break;
         case __SPAWN_REC_DEMAND__:
             StartDemandRecieveSubServer(process);
+            returnValue = CHILD_RETURN;
+                break;
+        case __SPAWN_DEL_SEND__:
+            StartSendDelSignal(process);
             returnValue = CHILD_RETURN;
                 break;
 	    /* Si no era un codigo de operacion valido, se devuelve error
@@ -262,6 +269,47 @@ byte * ReadDirSubServerRequests(void)
     return data;
 }
 
+int
+StartSendDelSignal(process_t process)
+{
+	    int status=OK;
+	    char * aux;
+	    pid_t client_pid;
+	    fileT file;
+	    char *path;
+	    char *user;
+	    int i;
+	    int *userPidArray;
+	    
+	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
+        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
+        fflush(stdout);
+		
+		user = GetPIDToUserName(process.aux_pid);
+        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
+        
+   /* Se almacenan en userPidArray los pids de dichos usuarios
+   *
+   */
+   userPidArray = PIDsLinkToDir(process.dir);
+        
+        for(i=0;i<cantUsersInDir;i++){
+            /* Si es distinto del pid del usuario que me lo mando */
+            if( userPidArray[i] != process.aux_pid ) {
+                user = GetPIDToUserName(userPidArray[i]);
+                printf("Se lo mando a %s\n",user);                
+                fflush(stdout);           
+                do{
+		            status = InitCommunication(userPidArray[i]);
+		            usleep(__POOL_WAIT__);
+	            }while(status <= ERROR);
+	            
+	            SendFileRemTransferSignal(process,process.file);
+            }            
+       }
+       
+   return status;
+}
 int StartDemandSubServer(process_t process)
 {
 	    int status=OK;
