@@ -332,7 +332,8 @@ int StartDemandSubServer(process_t process)
     
                     printf("Le voy a mandar el mensaje\n");
                     fflush(stdout);
-                       while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
+                    
+                     while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
                        usleep(__POOL_WAIT__);
                     }
                     printf("Le mande el mensaje\n");
@@ -397,6 +398,9 @@ StartDemandSndSubServer(process_t process)
                     /* Habilito nuevamente el inotify */
                     printf("Le voy a mandar el mensaje\n");
                     fflush(stdout);
+                    
+                    sleep(3);
+                    
                      while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
                        usleep(__POOL_WAIT__);
                     }

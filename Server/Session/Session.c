@@ -364,13 +364,13 @@ ProcessCall( session_t *data )
 		    break;
 		    
 		  case CL_FIL_DEL_SIGNAL:
-			printf("Llego un pedido de borrar archivo\n");
+			printf("Llego un pedido de borrar archivo en el dir %s\n",DirName((*data).senderID));
 		    fflush(stdout);
 		    /* Aca voy a escuchar */	 
 		    p.pid = (*data).pid;
 	        p.status = OK;
 	        p.opCode = __SPAWN_DEL_SEND__;
-	        strcpy(p.dir,DirName((*data).senderID) );
+	        strcpy(p.dir,DirName((*data).senderID));
 	        p.aux_pid = atoi(data->msg);
 	        	 
 	        fileT *aux;	        
