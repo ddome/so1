@@ -37,7 +37,7 @@
 /* Funciones
 */
 
-int InitINotifyMsg(pid_t pid);
+int InitINotifyMsg(pid_t pid,char *dir);
 
 int WriteINotifyMsg(char msg);
 

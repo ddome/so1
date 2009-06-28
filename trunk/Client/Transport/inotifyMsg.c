@@ -7,19 +7,19 @@ int rdFifo_FD;
 
 
 static char *
-MakeRD(pid_t pid)
+MakeRD(pid_t pid,char *dir)
 {
     char * path;
     if((path = calloc(MAX_DIR_NAME, sizeof(char)))==NULL)
 	return NULL;
 
-    sprintf(path,"%s%s%d", COMM_DIR, INOT,(int)pid);
+    sprintf(path,"%s%s%d%s", COMM_DIR, INOT,(int)pid,dir);
 
     return path;
 }
 
 
-int InitINotifyMsg(pid_t pid)
+int InitINotifyMsg(pid_t pid,char *dir)
 {
 
     int status = OK;
@@ -27,10 +27,10 @@ int InitINotifyMsg(pid_t pid)
     *  y luego se crean los fifo's propiamente.
     */
     
-    printf("Recibi un pedido para crear un fifo con el pid %d\n",pid);
+    printf("Recibi un pedido para crear un fifo con el pid %d dir %s\n",pid,dir);
     fflush(stdout); 
 
-    rdFifo=MakeRD(pid);
+    rdFifo=MakeRD(pid,dir);
 
     if ( mkfifo(rdFifo, __DEFAULT_FIFO_MODE__) == ERROR )
     {

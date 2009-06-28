@@ -448,7 +448,11 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
     {
        case BORRAR:
        
-            if( resp->isDir );
+            if( resp->isDir ) {
+            
+                SendDirDel(path,fileName);
+                break;
+            }
             
             printf("Mando pedido de borrar archivo\n");
             fflush(stdout);
@@ -456,7 +460,14 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
             printf("OK\n");
             fflush(stdout);            
             break;
-        case CREAR:       
+        case CREAR:
+        
+            if( resp->isDir ) {
+            
+                SendDirNew(path,fileName);
+                break;
+            }
+               
             printf("Mando pedido de agregar archivo\n");
             fflush(stdout);
             SendFileAddTransferSignal(pid, file,getpid());
@@ -479,6 +490,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
         case RENAME:
             break;
         case MODIFICAR:
+        
             printf("Mando pedido de modificacion\n");
             fflush(stdout);
             SendFileModTransferSignal(pid, file,getpid());

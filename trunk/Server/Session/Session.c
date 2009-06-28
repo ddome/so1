@@ -93,6 +93,7 @@ SendStartFileTransfer(process_t process)
     byte * data;
     /* Codigo de la operacion */
     session.opCode = SR_FIL_TRAN_REQ;
+    strcpy(session.senderID,DirName(process.dir));
     /* Direccion en donde se va a transmitir */
     session.pid    = process.pid;
     /* Directorio a transmitir */
@@ -134,7 +135,8 @@ SendFile(process_t process,fileT file)
    	session_t pack;
 	byte *data;
 	size_t size;
-
+	
+    strcpy(pack.senderID,DirName(file.path));
 	pack.opCode = SR_FIL_TRAN;
     pack.pid = getpid();
     
@@ -166,7 +168,7 @@ SendFileRemTransferSignal(process_t p,fileT file)
       
     pack.opCode = SR_FIL_REM;
     /* Usuario solicitante */
-	strcpy(pack.msg,p.dir);
+	strcpy(pack.senderID,DirName(file.path));
 
     pack.dataSize = sizeof(fileT);
     pack.data= malloc(sizeof(fileT));

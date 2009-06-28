@@ -399,7 +399,7 @@ SendExitSignal( string userName )
 }
 
 int
-SendDirRem( string userName, pid_t pid, string dirName )
+SendDirDel( string path, string dirName )
 {
 	char * serverPath;
     	key_t keyDir;
@@ -408,17 +408,39 @@ SendDirRem( string userName, pid_t pid, string dirName )
 	byte *data;
     	int status;
     
-	pack.pid = pid;
-	pack.opCode = CL_DIR_REM;
-	strcpy(pack.msg,userName);
-	pack.dataSize = strlen(dirName);	
-	strcpy(pack.data,dirName);
+	pack.opCode = CL_DIR_DEL;
+	strcpy(pack.msg,dirName);
+	strcpy(pack.senderID,path);
+	pack.dataSize = 0;	
+	pack.data = NULL;
 	
 	size = MakeSessionData(pack, &data);
 	pack = GetSessionData(data);
+	
+	InitIPC(__DEFAULT_PID__);
+	status =  WriteIPC(data, size)?OK:ERROR;
+	return status;	
+}
 
-	printf("acabo de armar un pack %s pidiendo que borren %s\n", pack.opCode==CL_DIR_REM?"CL_DIR_REM":"BASURA",pack.data);
-	    
+int
+SendDirNew( string path, string dirName )
+{
+	char * serverPath;
+    	key_t keyDir;
+    	session_t pack;
+	size_t size;
+	byte *data;
+    	int status;
+    
+	pack.opCode = CL_DIR_NEW;
+	strcpy(pack.msg,dirName);
+	strcpy(pack.senderID,path);
+	pack.dataSize = 0;	
+	pack.data = NULL;
+	
+	size = MakeSessionData(pack, &data);
+	pack = GetSessionData(data);
+	
 	InitIPC(__DEFAULT_PID__);
 	status =  WriteIPC(data, size)?OK:ERROR;
 	return status;	
@@ -465,7 +487,7 @@ ProcessCall( session_t *data )
 		    *  actualizan las carpetas */
 		    do
 		    {
-		        status = InitINotifyMsg(getpid());
+		        status = InitINotifyMsg(getpid(),data->senderID);
 		        usleep(__POOL_WAIT__);
 		    } while (status != OK);
 		    
@@ -473,9 +495,6 @@ ProcessCall( session_t *data )
 			p.status = CallFileRem(*data);
 			
 			sleep(3);
-			
-			printf("OK, ahora habilito el inotify\n");
-			fflush(stdout);
 			
 		    /* Ya termine de modificar, vuelvo a habilitar
 		    *  el inotify */
@@ -506,7 +525,7 @@ ProcessCall( session_t *data )
 			p.status = OK;
 			p.opCode = __SPAWN_SND_DEMAND__;
 			/* Directorio */
-			strcpy(p.dir, (*data).data);
+			strcpy(p.dir, data->senderID);
 			/* Pid en el que recibiria */
 			p.pid = (*data).pid;
 			
@@ -519,6 +538,7 @@ ProcessCall( session_t *data )
 		    fflush(stdout);
 			p.status = OK;
 			p.opCode =  __NO_RESPONSE__;
+			strcpy(p.dir,data->senderID);
 			CallFileTransfer(*data);
 			
 			break;
@@ -528,24 +548,7 @@ ProcessCall( session_t *data )
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
-        case  SR_READY_TO_RECIEVE_ADD:
-            p.opCode = __SPAWN_SND_DEMAND__;
-            p.pid = (*data).pid;
-            sscanf((*data).senderID, "%d", &(p.status));
-            aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
-            strcpy(p.dir, aux);
-            (*data).opCode = CL_FIL_MOD;
-            break;
-        case  SR_READY_TO_RECIEVE_MOD:
-            p.opCode =  __NO_RESPONSE__;
-            p.pid = (*data).pid;
-            sscanf((*data).senderID, "%d", &(p.status));
-            
-            aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
-            strcpy(p.dir, aux);
-            (*data).opCode = CL_FIL_MOD;
- 	        SendFileModPacket(*data);
-            break;
+		 
 		default:
 			p.status = ERROR;
 			break;

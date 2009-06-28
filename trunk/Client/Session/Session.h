@@ -73,6 +73,8 @@
 #define CL_FIL_MOD_SIGNAL 60
 #define CL_FIL_ADD_SIGNAL 61
 #define CL_FIL_DEL_SIGNAL 62
+#define CL_DIR_DEL 63
+#define CL_DIR_NEW 64
 
 /* Paquete de session */
 
@@ -106,6 +108,8 @@ int SendFileRemPack( string userName, fileT file, pid_t pid );
 int SendDirReq( string userName, pid_t pid, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );
+int SendDirDel( string path, string dirName );
+int SendDirNew( string path, string dirName );
 int SendDirRem( string userName, pid_t pid, string dirName );
 int SendDirRemoveSignal( string userName, string dir, pid_t pid );
 int SendFile( fileT file, pid_t parent_pid );
