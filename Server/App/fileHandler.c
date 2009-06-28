@@ -457,10 +457,19 @@ string
 DirName(string dirPath)	
 {
 	string dirName;
+	
 	printf("%s\n",dirPath);
-	dirName = strrchr(dirPath, '/');
-	printf("Dir: (%s)\n",(dirName+1));
-	return dirName+1;	
+	fflush(stdout);
+    dirName = strstr(dirPath,"backup") + strlen("backup") + 1;
+	printf("Dir: (%s)\n",dirName);
+	
+	int i=0;
+	while( dirName[i] != '/' && dirName[i] != '\0'  )
+	    i++;
+	dirName[i] = '\0';
+	
+	
+	return dirName;	
 }	
 	
 int

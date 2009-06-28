@@ -447,6 +447,9 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
      switch(resp->opCode)
     {
        case BORRAR:
+       
+            if( resp->isDir );
+            
             printf("Mando pedido de borrar archivo\n");
             fflush(stdout);
             SendFileDelTransferSignal(pid, file,getpid());
@@ -458,6 +461,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
             fflush(stdout);
             SendFileAddTransferSignal(pid, file,getpid());
             printf("OK\n");
+            
             fflush(stdout);            
             printf("Le voy a tratar de mandar los datos usando el pid %d\n",getpid());
             fflush(stdout);
