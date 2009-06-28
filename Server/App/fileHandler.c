@@ -470,7 +470,7 @@ DirName(string dirPath)
 	
 	
 	return dirName;	
-}	
+}
 	
 int
 RemoveDir( string dir )

@@ -197,8 +197,10 @@ DirAdd( string dirPath  )
     int ret;
     
     
-    NewDir(DirName(dirPath));
-    CreateDir(destPath=Concat(SERVER_PATH,DirName(dirPath)));
+    NewDir(strrchr(dirPath,'/')+1);
+    CreateDir(destPath=Concat(SERVER_PATH,strrchr(dirPath,'/')+1));
+
+    printf("%s a %s\n",dirPath,destPath);
 
     ret = CopyDir(dirPath,destPath);		
     free(destPath);

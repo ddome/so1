@@ -204,7 +204,7 @@ int StartDirSubServer(process_t reqProcess)
     }
     
     
-    status = InitINotifyMsg(getpid());
+    status = InitINotifyMsg(getpid(),NULL);
     if(status == ERROR)
     {
 	    return ERROR;
@@ -301,7 +301,7 @@ int StartDemandSubServer(process_t process)
     while(status<=ERROR)
     {
         /* Lo identifico con el pid del proceso principal */
-	    status = InitINotifyMsg(getppid());
+	    status = InitINotifyMsg(getppid(),process.dir);
         usleep(__POOL_WAIT__);
     }
     
@@ -365,7 +365,7 @@ StartDemandSndSubServer(process_t process)
    while(status<=ERROR)
     {
         /* Lo identifico con el pid del proceso principal */
-	    status = InitINotifyMsg(getppid());
+	    status = InitINotifyMsg(getppid(),process.dir);
         usleep(__POOL_WAIT__);
     }
     
@@ -486,7 +486,7 @@ DirRemoveSync(string user, string dir)
    while(status<=ERROR)
     {
         /* Lo identifico con el pid del proceso principal */
-	    status = InitINotifyMsg(getppid());
+	    status = InitINotifyMsg(getppid(),dir);
         usleep(__POOL_WAIT__);
     }    
     status = ERROR;
