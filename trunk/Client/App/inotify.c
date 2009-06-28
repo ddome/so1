@@ -122,7 +122,6 @@ inotifyWatcher(process_t process)
     key_t key;
     char * pathAux, * serverPath;
     char signal = __INOTIFY_NO_DATA__;
-
     resp_T * resp;
     listADT list;
     list=Newlist( (int (*)(void*,void*))Compare,(void (*)(void*))FreeElement);
@@ -180,16 +179,15 @@ inotifyWatcher(process_t process)
             resp=read_events(fd,list,&lastCookie,&lastMask);
 
 	        if( resp->opCode==BORRAR ) {
-	            printf("Borrar");
+	            printf("Borrar\n");
 	            fflush(stdout);
 	        }
 	        else if( resp->opCode==CREAR ) {
-	            printf("Crear");
+	            printf("Crear\n");
 	            fflush(stdout);
 	        }
 	        else if( resp->opCode==MODIFICAR ) {
-	            printf("Modificar");
-	            printf("senial: %s\n",signal==__INOTIFY_DISABLE__?"DESHABITILITADA":"HABILITADA");
+	            printf("Modificar\n");
 	            fflush(stdout);
 	        }
 	        else
@@ -208,9 +206,8 @@ inotifyWatcher(process_t process)
 		{
 		    exit(EXIT_SUCCESS);
 		}
-		printf("Recibi la senial %c", signal);
+		printf("Recibi la senial %c\n", signal);
 		if(status != __INOTIFY_DISABLE__) {
-		    printf("Mando el pedido de modificacion\n");
 		    fflush(stdout);   
 		    ret = NotifyServer(process.pid, key, resp, name);
 	    }
@@ -432,12 +429,16 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
     char * path, * fileName;
     int status;
     
+    printf("Comunicacion con el servidor OK\n");
+    fflush(stdout);
+
     path = GetPathFromBackup(resp->path);
     fileName = GetFileName(resp->path);
-
+    printf("*de *%s* saque *%s* y el fileName *%s*\n", resp->path, path, fileName);
+    fflush(stdout);
+    
     file = NewFileT(path, fileName);
     
-
     while(InitCommunication(__DEFAULT_PID__) == ERROR)
       usleep(__POOL_WAIT__);
     
@@ -460,6 +461,9 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
             fflush(stdout);            
             printf("Le voy a tratar de mandar los datos usando el pid %d\n",getpid());
             fflush(stdout);
+            
+            sleep(1);
+            
             /* Me conecto al servidor de demanda */
             while(InitCommunication(getpid()) == ERROR)
                 usleep(__POOL_WAIT__);
@@ -478,6 +482,9 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
             fflush(stdout);            
             printf("Le voy a tratar de mandar los datos usando el pid %d\n",getpid());
             fflush(stdout);
+            
+            sleep(1);
+            
             /* Me conecto al servidor de demanda */
             while(InitCommunication(getpid()) == ERROR)
                 usleep(__POOL_WAIT__);
@@ -524,7 +531,7 @@ InitNotify(void)
 	int ret;
 
 	if( (fd=fopen("config","r")) == NULL ) {
-		printf("El archivo config es inexistente");
+		printf("El archivo config es inexistente\n");
 		ret = ERROR;
 	}
 	else {

@@ -58,7 +58,8 @@ int
 WriteINotifyMsg(char msg)
 {
     int status;
-
+    while(ReadINotifyMsg() != __INOTIFY_NO_DATA__)
+        ;
     status = write(rdFifo_FD, &msg, sizeof(char));
     
     printf("Mande 1 paquete al Inotify por %s **%c**\n", rdFifo, msg);

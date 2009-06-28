@@ -260,8 +260,8 @@ SendFileDelTransferSignal( pid_t user_pid, fileT file, pid_t pid)
     pack.data= malloc(sizeof(fileT));
     *(fileT *)(pack.data) = file;
     strcpy(pack.senderID,file.path);
-    
-    printf("Copie el nombre del archivo %s y pesa %d\n",pack.data,pack.dataSize);
+        
+    printf("Copie el nombre del archivo %s en el dir %s y pesa %d\n",file.fName,pack.senderID,pack.dataSize);
     fflush(stdout);
 
 	size = MakeSessionData(pack, &data);
@@ -472,7 +472,11 @@ ProcessCall( session_t *data )
 		    status = WriteINotifyMsg(__INOTIFY_DISABLE__);
 			p.status = CallFileRem(*data);
 			
-		    usleep(200000);
+			sleep(3);
+			
+			printf("OK, ahora habilito el inotify\n");
+			fflush(stdout);
+			
 		    /* Ya termine de modificar, vuelvo a habilitar
 		    *  el inotify */
 		    status = WriteINotifyMsg(__INOTIFY_ENABLE__);
