@@ -65,6 +65,11 @@ static int Server(scannerADT scanner, void * data)
       {
         retValue=OK;
       }
+      else
+      {
+            printf("No se pudo establecer una conexion con el servidor.\n");
+            fflush(stdout);
+      }
     }
 
 	conect = TRUE;
@@ -159,7 +164,8 @@ static int Exit(scannerADT scanner, void * data)
     int retValue = ERROR;
     if(!MoreTokensExist(scanner))
     {
-      if(SendExitSignal(name)==OK)
+
+      if(conect && SendExitSignal(name)==OK)
       {
         retValue=OK;
       }

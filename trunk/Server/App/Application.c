@@ -307,7 +307,6 @@ ListAllSyncDirs( string **out)
 int
 CantUsersLinkToDir(char * pathName)
 {
-  printf("Conchudo1\n");
     if(pathName==NULL)
       return __ERROR_APPLICATION__;
     return GetCantUsersLinkToDir(pathName);

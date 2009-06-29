@@ -70,7 +70,8 @@ SendConectionSignal(  pid_t pid )
 	session_t aux;
 	byte * data;
 	size_t size;
-    
+        int failCount = 0; 
+
 	aux.pid = pid;
 	aux.opCode = CL_NEW_CON;
 	aux.dataSize = 0;
@@ -81,9 +82,12 @@ SendConectionSignal(  pid_t pid )
 	do
 	{
 		status = InitCommunication(__DEFAULT_PID__);
+                failCount++;
 		usleep(__POOL_WAIT__);
-	} while(status == ERROR);
-	
+	} while(status == ERROR && failCount < 500);
+	if(failCount >= 50){
+            return ERROR;
+        }
 	return WriteIPC(data, size);
 }	
 
