@@ -52,7 +52,7 @@ GetSem(key_t key)
 	printf("Aca 1\n");
 	return ERROR;
     }
-    if(semctl(semid,0,SETVAL,x)==-1)
+    /*if(semctl(semid,0,SETVAL,x)==-1)
     {
 	printf("Aca 2\n");
 	return ERROR;
@@ -71,7 +71,7 @@ GetSem(key_t key)
     {
 	printf("Aca 3\n");
 	return ERROR;
-    }
+    }*/
     
     return semid;
 }
@@ -98,7 +98,7 @@ InitIPC(key_t key)
 	printf("Hola 2\n");
 	return ERROR;
     }
-    keyAux1=ftok("/home",keyAux1);
+    keyAux1=ftok("/etc",key);
     if( GetSem(keyAux1)==-1 )
     {
 	printf("Hola 3\n");

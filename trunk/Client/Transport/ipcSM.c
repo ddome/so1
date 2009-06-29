@@ -96,7 +96,7 @@ InitIPC(key_t key)
 	printf("Hola 2\n");
 	return ERROR;
     }
-    keyAux1=ftok("/home",keyAux1);
+    keyAux1=ftok("/etc",key);
     if( GetSem(keyAux1)==-1 )
     {
 	printf("Hola 3\n");
@@ -185,7 +185,7 @@ ReadIPC(void)
 	semop(semid,&p3,1);
 	memcpy(&header,dataAux2,sizeof(headerIPC_t));
 	semop(semid,&v4,1);
-
+	printf("header size %d\n",header.size);
 	if(status > 0)
 	{
 	    printf("Read 3\n");
@@ -196,7 +196,6 @@ ReadIPC(void)
 	    semop(semid,&p3,1);
 	    memcpy(aux,dataAux2,header.size);
 	    semop(semid,&v4,1);
-
 	    printf("Read 5\n");
 	    memmove(data+pos, aux, header.size);
 	    printf("Read 6\n");
