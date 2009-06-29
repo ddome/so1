@@ -544,7 +544,7 @@ int
 InitServerPath()
 {
 	if( (bk_path = ReadBkPath()) == NULL ) {
-		printf("El archivo config esta dañado");
+		printf("El archivo config esta daniado");
 		return ERROR;
 	}
 	else

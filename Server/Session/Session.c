@@ -232,23 +232,6 @@ SendDirPack(process_t process)
     return ProcessSendPack(&data, size);
 }
 
-/*int
-SendFileSignal(process_t process, byte * prevData )
-{
-    size_t size;
-    byte * data;
-    session_t auxSession;
-    session_t session;
-    
-    session.pid = process.pid;
-    session.dataSize = strlen(process.dir) + 1;
-    session.data = malloc(session.dataSize);
-    strcpy(session.data, process.dir);  
-    session.opCode = SR_FIL_TRANS;
-    
-    
-}*/
-
 void
 GoodBye(void)
 {

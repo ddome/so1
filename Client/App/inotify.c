@@ -214,9 +214,6 @@ inotifyWatcher(process_t process)
             
         }
 	
-            
-	    if(!error)
-	        printf("%s - %s es directorio?\n",resp->path,resp->isDir?"SI":"NO");
 	    error=0;
     }
     if(pathAux != NULL)
