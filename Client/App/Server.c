@@ -512,3 +512,24 @@ StartInotifySubServer(process_t process)
 
     return status;
 }
+
+
+void
+KillInotify(pid_t pid, char *dir)
+{
+   int status = ERROR;
+    /* Deshabilito el inotify */
+   while(status<=ERROR)
+    {
+        /* Lo identifico con el pid del proceso principal */
+	    status = InitINotifyMsg(pid,dir);
+        usleep(__POOL_WAIT__);
+    }    
+
+    status = ERROR;
+    while(WriteINotifyMsg(__INOTIFY_EXIT__) == ERROR) {
+        usleep(__POOL_WAIT__);
+    }
+                
+}
+

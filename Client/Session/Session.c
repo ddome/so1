@@ -6,6 +6,9 @@
 #include "CallApp.h"
 #include "../Transport/OutputPipe.h"
 
+char dir_reg[150][150];
+int dir_reg_index=0;
+
 extern char *bk_path;
  
 /* Static Functions */
@@ -346,9 +349,6 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 	session_t pack;
 	byte *data;
 	size_t size;
-	
-	printf("Le mando el pedido de %s del usuario %s\n",dirPath,userName);
-	fflush(stdout);
 		
 	pack.opCode = CL_DIR_REQ;
 	strcpy(pack.msg,userName);
@@ -358,6 +358,9 @@ SendDirReq( string userName, pid_t pid, string dirPath )
 	pack.pid = pid;
 
 	size = MakeSessionData(pack, &data);
+	
+	strcpy(dir_reg[dir_reg_index++],dirPath);
+	
 	return WriteIPC(data, size)>0?OK:ERROR;
 }	
 
@@ -392,6 +395,13 @@ SendExitSignal( string userName )
 	pack = GetSessionData(data);
 	
 	kill(getppid(),SIGINT);
+
+    int i;
+    for(i=0;i<dir_reg_index;i++){
+        
+        KillInotify(getppid(),dir_reg[i]);
+        
+    }
 	
 	return WriteIPC(data, size);
 }
