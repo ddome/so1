@@ -165,7 +165,7 @@ SendFileRemTransferSignal(process_t p,fileT file)
 	session_t pack;
 	byte *data;
 	size_t size;
-
+    fileT aux=file;
       
     pack.opCode = SR_FIL_REM;
     /* Usuario solicitante */
@@ -173,7 +173,10 @@ SendFileRemTransferSignal(process_t p,fileT file)
 
     pack.dataSize = sizeof(fileT);
     pack.data= malloc(sizeof(fileT));
-    *(fileT *)(pack.data) = file;
+    *(fileT *)(pack.data) = aux;
+
+    printf("holaa %s/%s\n",file.path,file.fName);
+    printf("holaa %s/%s\n",aux.path,aux.fName);    
 
 	size = MakeSessionData(pack, &data);
 	
