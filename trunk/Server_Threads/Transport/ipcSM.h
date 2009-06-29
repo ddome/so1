@@ -30,11 +30,12 @@ int InitMainIPC(void);
 
 int InitIPC(key_t key);
 
-int WriteIPC(void * data, size_t size);
+int WriteIPC(key_t key, void * data, size_t size);
 
-byte * ReadIPC(void);
+byte * ReadIPC(key_t key);
 
 void CloseIPC(void);
+
 
 #endif
 

@@ -320,7 +320,6 @@ GetCantUsersLinkToDir(char * pathName)
     pqADT queue;
     int cant=0,i=0;
     char * aux;
-    printf("Conchudo2\n");
     queue=NewPQ((void*(*)(void*))CopyString,(void*(*)(void*))FreeString);
     if(queue==NULL)
     {

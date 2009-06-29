@@ -5,7 +5,8 @@ static int queue_id=0;
 int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 static int recibidos=0;
-
+pthread_mutex_t rdmtx = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t wrmtx=PTHREAD_MUTEX_INITIALIZER;
 #define MAX_SIZE 2056
 #define SERVER_MTYPE 1
 #define CLIENT_MTYPE 3
@@ -52,8 +53,10 @@ InitIPC(key_t key)
 }
 
 int 
-WriteIPC(void * data, size_t size)
+WriteIPC(key_t key,void * data, size_t size)
 {
+    pthread_mutex_lock(&wrmtx);
+    InitIPC(key);
     int status,i,bytesLeft,npacket;
     struct mymsg w_data;
     byte *block;
@@ -86,20 +89,25 @@ WriteIPC(void * data, size_t size)
 		    if( status == ERROR )
 			return ERROR;
 	    }
-	    else
-		return ERROR;
+	    else{
+                pthread_mutex_unlock(&wrmtx);
+                return ERROR;
+            }
+		
 	    bytesLeft -= PACKET_SIZE;
 	    npacket++;
     }
     printf("Enviados: %d\n",npacket-1);
 
-
+    pthread_mutex_unlock(&wrmtx);
     return (status<0)?ERROR:OK;
 }
 
 byte*
-ReadIPC(void)
+ReadIPC(key_t key)
 {
+    pthread_mutex_lock(&rdmtx);
+    InitIPC(key);
     int status = OK,pos,nPacketsRead;
     struct mymsg w_data;
     headerIPC_t header;
@@ -148,6 +156,7 @@ ReadIPC(void)
 	printf("Sali\n");
     if(nPacketsRead!=0)
 	printf("recibidos: %d\n", nPacketsRead);
+    pthread_mutex_unlock(&rdmtx);
     return status == ERROR ? NULL: data ;
 }
 
