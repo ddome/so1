@@ -15,7 +15,6 @@ static process_t ProcessCall( session_t *data );
 static size_t MakeSessionData( session_t data, byte **pack );
 static session_t GetSessionData( byte *data );
 
-
 /* Functions */
 
 
@@ -175,9 +174,6 @@ SendFileRemTransferSignal(process_t p,fileT file)
     pack.data= malloc(sizeof(fileT));
     *(fileT *)(pack.data) = aux;
 
-    printf("holaa %s/%s\n",file.path,file.fName);
-    printf("holaa %s/%s\n",aux.path,aux.fName);    
-
 	size = MakeSessionData(pack, &data);
 	
 	printf("El paquete pesa %d\n",size);
@@ -278,7 +274,6 @@ GoodBye(void)
 
 void ShutDown(void)
 {
-	/* AVISO A CLIENTES */
 
 	/* BORRO CANALES DE COMUNICACION */
 	RemoveDir(COMM_DIR);	
@@ -358,29 +353,11 @@ ProcessCall( session_t *data )
 		case CL_DIR_REM:
 		    printf("Llego un pedido de remover directoriooooo\n");
 		    fflush(stdout);	 
-		    
-		    //printf("directorio: %d %d usuario:\n",data->opCode,data->pid);
-	        fflush(stdout);
-		    
+
 		    p.status = CallDirRem(*data);
 		    p.opCode = __NO_RESPONSE__;
 		    break;
 			
-		case CL_FIL_ADD_TRANSFER:	
-		    sscanf((*data).senderID, "%d", &(p.status ));
-		    p.pid = (*data).pid; 
-		    (*data).opCode = SR_READY_TO_RECIEVE_ADD;
-		    fopen("llegoadd","w+");
-		    p.opCode = __SPAWN_REC_DEMAND__;
-		    break;
-		case CL_FIL_MOD_TRANSFER:
-		    sscanf((*data).senderID, "%d", &(p.status ));
-		    (*data).opCode = SR_READY_TO_RECIEVE_MOD;
-		    aux = ExtractDirFromPath(((fileT*)((*data).data))->path);
-		    strcpy(p.dir, aux);
-		    p.pid = (*data).pid; 
-		    p.opCode = __NOT_SPAWN__;
-		    break;
 
 		case CL_FIL_TRAN:
 		    // Recibo un archivo

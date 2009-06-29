@@ -86,4 +86,7 @@ int InitServerPath(void);
 
 int DirRemoveSync(string user, string dir);
 
+
+void KillInotify(pid_t pid, char *dir);
+
 #endif
