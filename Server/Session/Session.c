@@ -129,18 +129,18 @@ MakeFilePack( fileT file, byte *data, byte **dataBuffer )
 int
 SendFile(process_t process,fileT file)
 {
-    printf("Entre a la funcion\n");
+    printf("Entre a la funcion %s/%s\n",file.path,file.fName);
     fflush(stdout);
 
    	session_t pack;
 	byte *data;
 	size_t size;
 	
-    strcpy(pack.senderID,DirName(file.path));
+	strcpy(pack.senderID,Concat(file.path,Concat("/",file.fName)));
 	pack.opCode = SR_FIL_TRAN;
     pack.pid = getpid();
     
-    printf(" 1 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+    printf(" 1 Le voy a mandar el archivo --%s-- que pesa %d\n",pack.senderID,GetSize(file));
     fflush(stdout);
     
     data = ReqFile(file);
@@ -151,9 +151,10 @@ SendFile(process_t process,fileT file)
 	/* Armo el paquete con la informacion del file a mandar */
 	pack.dataSize = MakeFilePack(file, data, &pack.data );
 
+
+    printf(" 2 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+
 	size = MakeSessionData(pack, &data);
-	
-	printf("2 Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
 	
 	return WriteIPC(data, size)>0?OK:ERROR; 
 }
@@ -181,6 +182,50 @@ SendFileRemTransferSignal(process_t p,fileT file)
 	return WriteIPC(data, size)>0?OK:ERROR;
 }
 
+int
+SendDirDelSignal(process_t p,fileT file)
+{
+	session_t pack;
+	byte *data;
+	size_t size;
+    char *dir;
+      
+    pack.opCode = SR_DIR_REM;
+    
+    /* Usuario solicitante */
+	strcpy(pack.senderID,file.path);
+	strcpy(pack.msg,file.fName);
+    pack.dataSize = strlen(p.dir)+1;
+	pack.data = malloc(pack.dataSize);
+	strcpy(pack.data,p.dir);
+	
+	size = MakeSessionData(pack, &data);
+	
+    fflush(stdout);
+	return WriteIPC(data, size)>0?OK:ERROR;
+}
+
+int
+SendDirAddSignal(process_t p,fileT file)
+{
+	session_t pack;
+	byte *data;
+	size_t size;
+    char *dir;
+      
+    pack.opCode = SR_DIR_NEW;
+    /* Usuario solicitante */
+	strcpy(pack.senderID,file.path);
+	strcpy(pack.msg,file.fName);
+    pack.dataSize = strlen(p.dir)+1;
+	pack.data = malloc(pack.dataSize);
+	strcpy(pack.data,p.dir);
+	
+	size = MakeSessionData(pack, &data);
+	
+    fflush(stdout);
+	return WriteIPC(data, size)>0?OK:ERROR;
+}
 int
 SendDirPack(process_t process)
 {
@@ -266,9 +311,39 @@ ProcessCall( session_t *data )
 			p.status = CallNewConection(data);
 			p.opCode = __NOT_SPAWN__;
 			/* contesto a esta direccion */
-			p.pid = (*data).pid;
+			p.pid = (*data).pid;			
 			break;
 			
+		case CL_DIR_DEL:
+			printf("Llego un pedido de borrar un directorio\n");
+			fflush(stdout);
+			p.status = CallDirDel(*data);
+			p.opCode =  __SPAWN_DIR_DEL_SEND__;	
+			
+			strcpy(p.dir,DirName(data->senderID));
+			/* contesto a esta direccion */
+			p.pid = (*data).pid;
+			p.aux_pid = (*data).pid;
+			strcpy(p.file.path,data->senderID);
+			strcpy(p.file.fName,data->msg);  
+			
+			printf("Voy a borrar %s%s que pertenece a %s con el pid %d\n",p.file.path,p.file.fName,p.dir,p.pid);
+			fflush(stdout);
+			
+			break;
+		case CL_DIR_NEW:
+			printf("Llego un pedido de nuevo un directorio\n");
+			fflush(stdout);
+			p.status = CallDirNew(*data);
+			p.opCode =  __SPAWN_DIR_NEW_SEND__;
+			strcpy(p.dir,DirName(data->senderID));
+			/* contesto a esta direccion */
+			p.pid = (*data).pid;
+			p.aux_pid = (*data).pid;
+			strcpy(p.file.path,data->senderID);
+			strcpy(p.file.fName,data->msg);
+
+			break;		
 		case CL_NEW_USR:
 			printf("Llego un pedido de nueva usuario\n");
 			fflush(stdout);
@@ -308,10 +383,13 @@ ProcessCall( session_t *data )
 		    // Recibo un archivo
 		    printf("Recibi el archivo!!!\n");
 			fflush(stdout);	
-			p.status = CallFileTransfer(*data);
+			p.file = CallFileTransfer(*data);
 			p.opCode = __NO_RESPONSE__;
 			p.status = OK;
 			p.pid = (*data).pid;
+			
+			printf("Le voy a mandar que agregue el archivo %s/%s\n",p.file.path,p.file.fName);
+			
 			strcpy(p.dir,(*data).senderID);
 			break;
 			

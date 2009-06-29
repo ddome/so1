@@ -108,9 +108,15 @@ AnalyzeOperation(process_t process, byte * data, size_t size)
 	        case __KILL_DIR__://deprecated
 				status = KillDirProcess(process);
 				break;
-          case __SPAWN_REC_DEMAND__:
+            case __SPAWN_REC_DEMAND__:
                 status = SpawnSubProcess(process, size, data);
                 break;
+            case __SPAWN_DIR_DEL_SEND__:
+                status = SpawnSubProcess(process, size, data);  
+                break;
+            case __SPAWN_DIR_NEW_SEND__:
+                status = SpawnSubProcess(process, size, data);  
+                break;                               
             case __NO_RESPONSE__:
                // free(data);
                 //data = NULL;
@@ -144,7 +150,7 @@ SpawnSubProcess(process_t process, size_t size, byte * data)
             {
              //   TODO ver si no hace falta aca para recieve demand--resolved si
                 
-                if( process.opCode!=__SPAWN_REC_DEMAND__  && process.opCode!=__SPAWN_DEMAND__ && process.opCode!=__NO_RESPONSE__ && process.opCode != __DIR_BROADCAST__ && process.opCode != __DIR_BROADCAST_DEMAND__ && process.opCode != __SPAWN_DEL_SEND__)
+                if( process.opCode == __NOT_SPAWN__ )
                 {
 				/* child pid*/
                     returnValue = ProcessSendPack(&data, size);
@@ -186,6 +192,14 @@ int StartSubProcess(process_t process)
             StartSendDelSignal(process);
             returnValue = CHILD_RETURN;
                 break;
+        case __SPAWN_DIR_DEL_SEND__:
+            StartDirDelBroadcast(process);
+            returnValue = CHILD_RETURN;
+                break;        
+        case __SPAWN_DIR_NEW_SEND__:
+            StartDirNewBroadcast(process);
+            returnValue = CHILD_RETURN;
+                break;                   
 	    /* Si no era un codigo de operacion valido, se devuelve error
 	    */
 	    default:
@@ -310,6 +324,124 @@ StartSendDelSignal(process_t process)
        
    return status;
 }
+
+int
+StartDirBroadcast(process_t process)
+{
+	    int status=OK;
+	    	    	    
+	    int i;
+	    int *userPidArray;
+	    char *user;
+	    
+	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
+        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
+        fflush(stdout);
+		
+		user = GetPIDToUserName(process.aux_pid);
+        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
+        
+   /* Se almacenan en userPidArray los pids de dichos usuarios
+   *
+   */
+   userPidArray = PIDsLinkToDir(process.dir);
+        
+        for(i=0;i<cantUsersInDir;i++){
+            /* Si es distinto del pid del usuario que me lo mando */
+            if( userPidArray[i] != process.aux_pid ) {
+                user = GetPIDToUserName(userPidArray[i]);
+                printf("Se lo mando a %s\n",user);                
+                fflush(stdout);           
+                do{
+		            status = InitCommunication(userPidArray[i]);
+		            usleep(__POOL_WAIT__);
+	            }while(status <= ERROR);
+	            
+	            SendDirDelSignal(process,process.file);
+            }            
+       }
+       
+   return status;
+}
+
+int
+StartDirNewBroadcast(process_t process)
+{
+	    int status=OK;
+	    	    	    
+	    int i;
+	    int *userPidArray;
+	    char *user;
+	    
+	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
+        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
+        fflush(stdout);
+		
+		user = GetPIDToUserName(process.aux_pid);
+        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
+        
+       /* Se almacenan en userPidArray los pids de dichos usuarios
+       *
+       */
+       userPidArray = PIDsLinkToDir(process.dir);
+        
+        for(i=0;i<cantUsersInDir;i++){
+            /* Si es distinto del pid del usuario que me lo mando */
+            if( userPidArray[i] != process.aux_pid ) {
+                user = GetPIDToUserName(userPidArray[i]);
+                printf("Se lo mando a %s\n",user);                
+                fflush(stdout);           
+                do{
+		            status = InitCommunication(userPidArray[i]);
+		            usleep(__POOL_WAIT__);
+	            }while(status <= ERROR);
+	            
+	            SendDirAddSignal(process,process.file);
+            }            
+       }
+       
+   return status;
+}
+
+int
+StartDirDelBroadcast(process_t process)
+{
+	    int status=OK;
+	    	    	    
+	    int i;
+	    int *userPidArray;
+	    char *user;
+	    
+	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
+        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
+        fflush(stdout);
+		
+		user = GetPIDToUserName(process.aux_pid);
+        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
+        
+       /* Se almacenan en userPidArray los pids de dichos usuarios
+       *
+       */
+       userPidArray = PIDsLinkToDir(process.dir);
+        
+        for(i=0;i<cantUsersInDir;i++){
+            /* Si es distinto del pid del usuario que me lo mando */
+            if( userPidArray[i] != process.aux_pid ) {
+                user = GetPIDToUserName(userPidArray[i]);
+                printf("Se lo mando a %s\n",user);                
+                fflush(stdout);           
+                do{
+		            status = InitCommunication(userPidArray[i]);
+		            usleep(__POOL_WAIT__);
+	            }while(status <= ERROR);
+	            
+	            SendDirDelSignal(process,process.file);
+            }            
+       }
+       
+   return status;
+}
+
 int StartDemandSubServer(process_t process)
 {
 	    int status=OK;
@@ -417,9 +549,9 @@ int StartTransferSubServer(process_t process)
 	    path = GetPathFromBackup(process.dir);
         fileName = GetFileName(process.dir);
         
-        file = NewFileT(path,fileName);
+        file = process.file;
         
-	   	printf("Mandando el archivo %s %s....",path,fileName);
+	   	printf("Mandando el archivo %s %s....",file.path,file.fName);
 		fflush(stdout);
 	   
 	    SendFile(process,file);

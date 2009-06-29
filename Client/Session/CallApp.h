@@ -22,4 +22,8 @@ int CallDirList(session_t data);
 
 int CallFileTransfer(session_t data);
 
+int CallDirDel(session_t data);
+
+int CallDirNew(session_t data);
+
 #endif

@@ -189,6 +189,29 @@ CallFileMod(session_t data)
 }	
 
 int 
+CallDirDel(session_t data)
+{
+	int ret;
+	
+	rmdir(Concat(Concat(data.senderID,"/"),data.msg));
+	
+	return OK;
+}	
+
+int 
+CallDirNew(session_t data)
+{
+	int ret;
+	
+	
+	
+	mkdir(Concat(Concat(data.senderID,"/"),data.msg),0777);
+	
+	return OK;
+}	
+
+
+fileT
 CallFileTransfer(session_t data)
 {
 	fileT file;
@@ -201,6 +224,7 @@ CallFileTransfer(session_t data)
 	GetFileData(data,&file,&fileData);
 
     printf("Voy a agregar un archivo %s %s \n",file.path,file.fName);
+
     fflush(stdout);
 
     if( FileExists(file) ) {
@@ -216,7 +240,7 @@ CallFileTransfer(session_t data)
 	//free(data.data);
 	//free(fileData);
 	
-	return ret;
+	return file;
 }	
 
 fileT * 
