@@ -320,7 +320,6 @@ int StartDemandSubServer(process_t process)
     /*while(WriteINotifyMsg(__INOTIFY_NO_DATA__) == ERROR) {
         usleep(__POOL_WAIT__);
     }*/
-      
     if(status > ERROR)
     {
 		while(!requestExists)
