@@ -4,7 +4,7 @@
 #include "ipcFifo.h"
 #include <sys/ipc.h>
 #include <sys/types.h>
-
+#include <pthread.h>
 /* Defines generales para todos los IPC's
 */
 

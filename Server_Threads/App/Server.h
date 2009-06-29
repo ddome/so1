@@ -11,7 +11,7 @@
 #include <sys/msg.h>
 #include <sys/wait.h>
 #include <signal.h>
-
+#include <pthread.h>
 /*
 *  Project Includes
 */
@@ -49,6 +49,8 @@
 #define __KILL_DIR__          9
 #define __DIR_BROADCAST_DEMAND__ 10
 #define __SPAWN_DEL_SEND__ 11
+#define __SPAWN_DIR_DEL_SEND__ 12
+#define __SPAWN_DIR_NEW_SEND__ 13
 /* Definiciones para creacion de procesos con fork()
 */
 
@@ -68,15 +70,11 @@ int StartSubProcess(process_t* process);
 
 int AnalyzeOperation(process_t process, byte * data, size_t size);
 
-int StartDirSubServer(process_t process);
-
 int StartDemandSubServer(process_t * process);
 
 int StartDemandRecieveSubServer(process_t *  process);
 
 int SpawnSubProcess(process_t process, size_t size, byte * data);
-
-int DirBroadcastMsg(process_t process, size_t size, byte * data);
 
 int StartSendDelSignal(process_t * process);
 

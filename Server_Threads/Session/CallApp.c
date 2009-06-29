@@ -118,9 +118,6 @@ CallDirRem(session_t data)
 	dir = GetDirName(data);
 	userName = data.msg;
 	
-	printf("directorio: %s usuario: %s\n",dir,userName);
-	fflush(stdout);
-	
     DelDir(userName,dir);
     return OK;
 }
@@ -133,9 +130,6 @@ GetFileData(session_t data,fileT *filePtr, byte **fileData_ptr)
 	int pos;
 	byte *fileData;
 	
-	printf("Leo la info\n");
-    fflush(stdout);
-      
 	pos=0;
 	memmove(filePtr, data.data + pos, sizeof(fileT) );
 	
@@ -165,7 +159,6 @@ CallFileAdd(session_t data)
 	pid = atoi(data.msg);
     user = GetPIDToUserName(pid);
     
-    printf("--------user:%s  dir:%s\n",user, data.data);
 	LogAction(user, data.data, "Add");
     	
 	return ret;
@@ -182,41 +175,61 @@ CallFileMod(session_t data)
 	pid = atoi(data.msg);
     user = GetPIDToUserName(pid);
     
-    printf("--------user:%s  dir:%s\n",user, data.data);
 	LogAction(user, data.data, "Mod");
     	
 	return ret;
 }	
 
 int 
+CallDirDel(session_t data)
+{
+	int ret;
+	
+	rmdir(Concat(Concat(data.senderID,"/"),data.msg));
+	
+	return OK;
+}	
+
+int 
+CallDirNew(session_t data)
+{
+	int ret;
+	
+	
+	
+	mkdir(Concat(Concat(data.senderID,"/"),data.msg),0777);
+	
+	return OK;
+}	
+
+
+fileT
 CallFileTransfer(session_t data)
 {
 	fileT file;
-	byte *fileData;
+	byte *fileData;    fflush(stdout);
 	int ret;
 	
-	printf("Leo la informacion del archivo que pesa %d\n",data.dataSize);
-    fflush(stdout);
+	
 	
 	GetFileData(data,&file,&fileData);
 
-    printf("Voy a agregar un archivo %s %s \n",file.path,file.fName);
+    
+
     fflush(stdout);
 
     if( FileExists(file) ) {
 	    FileRem(file);
-	    printf("Lo borro\n");
-        fflush(stdout);	    	
+	    
     }
 	ret = FileAdd(file,fileData);
 
-    printf("TODO OK\n");
-    fflush(stdout);
+    
 
 	//free(data.data);
 	//free(fileData);
 	
-	return ret;
+	return file;
 }	
 
 fileT * 
@@ -235,7 +248,6 @@ CallFileRem(session_t * dataPtr)
     /* Lo borro del sistema */
     FileRem(*file);
    
-    printf("--------user:%s  dir:%s\n",user,file->fName);
 	LogAction(user, file->fName, "Del");
 	
 	return file;
@@ -335,8 +347,6 @@ CallDirReq(session_t *dataPtr)
     userName = (*dataPtr).msg;
 
     (*dataPtr).opCode = SR_DIR_REQ_OK;
-
-    printf("Registro %s para %s\n",dirName,userName);
 
     /* Agrego el directorio a la lista de directorios sincronizables para el usuario */
     UserAddDir(userName, dirName);

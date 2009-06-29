@@ -514,7 +514,7 @@ string GetPathFromBackup(string path)
     aux1 = CreateString(pathFromBk);
     aux = strrchr(aux1, '/');
     offset = aux - aux1;
-    ret = calloc(1, offset);
+    ret = malloc(offset);
     strncpy(ret, aux1, offset);
     return ret;
 }
