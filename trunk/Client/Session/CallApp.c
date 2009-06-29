@@ -104,7 +104,7 @@ CallFileRem(session_t data)
 	
 	file = (fileT *)(data.data);
 	
-	printf("Voy a borrar %s %s\n",file->path,file->fName);	
+	printf("Voy a borrar %s/%s\n",file->path,file->fName);	
 	fflush(stdout);
 	
 	ret = FileRem(*file);	
