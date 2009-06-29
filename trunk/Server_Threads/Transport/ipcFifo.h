@@ -11,7 +11,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <pthread.h>
 #include "../Lib/defines.h"
 #include "Transport.h"
 #include "../Lib/Error.h"
@@ -37,3 +36,4 @@ byte * ReadIPC(key_t key);
 void CloseIPC(void);
 
 #endif
+

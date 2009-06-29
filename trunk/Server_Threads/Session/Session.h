@@ -51,6 +51,7 @@
 #define SR_READY_TO_RECIEVE_ADD 29
 #define SR_FIL_TRAN 30
 #define SR_FIL_TRAN_REQ 52
+#define SR_DIR_NEW 70
 
 //Agregar Sr_DIr-CON-ERROR!!!!!!!!!!1111
 
@@ -74,6 +75,8 @@
 #define CL_FIL_MOD_SIGNAL 60
 #define CL_FIL_ADD_SIGNAL 61
 #define CL_FIL_DEL_SIGNAL 62
+#define CL_DIR_DEL 63
+#define CL_DIR_NEW 64
 
 /* Paquete de session */
 
@@ -101,15 +104,19 @@ typedef struct
 
 int InitCommunication(pid_t pid);
 
-byte * GetRequest(key_t key);
+byte * GetRequest(pid_t pid);
 
 process_t ProcessRequest(byte ** data, size_t * size);
+
+int SendDirAddSignal(process_t* p,fileT file, pid_t pid);
+
+int SendDirNewSignal(process_t *p,fileT file, pid_t pid);
 
 int SendDirPack(process_t* process, pid_t pid);
 
 int ProcessSendPack(pid_t pid,byte ** data, size_t size);
 
-int  SendConectionSignal(  pid_t pid );
+int SendConectionSignal(  pid_t pid );
 
 int SendFileAddPack( string userName, fileT file, byte *data );
 
@@ -118,7 +125,6 @@ int SendFile(process_t *process,fileT file, pid_t pid);
 int SendFileRemTransferSignal(process_t* p,fileT file, pid_t pid);
 
 int SendStartTransfer(process_t * process, pid_t pid);
-
 #endif
 
 
