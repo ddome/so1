@@ -12,7 +12,8 @@ static int shmid2=-1;
 static int semid=-1;
 static void * dataAux1;
 static void * dataAux2;
-
+pthread_mutex_t rdmtx = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t wrmtx=PTHREAD_MUTEX_INITIALIZER;
 
 typedef union _semun{
     int val;
@@ -113,9 +114,86 @@ InitIPC(key_t key)
     return OK;
 }
 
-int 
-WriteIPC(void * data, size_t size)
+
+int
+InitWriteIPC(key_t key)
 {
+    int keyAux1,keyAux2;
+    /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
+    keyAux1=ftok("/tmp",key);
+    keyAux2=ftok("/home",key);
+    shmid1=shmget(keyAux1,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    shmid2=shmget(keyAux2,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    if( shmid1==-1 || shmid2==-1 )
+    {
+	printf("Hola 1\n");
+	return ERROR;
+    }
+    dataAux1=shmat(shmid1,NULL,0);
+    dataAux2=shmat(shmid2,NULL,0);
+    if(dataAux1==ERR_DATA || dataAux2==ERR_DATA)
+    {
+	printf("Hola 2\n");
+	return ERROR;
+    }
+    keyAux1=ftok("/etc",key);
+    if( GetSem(keyAux1)==-1 )
+    {
+	printf("Hola 3\n");
+	return ERROR;
+    }
+
+    /* IPCStarted = isChildProcess = TRUE pues es para un proceso hijo
+    */
+    IPCStarted = TRUE;
+    isChildProcess = TRUE;
+    /*printf("shmid1=(%d) - shmid2=(%d) - semid=(%d)\n",shmid1,shmid2,semid);*/
+    return OK;
+}
+
+
+int
+InitReadIPC(key_t key)
+{
+    int keyAux1,keyAux2;
+    /*Se crea la cola de mensajes con permisos __DEFAULT_FIFO_MODE__.*/
+    keyAux1=ftok("/tmp",key);
+    keyAux2=ftok("/home",key);
+    shmid1=shmget(keyAux1,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    shmid2=shmget(keyAux2,MAX_SIZE,IPC_CREAT | __DEFAULT_FIFO_MODE__);
+    if( shmid1==-1 || shmid2==-1 )
+    {
+	printf("Hola 1\n");
+	return ERROR;
+    }
+    dataAux1=shmat(shmid1,NULL,0);
+    dataAux2=shmat(shmid2,NULL,0);
+    if(dataAux1==ERR_DATA || dataAux2==ERR_DATA)
+    {
+	printf("Hola 2\n");
+	return ERROR;
+    }
+    keyAux1=ftok("/etc",key);
+    if( GetSem(keyAux1)==-1 )
+    {
+	printf("Hola 3\n");
+	return ERROR;
+    }
+
+    /* IPCStarted = isChildProcess = TRUE pues es para un proceso hijo
+    */
+    IPCStarted = TRUE;
+    isChildProcess = TRUE;
+    /*printf("shmid1=(%d) - shmid2=(%d) - semid=(%d)\n",shmid1,shmid2,semid);*/
+    return OK;
+}
+
+
+int 
+WriteIPC(key_t key, void * data, size_t size)
+{
+    pthread_mutex_lock(&wrmtx);
+    InitWriteIPC(key);
     int status,i,bytesLeft,npacket;
     byte *block;
     headerIPC_t header;
@@ -151,28 +229,25 @@ WriteIPC(void * data, size_t size)
 			return ERROR;
 	    }
 	    else
-		return ERROR;
+            {
+                pthread_mutex_unlock(&wrmtx);
+                return ERROR;
+            }
+		
 	    bytesLeft -= PACKET_SIZE;
 	    npacket++;
     }
     printf("Enviados: %d\n",npacket-1);
 
-
+    pthread_mutex_unlock(&wrmtx);
     return (status<0)?ERROR:OK;
-  /*
-    memcpy(dataAux2,&header,sizeof(headerIPC_t));
-    semop(semid,&v3,1);
-    semop(semid,&p4,1);
-    
-    memcpy(dataAux2,data,size);
-    semop(semid,&v3,1);
-    semop(semid,&p4,1);
-    return OK;*/
 }
 
 byte*
-ReadIPC(void)
+ReadIPC(key_t key)
 {
+    pthread_mutex_lock(&rdmtx);
+    InitReadIPC(key);
     int status = OK,pos,nPacketsRead;
     headerIPC_t header;
     byte * data=NULL;
@@ -212,7 +287,7 @@ ReadIPC(void)
 	    else
 	    {
 		status = ERROR;
-	    }			  
+	    }
 	}
 	else
 	{
@@ -223,6 +298,7 @@ ReadIPC(void)
 	printf("Sali\n");
     if(nPacketsRead!=0)
 	printf("recibidos: %d\n", nPacketsRead);
+    pthread_mutex_unlock(&rdmtx);
     return status == ERROR ? NULL: data ;
 }
 

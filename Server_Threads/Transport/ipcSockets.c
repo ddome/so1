@@ -5,7 +5,8 @@ char * clientPath = NULL;
 char * serverPath = NULL;
 int recibidos = 0;
 int socketFD;
-
+pthread_mutex_t rdmtx = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t wrmtx=PTHREAD_MUTEX_INITIALIZER;
 int IPCStarted = FALSE;
 int isChildProcess = FALSE;
 
@@ -62,6 +63,60 @@ int InitIPC(key_t key)
     return status;
 }
 
+int InitReadIPC(key_t key)
+{
+    int status = OK;
+
+    clientPath=MakeRDPath(key);
+    serverPath=MakeWRPath(key);
+
+    struct sockaddr_un server;
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, serverPath);
+    unlink(server.sun_path);
+    if( (socketFD=socket(AF_UNIX,SOCK_DGRAM,0))==-1 )
+    {
+	printf("A comerlaaaaaaa!!!\n");
+	return ERROR;
+    }
+    if (bind(socketFD, (struct sockaddr *)&server, sizeof(struct sockaddr_un)) == -1) 
+    {
+	printf("Murio\n");
+	return ERROR;
+    }
+
+    IPCStarted = TRUE;
+    isChildProcess = TRUE;
+    return status;
+}
+
+int InitWriteIPC(key_t key)
+{
+    int status = OK;
+
+    clientPath=MakeRDPath(key);
+    serverPath=MakeWRPath(key);
+
+    struct sockaddr_un server;
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, serverPath);
+    unlink(server.sun_path);
+    if( (socketFD=socket(AF_UNIX,SOCK_DGRAM,0))==-1 )
+    {
+	printf("A comerlaaaaaaa!!!\n");
+	return ERROR;
+    }
+    if (bind(socketFD, (struct sockaddr *)&server, sizeof(struct sockaddr_un)) == -1) 
+    {
+	printf("Murio\n");
+	return ERROR;
+    }
+
+    IPCStarted = TRUE;
+    isChildProcess = TRUE;
+    return status;
+}
+
 static int
 GetTotalPackets(size_t size)
 {
@@ -69,8 +124,10 @@ GetTotalPackets(size_t size)
 }
 
 int 
-WriteIPC(void * data, size_t size)
+WriteIPC(key_t key, void * data, size_t size)
 {
+    pthread_mutex_lock(&wrmtx);
+    InitWriteIPC(key);
     int status;
     headerIPC_t header;
 	byte *block;
@@ -98,19 +155,25 @@ WriteIPC(void * data, size_t size)
 			free(block);
 			
 			if( status == ERROR )
-				return ERROR;
+                        {
+                            pthread_mutex_unlock(&wrmtx);
+                            return ERROR;
+                        }
+				
 		}
 		
 		bytesLeft -= PACKET_SIZE;
 		npacket++;
 	}
-	
+    pthread_mutex_unlock(&wrmtx);
     return status;
 }
 
 byte *
-ReadIPC(void)
+ReadIPC(key_t key)
 {
+        pthread_mutex_lock(&rdmtx);
+        InitReadIPC(key);
 	int status = OK;
 	headerIPC_t header;
 	byte * data=NULL;
@@ -151,7 +214,7 @@ ReadIPC(void)
 	}while( status != ERROR && nPacketsRead < header.totalPackets );
 	
 	printf("recibidos: %d\n", nPacketsRead);
-	
+	pthread_mutex_unlock(&rdmtx);
 	return status == ERROR ? NULL: data ;
 }
 
