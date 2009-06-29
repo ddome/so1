@@ -296,11 +296,8 @@ StartSendDelSignal(process_t process)
 	    int *userPidArray;
 	    
 	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
-        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
-        fflush(stdout);
 		
 		user = GetPIDToUserName(process.aux_pid);
-        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
         
    /* Se almacenan en userPidArray los pids de dichos usuarios
    *
@@ -310,9 +307,7 @@ StartSendDelSignal(process_t process)
         for(i=0;i<cantUsersInDir;i++){
             /* Si es distinto del pid del usuario que me lo mando */
             if( userPidArray[i] != process.aux_pid ) {
-                user = GetPIDToUserName(userPidArray[i]);
-                printf("Se lo mando a %s\n",user);                
-                fflush(stdout);           
+                user = GetPIDToUserName(userPidArray[i]);        
                 do{
 		            status = InitCommunication(userPidArray[i]);
 		            usleep(__POOL_WAIT__);
@@ -335,11 +330,8 @@ StartDirBroadcast(process_t process)
 	    char *user;
 	    
 	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
-        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
-        fflush(stdout);
 		
 		user = GetPIDToUserName(process.aux_pid);
-        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
         
    /* Se almacenan en userPidArray los pids de dichos usuarios
    *
@@ -350,8 +342,6 @@ StartDirBroadcast(process_t process)
             /* Si es distinto del pid del usuario que me lo mando */
             if( userPidArray[i] != process.aux_pid ) {
                 user = GetPIDToUserName(userPidArray[i]);
-                printf("Se lo mando a %s\n",user);                
-                fflush(stdout);           
                 do{
 		            status = InitCommunication(userPidArray[i]);
 		            usleep(__POOL_WAIT__);
@@ -374,11 +364,8 @@ StartDirNewBroadcast(process_t process)
 	    char *user;
 	    
 	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
-        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
-        fflush(stdout);
 		
 		user = GetPIDToUserName(process.aux_pid);
-        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
         
        /* Se almacenan en userPidArray los pids de dichos usuarios
        *
@@ -389,8 +376,6 @@ StartDirNewBroadcast(process_t process)
             /* Si es distinto del pid del usuario que me lo mando */
             if( userPidArray[i] != process.aux_pid ) {
                 user = GetPIDToUserName(userPidArray[i]);
-                printf("Se lo mando a %s\n",user);                
-                fflush(stdout);           
                 do{
 		            status = InitCommunication(userPidArray[i]);
 		            usleep(__POOL_WAIT__);
@@ -413,11 +398,9 @@ StartDirDelBroadcast(process_t process)
 	    char *user;
 	    
 	    int cantUsersInDir = CantUsersLinkToDir(process.dir);
-        printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
-        fflush(stdout);
 		
 		user = GetPIDToUserName(process.aux_pid);
-        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
+
         
        /* Se almacenan en userPidArray los pids de dichos usuarios
        *
@@ -427,8 +410,7 @@ StartDirDelBroadcast(process_t process)
         for(i=0;i<cantUsersInDir;i++){
             /* Si es distinto del pid del usuario que me lo mando */
             if( userPidArray[i] != process.aux_pid ) {
-                user = GetPIDToUserName(userPidArray[i]);
-                printf("Se lo mando a %s\n",user);                
+                user = GetPIDToUserName(userPidArray[i]);            
                 fflush(stdout);           
                 do{
 		            status = InitCommunication(userPidArray[i]);
@@ -514,9 +496,7 @@ int StartTransferSubServer(process_t process)
 		    status = InitCommunication(getpid());
 		    usleep(__POOL_WAIT__);
 	    }while(status <= ERROR);
-	    
-	    printf("Iniciada la comunicacion para la transferencia en %d\n",getpid());
-		fflush(stdout);
+
 		
 		sleep(1);
 		
@@ -527,15 +507,8 @@ int StartTransferSubServer(process_t process)
 		    status = InitCommunication(client_pid);
 		    usleep(__POOL_WAIT__);
 	    }while(status <= ERROR);
-	    
-	    printf("Iniciada la comunicacion con el cliente %d\n",client_pid);	    
-	    fflush(stdout);  
 	       
 	    SendStartFileTransfer(process);
-	    
-	    printf("Le avise al cliente que puede empezar a escuchar en %d\n",process.pid);
-		fflush(stdout);
-
 
         sleep(1);
 	   /* Compienzo a transmitir */
@@ -550,13 +523,9 @@ int StartTransferSubServer(process_t process)
         fileName = GetFileName(process.dir);
         
         file = process.file;
-        
-	   	printf("Mandando el archivo %s %s....",file.path,file.fName);
-		fflush(stdout);
-	   
+        	   
 	    SendFile(process,file);
 	   
-	   	printf("OK\n");
 		fflush(stdout);		
 	    
    return status;
@@ -577,18 +546,12 @@ int StartDemandRecieveSubServer(process_t process)
   int *userPidArray;
   int i;
 
-  printf("Voy a crear la comunicacion\n");
-  fflush(stdout);
-
    /* Se obtienen la cantidad de usuarios conectados al directorio.
     ** Si hay 1 solo, no se manda broadcast, pues el unico que hay
     ** es el que hizo la modificacion del archivo en primera instancia.
     */
   int cantUsersInDir = CantUsersLinkToDir(process.dir);
-  printf("Tengo %d clientes asociados al directorio %s\n",cantUsersInDir,process.dir);
-  fflush(stdout);
-
-
+ 
    /* Se almacenan en userPidArray los pids de dichos usuarios
    *
    */
@@ -600,9 +563,6 @@ int StartDemandRecieveSubServer(process_t process)
     usleep(__POOL_WAIT__);
   }
   
-  printf("Cree la comunicacion con el pid %d y espero por los datos\n",process.pid);
-  fflush(stdout);
-  
   if(status > ERROR)
   {
   /* Recibo el archivo nuevo */
@@ -610,18 +570,14 @@ int StartDemandRecieveSubServer(process_t process)
     {
       if( (data = GetRequest()) != NULL)
       {
-        printf("Proceso lo recibido\n");
-        fflush(stdout);
         p = ProcessRequest(&data, &size);
         requestExists=TRUE;
         user = GetPIDToUserName(process.aux_pid);
-        printf("Ahora se lo tengo que mandar a todos salvo a %s\n",user);
         
         for(i=0;i<cantUsersInDir;i++){
             /* Si es distinto del pid del usuario que me lo mando */
             if( userPidArray[i] != process.aux_pid ) {
-                user = GetPIDToUserName(userPidArray[i]);
-                printf("Se lo mando a %s\n",user);                
+                user = GetPIDToUserName(userPidArray[i]);              
                 fflush(stdout);
                 p.opCode = __DIR_BROADCAST__;
                 p.pid = userPidArray[i];
@@ -633,9 +589,6 @@ int StartDemandRecieveSubServer(process_t process)
       usleep(__POOL_WAIT__);
     }
   }
-  
-  printf("Salio todo re joya\n");
-  fflush(stdout);
   
   return status;
 }

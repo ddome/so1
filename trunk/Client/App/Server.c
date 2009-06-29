@@ -292,9 +292,6 @@ int StartDemandSubServer(process_t process)
 	    status = InitCommunication(process.pid);
         usleep(__POOL_WAIT__);
     }
-    
-    printf("Inicie la comunicacion con el proceso demanda servidor\n");
-    fflush(stdout);
       
     /* Comunicacion con el inotify */
     status = ERROR;
@@ -305,21 +302,12 @@ int StartDemandSubServer(process_t process)
         usleep(__POOL_WAIT__);
     }
     
-    printf("Inicie la comunicacion con el proceso inotify\n");
-    fflush(stdout); 
-    
      /* Creo el proceso inotify */
     inotifyProcess.pid = getppid();
     strcpy(inotifyProcess.dir,process.dir);
     inotifyProcess.opCode=__SPAWN_INOTIFY__;
     SpawnSubProcess(inotifyProcess,0,NULL);                
-    printf("Creado el proceso inotify\n");
-    fflush(stdout);  
-    
-    /* Deshabilito el inotify */
-    /*while(WriteINotifyMsg(__INOTIFY_NO_DATA__) == ERROR) {
-        usleep(__POOL_WAIT__);
-    }*/
+
     if(status > ERROR)
     {
 		while(!requestExists)
@@ -329,14 +317,11 @@ int StartDemandSubServer(process_t process)
 				p = ProcessRequest(&data, &size);
                 if(p.status != ERROR) {
     
-                    printf("Le voy a mandar el mensaje\n");
-                    fflush(stdout);
-                    
+
                      while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
                        usleep(__POOL_WAIT__);
                     }
-                    printf("Le mande el mensaje\n");
-                    fflush(stdout);
+
                 }
                        
 				requestExists=TRUE;
@@ -373,9 +358,6 @@ StartDemandSndSubServer(process_t process)
         usleep(__POOL_WAIT__);
     }
 
-     printf("Me conecto y leo por el pid %d\n",process.pid);
-     fflush(stdout);
-
     pid = process.pid;
     status = ERROR;
     do
@@ -395,16 +377,12 @@ StartDemandSndSubServer(process_t process)
                 if(p.status != ERROR) {
                     
                     /* Habilito nuevamente el inotify */
-                    printf("Le voy a mandar el mensaje\n");
-                    fflush(stdout);
                     
                     sleep(3);
                     
                      while(WriteINotifyMsg(__INOTIFY_ENABLE__) == ERROR) {
                        usleep(__POOL_WAIT__);
                     }
-                    printf("Le mande el mensaje\n");
-                    fflush(stdout);
                 }
                        
 				requestExists=TRUE;
@@ -476,9 +454,7 @@ InitServerPath()
 int
 DirRemoveSync(string user, string dir)
 {
-    printf("Voy a mandar un pedido de borrar el directorio %s para %s\n",dir,user);
-    fflush(stdout);
-    
+   
 
     int status = ERROR;
     /* Deshabilito el inotify */
@@ -492,9 +468,6 @@ DirRemoveSync(string user, string dir)
     while(WriteINotifyMsg(__INOTIFY_EXIT__) == ERROR) {
         usleep(__POOL_WAIT__);
     }
-    
-    printf("Voy a mandar un pedido de borrar el directorio %s para %s\n",dir,user);
-    fflush(stdout);
     
     SendDirRemoveSignal(user,dir,getppid());         
 }

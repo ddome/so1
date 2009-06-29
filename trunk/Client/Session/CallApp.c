@@ -69,24 +69,13 @@ CallFileTransfer(session_t data)
 	byte *fileData;
 	int ret;
 	
-	printf("Leo la informacion del archivo que pesa %d\n",data.dataSize);
-    fflush(stdout);
-	
 	GetFileData(data,&file,&fileData);
 
-    printf("Voy a agregar un archivo %s %s pesa %d\n",file.path,file.fName,GetSize(file));
-        printf("Voy a agregar un archivo %s \n",data.senderID);
-    fflush(stdout);
 
     if( FileExists(file) ) {
-	    FileRem(file);
-	    printf("Lo borro\n");
-        fflush(stdout);	    	
+	    FileRem(file);    	
     }
 	ret = FileAdd(file,fileData);
-
-    printf("TODO OK\n");
-    fflush(stdout);
 
 	//free(data.data);
 	//free(fileData);
@@ -103,9 +92,6 @@ CallFileRem(session_t data)
 	int ret;
 	
 	file = (fileT *)(data.data);
-	
-	printf("Voy a borrar %s/%s\n",file->path,file->fName);	
-	fflush(stdout);
 	
 	ret = FileRem(*file);	
 	
