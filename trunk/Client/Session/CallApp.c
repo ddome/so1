@@ -74,7 +74,8 @@ CallFileTransfer(session_t data)
 	
 	GetFileData(data,&file,&fileData);
 
-    printf("Voy a agregar un archivo %s %s \n",file.path,file.fName);
+    printf("Voy a agregar un archivo %s %s pesa %d\n",file.path,file.fName,GetSize(file));
+        printf("Voy a agregar un archivo %s \n",data.senderID);
     fflush(stdout);
 
     if( FileExists(file) ) {
@@ -210,9 +211,28 @@ CallDirList(session_t data)
 	return OK;
 }
 		
+int 
+CallDirDel(session_t data)
+{
+    
+
+    printf("--%s--\n",data.msg);
+    fflush(stdout);
+    
+    rmdir(Concat(Concat(data.senderID,"/"),data.msg));
+    return OK;
+}		
 		
-		
-		
+int 
+CallDirNew(session_t data)
+{
+
+    printf("--%s--\n",data.msg);
+    fflush(stdout);
+    
+    mkdir(Concat(Concat(data.senderID,"/"),data.msg),0777);
+    return OK;
+}			
 	
 	
 	

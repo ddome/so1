@@ -450,7 +450,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
        
             if( resp->isDir ) {
             
-                SendDirDel(path,fileName);
+                SendDirDel(path,fileName,pid);
                 break;
             }
             
@@ -464,7 +464,7 @@ NotifyServer(pid_t pid, key_t key, resp_T * resp, char name[MAX_LINE])
         
             if( resp->isDir ) {
             
-                SendDirNew(path,fileName);
+                SendDirNew(path,fileName,pid);
                 break;
             }
                

@@ -49,6 +49,8 @@
 #define __KILL_DIR__          9
 #define __DIR_BROADCAST_DEMAND__ 10
 #define __SPAWN_DEL_SEND__ 11
+#define __SPAWN_DIR_DEL_SEND__ 12
+#define __SPAWN_DIR_NEW_SEND__ 13
 /* Definiciones para creacion de procesos con fork()
 */
 

@@ -296,7 +296,7 @@ SendFile( fileT file, pid_t pid )
 
 	size = MakeSessionData(pack, &data);
 	
-	printf("Le voy a mandar el archivo --%s/%s-- que pesa %d\n",file.path,file.fName,GetSize(file));
+	printf("Le voy a mandar el archivo --%s-- que pesa %d\n",pack.senderID,GetSize(file));
 	
 	return WriteIPC(data, size)>0?OK:ERROR; 
 
@@ -309,8 +309,6 @@ SendDirRemoveSignal( string userName, string dir, pid_t pid )
   byte *data;
   size_t size;
    
-    
-  printf("LLEGUE\n");
   fflush(stdout); 
     
   pack.pid = pid;
@@ -399,7 +397,7 @@ SendExitSignal( string userName )
 }
 
 int
-SendDirDel( string path, string dirName )
+SendDirDel( string path, string dirName, pid_t pid )
 {
 	char * serverPath;
     	key_t keyDir;
@@ -413,6 +411,7 @@ SendDirDel( string path, string dirName )
 	strcpy(pack.senderID,path);
 	pack.dataSize = 0;	
 	pack.data = NULL;
+	pack.pid = pid;
 	
 	size = MakeSessionData(pack, &data);
 	pack = GetSessionData(data);
@@ -423,7 +422,7 @@ SendDirDel( string path, string dirName )
 }
 
 int
-SendDirNew( string path, string dirName )
+SendDirNew( string path, string dirName, pid_t pid )
 {
 	char * serverPath;
     	key_t keyDir;
@@ -437,6 +436,7 @@ SendDirNew( string path, string dirName )
 	strcpy(pack.senderID,path);
 	pack.dataSize = 0;	
 	pack.data = NULL;
+	pack.pid = pid;
 	
 	size = MakeSessionData(pack, &data);
 	pack = GetSessionData(data);
@@ -539,8 +539,7 @@ ProcessCall( session_t *data )
 			p.status = OK;
 			p.opCode =  __NO_RESPONSE__;
 			strcpy(p.dir,data->senderID);
-			CallFileTransfer(*data);
-			
+			CallFileTransfer(*data);			
 			break;
 			
 		case SR_DIR_TRANS:
@@ -548,7 +547,50 @@ ProcessCall( session_t *data )
 			p.status = CallDirAdd(*data);
 			p.opCode = __NO_RESPONSE__;
 			break;
-		 
+			
+		case SR_DIR_REM:
+		
+				 printf("Borro un dir");
+                 fflush(stdout);	
+			do
+		    {
+		        status = InitINotifyMsg(getpid(),data->data);
+		        usleep(__POOL_WAIT__);
+		    } while (status != OK);
+		    
+		    WriteINotifyMsg(__INOTIFY_DISABLE__); 
+		    
+			p.status = CallDirDel(*data);
+			p.opCode = __NO_RESPONSE__;
+			
+			sleep(2);
+    
+            WriteINotifyMsg(__INOTIFY_ENABLE__);
+            
+			break;	
+		case SR_DIR_NEW:
+		
+		        printf("Creo un dir");
+                 fflush(stdout);
+		    
+			do
+		    {
+		        status = InitINotifyMsg(getpid(),data->data);
+		        usleep(__POOL_WAIT__);
+		    } while (status != OK);
+		    
+		    WriteINotifyMsg(__INOTIFY_DISABLE__);
+		
+			p.status = CallDirNew(*data);
+			p.opCode = __NO_RESPONSE__;
+			
+			sleep(2);
+			
+			WriteINotifyMsg(__INOTIFY_ENABLE__);
+			
+			break;
+			
+			
 		default:
 			p.status = ERROR;
 			break;

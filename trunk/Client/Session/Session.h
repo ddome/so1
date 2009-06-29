@@ -51,6 +51,7 @@
 #define SR_READY_TO_RECIEVE_ADD 29
 #define SR_FIL_TRAN 30
 #define SR_FIL_TRAN_REQ 52
+#define SR_DIR_NEW 70
 
 //Agregar Sr_DIr-CON-ERROR!!!!!!!!!!1111
 
@@ -108,8 +109,8 @@ int SendFileRemPack( string userName, fileT file, pid_t pid );
 int SendDirReq( string userName, pid_t pid, string dirPath );
 int SendDirListReq( string userName );
 int SendExitSignal( string userName );
-int SendDirDel( string path, string dirName );
-int SendDirNew( string path, string dirName );
+int SendDirDel( string path, string dirName, pid_t pid );
+int SendDirNew( string path, string dirName, pid_t pid );
 int SendDirRem( string userName, pid_t pid, string dirName );
 int SendDirRemoveSignal( string userName, string dir, pid_t pid );
 int SendFile( fileT file, pid_t parent_pid );
